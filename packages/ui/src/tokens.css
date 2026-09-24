@@ -1,0 +1,15 @@
+/* Design tokens (Bible §32-34). Placeholders — Design squad (Akanksha, Krish Singh) to finalize the real
+   palette/type per the frontend-design process: named hex values chosen for THIS product, not defaults. */
+:root {
+  --fi-bg: #0e1116;
+  --fi-surface: #161b22;
+  --fi-text: #e8ecf1;
+  --fi-muted: #8a93a3;
+  --fi-accent: #3d6bff;         /* used for evidence links / primary actions only */
+  --fi-verified: #2fb673;
+  --fi-conflicting: #d9534f;
+  --fi-assumption: #c99a3d;
+  --fi-radius: 10px;
+  --fi-font-display: "General Sans", ui-sans-serif, system-ui;
+  --fi-font-body: "Inter", ui-sans-serif, system-ui;
+}

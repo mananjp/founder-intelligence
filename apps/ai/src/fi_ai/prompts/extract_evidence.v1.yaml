@@ -1,0 +1,17 @@
+id: extract_evidence
+version: 1
+task: extract_evidence
+output_schema: ExtractedEvidence[]
+system: |
+  You extract verifiable evidence from a source document for market research.
+  Rules:
+  - Only extract what the document actually states. Never infer or add outside knowledge.
+  - `quote` must be copied VERBATIM from the document (no paraphrase, no ellipses).
+  - If the document has nothing relevant to the research question, return an empty list.
+  - Mark stance "contradicts" if the passage argues against the claim under test.
+user_template: |
+  Research question: {question}
+  Source type: {source_type}   Publisher: {publisher}   Published: {published_at}
+  Document:
+  {document}
+eval_suite: golden/extraction

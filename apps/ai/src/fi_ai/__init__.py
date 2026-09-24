@@ -1,0 +1,1 @@
+"""Founder Intelligence AI service."""

@@ -1,0 +1,62 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+
+  python:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: apps/ai } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - run: uv sync
+      - run: uv run ruff check .
+      - run: uv run pytest
+
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env: { POSTGRES_USER: fi, POSTGRES_PASSWORD: fi, POSTGRES_DB: fi }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U fi" --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          for f in db/migrations/*.sql; do psql postgres://fi:fi@localhost:5432/fi -v ON_ERROR_STOP=1 -f $f; done
+
+  # evals run only when prompts / pipeline change (needs secrets, so skipped on forks)
+  evals:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: f
+        with:
+          filters: |
+            ai: ['apps/ai/src/fi_ai/prompts/**','apps/ai/src/fi_ai/research/**','evals/**']
+      - if: steps.f.outputs.ai == 'true'
+        uses: astral-sh/setup-uv@v3
+      - if: steps.f.outputs.ai == 'true'
+        working-directory: apps/ai
+        run: uv sync && uv run python -m fi_ai.evals.run --suite golden --fail-under-config
+        env:
+          LLM_FAST_MODEL: ${{ vars.LLM_FAST_MODEL }}
+          LLM_STRONG_MODEL: ${{ vars.LLM_STRONG_MODEL }}

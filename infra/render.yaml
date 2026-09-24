@@ -1,0 +1,18 @@
+# MVP deploy blueprint (Render). Swap for Railway/Fly if preferred.
+services:
+  - type: web
+    name: fi-api
+    runtime: docker
+    dockerfilePath: infra/docker/api.Dockerfile
+    healthCheckPath: /health
+    envVars: [{ key: NODE_ENV, value: production }]
+  - type: web
+    name: fi-ai
+    runtime: docker
+    dockerfilePath: infra/docker/ai.Dockerfile
+    healthCheckPath: /health
+  - type: worker
+    name: fi-worker
+    runtime: docker
+    dockerfilePath: infra/docker/ai.Dockerfile
+    dockerCommand: uv run celery -A fi_ai.worker worker -l info
