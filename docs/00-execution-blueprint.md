@@ -16,37 +16,31 @@ ultimately describes (§28–34, §40–43).
 Everything here has a matching, runnable scaffold in this repository (`apps/`, `packages/`, `db/`,
 `infra/`, `.github/`) — this is not a slideware plan, it's the plan the folder structure implements.
 
----
+---## 2. Team Structure (26 People → 9 Squads)
 
-## 2. Team structure (26 people → 9 squads)
+| # | Squad                                           | Mission                                                                               | Lead                                            | Members                                                                                                       |
+| - | ----------------------------------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| 1 | **PMO & Delivery**                              | Scope, sequencing, standups, unblocking, stakeholder comms                            | Manan (PM)                                      | Harshil Thakkar (Team Manager — pace/blockers)                                                                |
+| 2 | **Platform / DevOps / QA**                      | CI/CD, environments, infrastructure, observability, cost, cross-cutting test strategy | Ansh Dhanani                                    | Rishi Bharatbhai Sanja (Full stack + DevOps), Rahil (Cloud intern, 4mo), Hitarth (role TBC — good fit for QA) |
+| 3 | **Core Backend** (`apps/api`)                   | Auth, workspaces, ideas, CRUD, billing, exports, SSE gateway — the system of record   | Mann Shah (Backend)                             | Krish Parmar, Nil, Deep, Tirth Bhanderi                                                                       |
+| 4 | **AI — Research Engine** (`apps/ai/research`)   | Scope → Plan → Discover → Fetch → Extract pipeline (Bible §9)                         | Sharanam Katwala (AI/ML)                        | Preet Savaliya, Jiya Sadaria (AIML Backend)                                                              |
+| 5 | **AI — Reasoning, Scoring & Evals**             | Crosscheck/Synthesize/Recommend, opportunity score, evals, prompt registry            | Shreeji Sojitra (AI/ML — interview reliability) | Yug Bhatt                                                                                                     |
+| 6 | **Frontend Core** (`apps/web`)                  | App shell, auth flows, state, data layer, all screens' scaffolding                    | Aanshi Bhut (Frontend core flow, App state)     | Varun, Prashant                                                                                               |
+| 7 | **Product Design**                              | Design tokens, IA, the "premium intelligence instrument" visual system (§32)          | Akanksha (UI/UX)                                | Krish Singh (Product design + backend swing)                                                                  |
+| 8 | **Feature Pod A — Decision Layer**              | Assumptions, Experiments, Decision Trace, Scorecard UI + API                          | **Avi Patel**                                   |  Vraj (intern, 6mo)                                                                                                         |
+| 9 | **Feature Pod B — Reports, Workspace, Billing** | Report system, exports, workspace/collab, pricing tiers                               | Krish Bhingradiya (Full stack)                  | Anmol Dholiya (Full stack)                                                                                    |
+| — | **Feature Pod C — Radar & Intelligence Views**  | Market/Competitor/Customer screens, Radar UI                                          | Romit Kakadiya (Full stack)                     | Borrow from Pod A/B once Phase 2 lands                                                                        |
 
-The Bible's system naturally splits into five _layers_ (data/schema, AI research engine, decision
-logic, API, UI) plus delivery and platform concerns. I've mapped your roster onto that split. Roles
-you gave me (Full stack, Backend, AI/ML, Frontend, UI/UX, DevOps, PM) map directly; three "Full
-stack Developer" hires with no stated specialty are placed as a flex pod that takes on whichever
-squad is behind schedule — that's the group to reshuffle first.
+### Role Changes
 
-| #   | Squad                                           | Mission                                                                             | Lead                                            | Members                                                         |
-| --- | ----------------------------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------- |
-| 1   | **PMO & Delivery**                              | Scope, sequencing, standups, unblocking, stakeholder comms                          | Manan (PM)                                      | Harshil Thakkar (Team Manager — pace/blockers)                  |
-| 2   | **Platform / DevOps / QA**                      | CI/CD, envs, infra, observability, cost, cross-cutting test strategy                | Rishi Bharatbhai Sanja (Full stack + DevOps)    | Rahil (Cloud intern, 4mo), Hitarth (role TBC — good fit for QA) |
-| 3   | **Core Backend** (`apps/api`)                   | Auth, workspaces, ideas, CRUD, billing, exports, SSE gateway — the system of record | Mann Shah (Backend)                             | Krish Parmar, Nil, Deep, Tirth Bhanderi                         |
-| 4   | **AI — Research Engine** (`apps/ai/research`)   | Scope→Plan→Discover→Fetch→Extract pipeline (Bible §9)                               | Sharanam Katwala (AI/ML)                        | Preet Savaliya, Jiya Sadaria (AIML Backend), Vraj (intern, 6mo) |
-| 5   | **AI — Reasoning, Scoring & Evals**             | Crosscheck/Synthesize/Recommend, opportunity score, evals, prompt registry          | Shreeji Sojitra (AI/ML — interview reliability) | Yug Bhatt                                                       |
-| 6   | **Frontend Core** (`apps/web`)                  | App shell, auth flows, state, data layer, all screens' scaffolding                  | Aanshi Bhut (Frontend core flow, App state)     | Varun, Prashant                                                 |
-| 7   | **Product Design**                              | Design tokens, IA, the "premium intelligence instrument" visual system (§32)        | Akanksha (UI/UX)                                | Krish Singh (Product design + backend swing)                    |
-| 8   | **Feature Pod A — Decision Layer**              | Assumptions, Experiments, Decision Trace, Scorecard UI+API                          | Ansh Dhanani (Full stack)                       | Avi Patel                                                       |
-| 9   | **Feature Pod B — Reports, Workspace, Billing** | Report system, exports, workspace/collab, pricing tiers                             | Krish Bhingradiya (Full stack)                  | Anmol Dholiya                                                   |
-| —   | **Feature Pod C — Radar & Intelligence Views**  | Market/Competitor/Customer screens, Radar UI                                        | Romit Kakadiya (Full stack)                     | borrow from Pod A/B once Phase 2 lands                          |
-
-**Reshuffle rule of thumb:** keep squads 3, 4, 5 stable — they own hard, load-bearing internals
-(schema, pipeline, scoring) where context-switching is expensive. Rotate people through squads 6, 8,
-9, C freely; those are feature pods against a contract (`packages/contracts`) and a design system
-(`packages/ui`), so swapping people costs little once both are stable.
-
-**Note:** three roster entries (Yug Bhatt, Hitarth) have no confirmed handle/role — confirm before
-sprint 1 so CODEOWNERS and standup rotations are accurate. Three people share the first name
-"Krish" (Parmar, Singh, Bhingradiya) — always tag by full name/handle in issues.
+* **Ansh Dhanani** → Lead, **Platform / DevOps / QA**
+* **Rishi Bharatbhai Sanja** → Member, **Platform / DevOps / QA**
+* **Avi Patel** → Lead, **Feature Pod A — Decision Layer**
+* **Vraj** → Member of **AI — Research Engine**
+* **Ansh Dhanani is not listed anywhere else.**
+* **Avi Patel is not listed anywhere else.**
+* **Vraj is not duplicated.**
+* Everyone appears only once in the team structure.
 
 ---
 
