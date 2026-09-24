@@ -4,7 +4,9 @@ export default function Page() {
   return (
     <main style={{ padding: 24 }}>
       <h1>Copilot</h1>
-      <p style={{ color: "var(--fi-muted)" }}>Ask questions about the whole project.</p>
+      <p style={{ color: "var(--fi-muted)" }}>
+        Ask questions about the whole project.
+      </p>
     </main>
   );
 }

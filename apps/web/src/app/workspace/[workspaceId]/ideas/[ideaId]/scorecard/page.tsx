@@ -4,7 +4,9 @@ export default function Page() {
   return (
     <main style={{ padding: 24 }}>
       <h1>Scorecard</h1>
-      <p style={{ color: "var(--fi-muted)" }}>Opportunity dimensions + evidence coverage.</p>
+      <p style={{ color: "var(--fi-muted)" }}>
+        Opportunity dimensions + evidence coverage.
+      </p>
     </main>
   );
 }

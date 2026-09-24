@@ -1,4 +1,5 @@
 """Pre-display quality gate (Bible §27): what supports it, how recent, independent?, what contradicts, what's unknown."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -10,7 +11,9 @@ class GateResult:
     reasons: list[str] = field(default_factory=list)
 
 
-def check_recommendation(cited_claim_ids: list[str], known_claim_ids: set[str], has_unknowns_section: bool) -> GateResult:
+def check_recommendation(
+    cited_claim_ids: list[str], known_claim_ids: set[str], has_unknowns_section: bool
+) -> GateResult:
     reasons: list[str] = []
     if not cited_claim_ids:
         reasons.append("no evidence cited")

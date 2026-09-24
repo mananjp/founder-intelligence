@@ -12,14 +12,20 @@ class RunState(StrEnum):
     SYNTHESIZING = "synthesizing"
     RECOMMENDING = "recommending"
     COMPLETED = "completed"
-    PARTIAL = "partial"      # budget/time exhausted but usable output exists
+    PARTIAL = "partial"  # budget/time exhausted but usable output exists
     FAILED = "failed"
     CANCELLED = "cancelled"
 
 
 PIPELINE = [
-    RunState.SCOPING, RunState.PLANNING, RunState.DISCOVERING, RunState.FETCHING,
-    RunState.EXTRACTING, RunState.CROSSCHECKING, RunState.SYNTHESIZING, RunState.RECOMMENDING,
+    RunState.SCOPING,
+    RunState.PLANNING,
+    RunState.DISCOVERING,
+    RunState.FETCHING,
+    RunState.EXTRACTING,
+    RunState.CROSSCHECKING,
+    RunState.SYNTHESIZING,
+    RunState.RECOMMENDING,
 ]
 TERMINAL = {RunState.COMPLETED, RunState.PARTIAL, RunState.FAILED, RunState.CANCELLED}
 

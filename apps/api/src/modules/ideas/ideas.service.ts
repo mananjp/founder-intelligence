@@ -9,5 +9,6 @@ export const ideasService = {
     if (!idea) throw new HttpError(404, "not_found", "Idea not found");
     return idea;
   },
-  create: (ws: string, userId: string, body: CreateIdeaBody) => ideasRepo.create(ws, userId, body),
+  create: (ws: string, userId: string, body: CreateIdeaBody) =>
+    ideasRepo.create(ws, userId, body),
 };

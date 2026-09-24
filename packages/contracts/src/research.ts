@@ -11,12 +11,29 @@ export type StartResearchRun = z.infer<typeof StartResearchRun>;
 
 /** Mirrors fi_ai.research.state.RunState */
 export const RunState = z.enum([
-  "created", "scoping", "planning", "discovering", "fetching", "extracting",
-  "crosschecking", "synthesizing", "recommending", "completed", "partial", "failed", "cancelled",
+  "created",
+  "scoping",
+  "planning",
+  "discovering",
+  "fetching",
+  "extracting",
+  "crosschecking",
+  "synthesizing",
+  "recommending",
+  "completed",
+  "partial",
+  "failed",
+  "cancelled",
 ]);
 
 export const RunEvent = z.object({
-  type: z.enum(["stage.started", "stage.progress", "stage.completed", "stage.failed", "run.finished"]),
+  type: z.enum([
+    "stage.started",
+    "stage.progress",
+    "stage.completed",
+    "stage.failed",
+    "run.finished",
+  ]),
   stage: z.string().optional(),
   note: z.string().optional(),
   error: z.string().optional(),

@@ -1,5 +1,6 @@
 from fi_ai.evidence.schemas import ClaimStatus
-from fi_ai.evidence.status import EvidenceRef, derive_claim_status as d
+from fi_ai.evidence.status import EvidenceRef
+from fi_ai.evidence.status import derive_claim_status as d
 
 
 def ref(i, pub, st="news", stance="supports", age=30):
@@ -20,7 +21,9 @@ def test_supported_needs_two_independent_publishers():
 
 
 def test_conflicting():
-    assert d("evidence", [ref("1", "a.com"), ref("2", "b.com", stance="contradicts")]) == ClaimStatus.CONFLICTING
+    assert (
+        d("evidence", [ref("1", "a.com"), ref("2", "b.com", stance="contradicts")]) == ClaimStatus.CONFLICTING
+    )
 
 
 def test_assumption_and_unverified():
@@ -29,7 +32,10 @@ def test_assumption_and_unverified():
 
 
 def test_signals_never_exceed_directional():
-    assert d("evidence", [ref("1", "trends.google.com", "search_trend"), ref("2", "b.com")], kind="signal") == ClaimStatus.DIRECTIONAL
+    assert (
+        d("evidence", [ref("1", "trends.google.com", "search_trend"), ref("2", "b.com")], kind="signal")
+        == ClaimStatus.DIRECTIONAL
+    )
 
 
 def test_inferred():

@@ -4,7 +4,9 @@ export default function Page() {
   return (
     <main style={{ padding: 24 }}>
       <h1>Market Map</h1>
-      <p style={{ color: "var(--fi-muted)" }}>Market structure, segments, trends, context.</p>
+      <p style={{ color: "var(--fi-muted)" }}>
+        Market structure, segments, trends, context.
+      </p>
     </main>
   );
 }

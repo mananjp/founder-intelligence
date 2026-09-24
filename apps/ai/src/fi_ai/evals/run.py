@@ -6,6 +6,7 @@ Metrics to implement first (Bible section 41):
   - contradiction_recall     (seeded contradictions surfaced)                  tracked
   - cost_per_run_usd, latency_p50/p95
 """
+
 import argparse
 
 

@@ -3,14 +3,15 @@
 Every stage must be idempotent: re-running a stage for the same run_id must not duplicate rows
 (use natural keys such as (run_id, url_hash) and UPSERT).
 """
+
 from __future__ import annotations
 
-import json
-from typing import Callable, Protocol
+from collections.abc import Callable
+from typing import Protocol
 
 import structlog
 
-from fi_ai.research.state import RunState, TERMINAL, next_state
+from fi_ai.research.state import TERMINAL, RunState, next_state
 
 log = structlog.get_logger()
 
@@ -36,7 +37,14 @@ class Stage(Protocol):
 
 def _registry() -> dict[RunState, Callable[[RunContext], None]]:
     from fi_ai.research.pipeline import (
-        scope, plan, discover, fetch, extract, crosscheck, synthesize, recommend,
+        crosscheck,
+        discover,
+        extract,
+        fetch,
+        plan,
+        recommend,
+        scope,
+        synthesize,
     )
 
     return {
@@ -68,7 +76,7 @@ class Orchestrator:
             self.ctx.publish({"type": "stage.started", "stage": state.value})
             try:
                 stages[state](self.ctx)
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 log.exception("stage.failed", stage=state.value)
                 self.ctx.publish({"type": "stage.failed", "stage": state.value, "error": str(exc)})
                 state = RunState.FAILED

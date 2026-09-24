@@ -2,6 +2,7 @@
 LLM structured extraction into ExtractedEvidence. HARD GATE: quote must be a verbatim substring of the snapshot, else discard.
 Owner: AI / Research Engine squad.
 """
+
 from fi_ai.research.orchestrator import RunContext
 
 

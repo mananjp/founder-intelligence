@@ -9,6 +9,8 @@ __pycache__/
 .venv/
 .pytest_cache/
 *.pyc
+*.tsbuildinfo
+*.mtsbuildinfo
 .DS_Store
 coverage/
 *.tfstate*

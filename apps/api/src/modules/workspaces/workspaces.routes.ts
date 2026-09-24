@@ -18,9 +18,20 @@ workspacesRouter.post("/", async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    const { rows } = await client.query("INSERT INTO workspaces (name, owner_id) VALUES ($1,$2) RETURNING id, name", [name, req.user!.id]);
-    await client.query("INSERT INTO workspace_members (workspace_id, user_id, role) VALUES ($1,$2,'owner')", [rows[0].id, req.user!.id]);
+    const { rows } = await client.query(
+      "INSERT INTO workspaces (name, owner_id) VALUES ($1,$2) RETURNING id, name",
+      [name, req.user!.id],
+    );
+    await client.query(
+      "INSERT INTO workspace_members (workspace_id, user_id, role) VALUES ($1,$2,'owner')",
+      [rows[0].id, req.user!.id],
+    );
     await client.query("COMMIT");
     res.status(201).json({ data: rows[0] });
-  } catch (e) { await client.query("ROLLBACK"); throw e; } finally { client.release(); }
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
+  } finally {
+    client.release();
+  }
 });

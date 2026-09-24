@@ -1,6 +1,7 @@
 services:
   postgres:
     image: pgvector/pgvector:pg16
+    restart: unless-stopped
     environment:
       POSTGRES_USER: fi
       POSTGRES_PASSWORD: fi
@@ -9,13 +10,37 @@ services:
     volumes: ["pgdata:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U fi"]
-      interval: 5s
-      retries: 10
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "1.0"
   redis:
     image: redis:7-alpine
+    restart: unless-stopped
     ports: ["6379:6379"]
+    command: ["redis-server", "--save", ""]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+          cpus: "0.5"
   mailpit:
     image: axllent/mailpit
+    restart: unless-stopped
     ports: ["8025:8025", "1025:1025"]
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+          cpus: "0.5"
 volumes:
   pgdata:

@@ -1,4 +1,5 @@
 """Deterministic claim-status derivation (Bible §10). LLMs never assign a status directly."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -39,7 +40,8 @@ def derive_claim_status(
         return ClaimStatus.INFERRED  # inherits caveats of its parents; parents' statuses shown in the trace
 
     fresh_primary = any(
-        e.source_type in PRIMARY_SOURCE_TYPES and (e.age_days is None or e.age_days <= ttl_days) for e in supports
+        e.source_type in PRIMARY_SOURCE_TYPES and (e.age_days is None or e.age_days <= ttl_days)
+        for e in supports
     )
     independent_publishers = len({e.publisher or e.evidence_id for e in supports})
 

@@ -1,11 +1,11 @@
 # Tier -> model mapping. Change models HERE (or via env), never in call sites.
 # LiteLLM model strings; fill via env so providers can be swapped without code changes.
 tiers:
-  fast:      { model: "${LLM_FAST_MODEL}",   timeout_s: 30,  max_retries: 3 }   # classify, tag, extract, summarize
-  strong:    { model: "${LLM_STRONG_MODEL}", timeout_s: 120, max_retries: 2 }   # synthesis, contradiction analysis, strategy
-  embedding: { model: "${LLM_EMBED_MODEL}",  timeout_s: 30,  max_retries: 3 }
+  fast: { model: "${LLM_FAST_MODEL}", timeout_s: 30, max_retries: 3 } # classify, tag, extract, summarize
+  strong: { model: "${LLM_STRONG_MODEL}", timeout_s: 120, max_retries: 2 } # synthesis, contradiction analysis, strategy
+  embedding: { model: "${LLM_EMBED_MODEL}", timeout_s: 30, max_retries: 3 }
 
-tasks:            # task -> tier
+tasks: # task -> tier
   interview_turn: fast
   classify_source: fast
   extract_evidence: fast
@@ -15,4 +15,4 @@ tasks:            # task -> tier
   copilot_answer: strong
   radar_diff_summary: fast
 fallbacks:
-  strong: fast    # degrade gracefully on provider outage; flag output as lower-confidence
+  strong: fast # degrade gracefully on provider outage; flag output as lower-confidence

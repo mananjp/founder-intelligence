@@ -4,14 +4,19 @@
  */
 export interface ExperimentInput {
   id: string;
-  expectedLearning: number;  // 0-1
-  decisionImpact: number;    // 0-1
-  costTime: number;          // > 0
+  expectedLearning: number; // 0-1
+  decisionImpact: number; // 0-1
+  costTime: number; // > 0
 }
 
 export function rankExperiments(inputs: ExperimentInput[]) {
   return inputs
-    .map((e) => ({ ...e, priorityScore: round3((e.expectedLearning * e.decisionImpact) / Math.max(e.costTime, 0.01)) }))
+    .map((e) => ({
+      ...e,
+      priorityScore: round3(
+        (e.expectedLearning * e.decisionImpact) / Math.max(e.costTime, 0.01),
+      ),
+    }))
     .sort((a, b) => b.priorityScore - a.priorityScore);
 }
 const round3 = (n: number) => Math.round(n * 1000) / 1000;

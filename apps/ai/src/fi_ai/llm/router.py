@@ -5,6 +5,7 @@ Rules:
   * Structured outputs are validated with Pydantic; on failure retry once with the validation error appended.
   * Every call is logged to `llm_calls` (task, model, tokens, cost, latency, run_id) and traced in Langfuse.
 """
+
 from __future__ import annotations
 
 import os
@@ -28,6 +29,8 @@ def model_for(task: str) -> str:
     return _expand(_CFG["tiers"][tier]["model"])
 
 
-def complete_structured(task: str, messages: list[dict], schema: type[T], run_id: str | None = None) -> T:
+def complete_structured[T: BaseModel](
+    task: str, messages: list[dict], schema: type[T], run_id: str | None = None
+) -> T:
     """TODO(AI): implement with litellm.completion(response_format=schema) + validation/retry + cost accounting."""
     raise NotImplementedError

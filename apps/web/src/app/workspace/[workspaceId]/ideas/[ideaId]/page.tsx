@@ -4,7 +4,9 @@ export default function Page() {
   return (
     <main style={{ padding: 24 }}>
       <h1>Intelligence Home</h1>
-      <p style={{ color: "var(--fi-muted)" }}>Executive dashboard for the project.</p>
+      <p style={{ color: "var(--fi-muted)" }}>
+        Executive dashboard for the project.
+      </p>
     </main>
   );
 }

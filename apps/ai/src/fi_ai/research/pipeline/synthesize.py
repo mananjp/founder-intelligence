@@ -2,6 +2,7 @@
 Per module (market, customer, competitive, demand, pricing, gtm) produce insights that cite claim_ids. Reject uncited statements.
 Owner: AI / Research Engine squad.
 """
+
 from fi_ai.research.orchestrator import RunContext
 
 

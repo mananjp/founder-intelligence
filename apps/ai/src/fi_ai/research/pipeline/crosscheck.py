@@ -2,6 +2,7 @@
 Cluster claims (embeddings), detect agreement/contradiction, dedupe syndicated copies, compute independence; derive claim status via evidence.status.
 Owner: AI / Research Engine squad.
 """
+
 from fi_ai.research.orchestrator import RunContext
 
 

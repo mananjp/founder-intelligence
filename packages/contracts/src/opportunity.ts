@@ -1,9 +1,18 @@
 import { z } from "zod";
 
 export const DimensionKey = z.enum([
-  "problem_severity", "market_attractiveness", "customer_willingness", "competitive_pressure",
-  "differentiation", "timing", "monetization", "distribution_feasibility", "defensibility", "execution_fit",
+  "problem_severity",
+  "market_attractiveness",
+  "customer_willingness",
+  "competitive_pressure",
+  "differentiation",
+  "timing",
+  "monetization",
+  "distribution_feasibility",
+  "defensibility",
+  "execution_fit",
 ]);
+export type DimensionKey = z.infer<typeof DimensionKey>;
 
 export const DimensionScore = z.object({
   score: z.number().min(0).max(10),

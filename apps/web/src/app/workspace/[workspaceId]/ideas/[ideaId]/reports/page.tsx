@@ -4,7 +4,9 @@ export default function Page() {
   return (
     <main style={{ padding: 24 }}>
       <h1>Reports</h1>
-      <p style={{ color: "var(--fi-muted)" }}>Generate and export intelligence.</p>
+      <p style={{ color: "var(--fi-muted)" }}>
+        Generate and export intelligence.
+      </p>
     </main>
   );
 }

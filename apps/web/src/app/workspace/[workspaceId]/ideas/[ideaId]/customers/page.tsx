@@ -4,7 +4,9 @@ export default function Page() {
   return (
     <main style={{ padding: 24 }}>
       <h1>Customers</h1>
-      <p style={{ color: "var(--fi-muted)" }}>ICP, pain, language, reviews, interviews.</p>
+      <p style={{ color: "var(--fi-muted)" }}>
+        ICP, pain, language, reviews, interviews.
+      </p>
     </main>
   );
 }

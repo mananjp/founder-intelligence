@@ -2,6 +2,7 @@
 Recommendations, assumptions, unknowns, risk register. Run quality_gate before persisting.
 Owner: AI / Research Engine squad.
 """
+
 from fi_ai.research.orchestrator import RunContext
 
 

@@ -2,6 +2,7 @@
 Brief -> ResearchQuestion[] with priority, required source classes and evidence targets.
 Owner: AI / Research Engine squad.
 """
+
 from fi_ai.research.orchestrator import RunContext
 
 

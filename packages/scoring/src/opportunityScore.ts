@@ -10,10 +10,10 @@ export const SCORING_MODEL_VERSION = "opportunity-score.v1";
  */
 export interface DimensionInput {
   key: DimensionKey;
-  score: number;          // 0-10, from the LLM synthesis step
+  score: number; // 0-10, from the LLM synthesis step
   evidenceCoverage: number; // 0-1, fraction of sub-claims for this dimension that are evidence-backed
   citedClaimIds: string[];
-  weight?: number;         // default 1; product/PM may tune per-dimension weight later
+  weight?: number; // default 1; product/PM may tune per-dimension weight later
 }
 
 export function computeOpportunityScore(dims: DimensionInput[]) {
@@ -22,7 +22,8 @@ export function computeOpportunityScore(dims: DimensionInput[]) {
   let weightedCoverageSum = 0;
   let weightSum = 0;
   for (const d of dims) {
-    if (d.score < 0 || d.score > 10) throw new Error(`score out of range for ${d.key}`);
+    if (d.score < 0 || d.score > 10)
+      throw new Error(`score out of range for ${d.key}`);
     const w = d.weight ?? 1;
     weightedScoreSum += d.score * w;
     weightedCoverageSum += d.evidenceCoverage * w;
@@ -30,7 +31,11 @@ export function computeOpportunityScore(dims: DimensionInput[]) {
   }
   const overallScore = round1(weightedScoreSum / weightSum);
   const evidenceCoverage = round3(weightedCoverageSum / weightSum);
-  return { overallScore, evidenceCoverage, scoringModelVersion: SCORING_MODEL_VERSION };
+  return {
+    overallScore,
+    evidenceCoverage,
+    scoringModelVersion: SCORING_MODEL_VERSION,
+  };
 }
 
 const round1 = (n: number) => Math.round(n * 10) / 10;

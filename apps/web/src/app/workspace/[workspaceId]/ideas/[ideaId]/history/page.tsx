@@ -4,7 +4,9 @@ export default function Page() {
   return (
     <main style={{ padding: 24 }}>
       <h1>History</h1>
-      <p style={{ color: "var(--fi-muted)" }}>Compare previous research and decisions.</p>
+      <p style={{ color: "var(--fi-muted)" }}>
+        Compare previous research and decisions.
+      </p>
     </main>
   );
 }
