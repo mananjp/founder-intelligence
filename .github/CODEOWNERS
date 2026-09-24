@@ -1,13 +1,31 @@
-# Replace @FounderIntelligence/* with your real GitHub org teams. Teams are shuffle-friendly: move people between teams, not files.
-/apps/web/                 @FounderIntelligence/frontend
-/packages/ui/              @FounderIntelligence/frontend @FounderIntelligence/design
-/apps/api/                 @FounderIntelligence/backend
-/db/migrations/            @FounderIntelligence/backend @FounderIntelligence/ai
-/apps/ai/                  @FounderIntelligence/ai
-/apps/ai/src/fi_ai/prompts/ @FounderIntelligence/ai
-/packages/scoring/         @FounderIntelligence/ai
-/packages/contracts/       @FounderIntelligence/backend @FounderIntelligence/ai
-/evals/                    @FounderIntelligence/ai
-/infra/                    @FounderIntelligence/platform
-/.github/                  @FounderIntelligence/platform
-/docs/                     @FounderIntelligence/pmo
+# Squad-based ownership (see docs/team/squads.md).
+# PMs move people between squads in squads.md — update this file when rosters change.
+# Naming: three people are "Krish" — full handles used to avoid ambiguity.
+
+# Frontend (Aanshi lead, Varun, Prashant)
+/apps/web/                 @AANSHIBHUT-25 @VARUN4122006 @PrashantCodes150
+/packages/ui/              @AANSHIBHUT-25 @VARUN4122006 @PrashantCodes150 @akisha-dev @Kscoder11
+
+# Core Backend (Mann lead, Krish Parmar, Nil, Deep, Tirth)
+/apps/api/                 @mann1325 @KRISH-0201 @Ladnil03 @Deep6890 @tirthbhanderi2006
+/db/migrations/            @mann1325 @KRISH-0201 @Ladnil03 @Deep6890 @tirthbhanderi2006 @Sharanam24
+
+# AI (Research Engine + Scoring/Evals; Sharanam & Shreeji leads)
+/apps/ai/                  @Sharanam24 @Preetsavaliya111 @Jiyabhaviksadaria @VRAJ-710 @shreejisojitra
+/apps/ai/src/fi_ai/prompts/ @Sharanam24 @Preetsavaliya111 @shreejisojitra
+/packages/scoring/         @shreejisojitra @Preetsavaliya111
+/packages/contracts/       @mann1325 @Sharanam24 @shreejisojitra
+/evals/                    @shreejisojitra @Preetsavaliya111
+
+# Platform / DevOps / QA (Rishi lead, Rahil, Hitarth) + PMO
+/infra/                    @Rishisanja-3011 @RahilBarchha @hitarth1812
+/.github/                  @Rishisanja-3011 @RahilBarchha @hitarth1812 @mananjp
+/docker-compose.yml        @Rishisanja-3011 @hitarth1812
+
+# Feature pods (contract + feature ownership)
+/apps/api/src/modules/decisions/  @Ansh-dhanani @avipatel708
+/apps/api/src/modules/reports/    @krishbhingradiya @AnmolDholiya
+/apps/api/src/modules/radar/      @Romit2770
+
+# Docs & governance (PMO)
+/docs/                     @mananjp @Harshil3431
