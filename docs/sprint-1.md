@@ -46,7 +46,7 @@ Docs: `docs/README.md` missing, runbooks TODO, architecture README stub, CODEOWN
 | 5 | Migration `006_indexes` | Tirth `tirthbhanderi2006` | S | Indexes for FK/query cols in `003`/`004` tables (opportunity_scores, assumptions, experiments, recommendations, decisions, watch_items, alerts, reports, activity_log). Migration idempotent + reviewed in runbook. |
 | 6 | OpenAPI v3.1 at `/v1/docs` | Mann Shah | M | OpenAPI spec generated from `@fi/contracts` Zod schemas; UI served at `/v1/docs` (swagger-ui); every registered route documented; spec validated against `openapi-schema-validator` in CI. |
 
-## Workstream 2 — Platform / DevOps / QA (lead: Rishi Sanja `Rishisanja-3011`)
+## Workstream 2 — Platform / DevOps / QA (leads: Rishi Sanja `Rishisanja-3011` + Ansh Dhanani `Ansh-dhanani`)
 
 | # | Task | Owner | Est | Deliverable / Acceptance criteria |
 |---|------|-------|-----|----------------------------------|
@@ -85,11 +85,11 @@ Docs: `docs/README.md` missing, runbooks TODO, architecture README stub, CODEOWN
 | 19 | UX error/empty/loading guidance | Akanksha | S | Doc capturing error/empty/loading patterns + copy (feeds WS5); tokens added to `packages/ui` if needed. |
 | 20 | IA for 13 stub modules | Krish Singh `Kscoder11` | M | Information-architecture doc (nav, route map, page hierarchy) for the 13 unregistered modules; unblocks Sprint 2 pods; filed under `docs/architecture/`. |
 
-## Workstream 7 — Feature Pods (contract verification only this sprint)
+## Workstream 7 — Feature Pods (contract verification only this sprint; Pod A now led by Avi after Ansh → Platform lead)
 
 | # | Task | Owner | Est | Deliverable / Acceptance criteria |
 |---|------|-------|-----|----------------------------------|
-| 21 | Pod A — Decision/Scorecard contract tests | Ansh `Ansh-dhanani` + Avi `avipatel708` | M | Supertest + real-PG integration tests validating `@fi/contracts` schemas for decisions/opportunity scores; OpenAPI path stubs for their domain. |
+| 21 | Pod A — Decision/Scorecard contract tests | Avi Patel `avipatel708` | M | Supertest + real-PG integration tests validating `@fi/contracts` schemas for decisions/opportunity scores; OpenAPI path stubs for their domain. |
 | 22 | Pod B — Reports/Workspace/Billing contract tests | Krish Bhingradiya `krishbhingradiya` + Anmol `AnmolDholiya` | M | Same for reports/billing/workspace contracts; OpenAPI path stubs. |
 | 23 | Pod C — Radar contract tests | Romit `Romit2770` | M | Same for radar/intelligence contracts; OpenAPI path stubs. |
 

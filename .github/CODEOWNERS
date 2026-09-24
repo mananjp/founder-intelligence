@@ -17,13 +17,13 @@
 /packages/contracts/       @mann1325 @Sharanam24 @shreejisojitra
 /evals/                    @shreejisojitra @Preetsavaliya111
 
-# Platform / DevOps / QA (Rishi lead, Rahil, Hitarth) + PMO
-/infra/                    @Rishisanja-3011 @RahilBarchha @hitarth1812
-/.github/                  @Rishisanja-3011 @RahilBarchha @hitarth1812 @mananjp
-/docker-compose.yml        @Rishisanja-3011 @hitarth1812
+# Platform / DevOps / QA (Rishi + Ansh leads, Rahil, Hitarth) + PMO
+/infra/                    @Rishisanja-3011 @Ansh-dhanani @RahilBarchha @hitarth1812
+/.github/                  @Rishisanja-3011 @Ansh-dhanani @RahilBarchha @hitarth1812 @mananjp
+/docker-compose.yml        @Rishisanja-3011 @Ansh-dhanani @hitarth1812
 
 # Feature pods (contract + feature ownership)
-/apps/api/src/modules/decisions/  @Ansh-dhanani @avipatel708
+/apps/api/src/modules/decisions/  @avipatel708
 /apps/api/src/modules/reports/    @krishbhingradiya @AnmolDholiya
 /apps/api/src/modules/radar/      @Romit2770
 
