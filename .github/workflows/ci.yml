@@ -60,3 +60,37 @@ jobs:
         env:
           LLM_FAST_MODEL: ${{ vars.LLM_FAST_MODEL }}
           LLM_STRONG_MODEL: ${{ vars.LLM_STRONG_MODEL }}
+
+  ai-container:
+    name: AI container build + healthcheck gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build fi-ai Docker image
+        run: docker build -f infra/docker/ai.Dockerfile -t fi-ai:test .
+
+      - name: Run container & assert healthy status
+        run: |
+          docker run -d --name fi-ai-smoke fi-ai:test  
+          echo "Waiting for fi-ai container to become healthy..."
+
+          for i in {1..20}; do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' fi-ai-smoke 2>/dev/null || echo "not-running")
+            echo "[$i/20] Health status: $STATUS"
+
+            if [ "$STATUS" = "healthy" ]; then
+              echo "fi-ai container is healthy!"
+              docker rm -f fi-ai-smoke
+              exit 0
+            fi
+
+            sleep 5
+          done
+
+          echo "Container failed to become healthy within timeout."
+          echo "=== Container logs ==="
+          docker logs fi-ai-smoke
+          docker rm -f fi-ai-smoke
+          exit 1
+
