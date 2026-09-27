@@ -1,21 +1,13 @@
 // Screen: Landing (Bible §33) — explain the problem, promise, workflow, credibility.
+import type { Metadata } from "next";
+import LandingView from "@/components/landing/LandingView";
+
+export const metadata: Metadata = {
+  title: "Founder Intelligence — From uncertainty to evidence-backed decisions",
+  description:
+    "AI-native market intelligence and decision platform that turns an idea into evidence-backed market understanding and a clear next action.",
+};
+
 export default function LandingPage() {
-  return (
-    <main style={{ maxWidth: 720, margin: "0 auto", padding: "80px 24px" }}>
-      <h1
-        style={{
-          fontFamily: "var(--fi-font-display)",
-          fontSize: 44,
-          lineHeight: 1.1,
-        }}
-      >
-        Founder Intelligence
-      </h1>
-      <p style={{ color: "var(--fi-muted)", fontSize: 18 }}>
-        Evidence before confidence. Turn an idea into a decision-grade market
-        understanding.
-      </p>
-      {/* TODO(Frontend + Design): replace with the real, brief-specific design pass (see frontend-design skill). */}
-    </main>
-  );
+  return <LandingView />;
 }

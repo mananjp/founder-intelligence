@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
-export default {
+const nextConfig = {
   reactStrictMode: true,
   output: "standalone", // needed for infra/docker/web.Dockerfile (Production path)
-  transpilePackages: ["@fi/ui", "@fi/contracts"],
+  transpilePackages: ["@fi/ui", "@fi/contracts", "three"],
 };
+
+export default nextConfig;
