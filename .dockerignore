@@ -14,3 +14,10 @@ coverage
 .env.*
 !.env.example
 *.log
+__pycache__
+**/__pycache__
+.pytest_cache
+**/.pytest_cache
+*.pyc
+*.pyo
+*.pyd
