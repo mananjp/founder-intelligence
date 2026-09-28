@@ -16,6 +16,16 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Upload Node coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-node
+          path: |
+            packages/scoring/coverage/
+            apps/api/coverage/
+            apps/web/coverage/
+          if-no-files-found: warn
 
   python:
     runs-on: ubuntu-latest
@@ -26,6 +36,15 @@ jobs:
       - run: uv sync
       - run: uv run ruff check .
       - run: uv run pytest
+      - name: Upload AI coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-ai
+          path: |
+            apps/ai/coverage.xml
+            apps/ai/htmlcov/
+          if-no-files-found: warn
 
   migrations:
     runs-on: ubuntu-latest

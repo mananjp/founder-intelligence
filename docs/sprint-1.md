@@ -56,6 +56,8 @@ Docs: `docs/README.md` missing, runbooks TODO, architecture README stub, CODEOWN
 | 10 | Compose/health readiness | Hitarth | S | mailpit healthcheck (`wget` to API?): `mailpit` healthcheck via `/api/v1/info` curl; `render.yaml` probe → `/health/ready`; AI build+healthcheck gate job in CI. |
 | 11 | Branch protection on `main` | Rishi + PM | S | `gh api` rules via GitHub App/rest API: require CI status (ci), PR required before merge, linear history. Verified by pushing a test PR. |
 
+**WS2 #8 baseline note:** API and web currently have placeholder tests that execute no application source, so their initial source coverage baseline is 0%. The committed Vitest thresholds record that measured floor; raise them with newly-covered code, never lower them. Increase each API/web threshold by at least 10 percentage points in Sprint 2.
+
 ## Workstream 3 — AI · Reasoning, Scoring & Evals (lead: Shreeji Sojitra `shreejisojitra`)
 
 | # | Task | Owner | Est | Deliverable / Acceptance criteria |
