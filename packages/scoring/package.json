@@ -8,13 +8,14 @@
   "scripts": {
     "lint": "echo ok",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --coverage",
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@fi/contracts": "workspace:*"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "2.1.9",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   }

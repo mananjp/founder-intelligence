@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "ruff>=0.6"]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.24", "pytest-cov>=6.0", "ruff>=0.6"]
 
 [build-system]
 requires = ["hatchling"]
@@ -37,3 +37,10 @@ src = ["src", "tests"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+addopts = [
+  "--cov=fi_ai",
+  "--cov-report=term-missing",
+  "--cov-report=xml:coverage.xml",
+  "--cov-report=html:htmlcov",
+  "--cov-fail-under=85",
+]
