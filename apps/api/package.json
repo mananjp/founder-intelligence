@@ -12,6 +12,7 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
+    "@asteasolutions/zod-to-openapi": "^7.3.4",
     "@fi/contracts": "workspace:*",
     "@fi/scoring": "workspace:*",
     "bullmq": "^5.12.0",
@@ -24,13 +25,16 @@
     "pg": "^8.13.0",
     "pino": "^9.5.0",
     "pino-http": "^10.3.0",
+    "swagger-ui-express": "^5.0.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@scalar/openapi-validator": "0.1.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
     "@types/pg": "^8.11.0",
+    "@types/swagger-ui-express": "^4.1.8",
     "@vitest/coverage-v8": "2.1.9",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",

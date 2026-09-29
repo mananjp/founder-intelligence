@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { z } from "zod";
+import { StartResearchRun } from "@fi/contracts";
 import { requireWorkspace } from "../../middleware/auth.js";
 import { validate } from "../../middleware/validate.js";
 import { withWorkspace } from "../../lib/db.js";
@@ -10,16 +10,10 @@ import { HttpError } from "../../middleware/errorHandler.js";
 export const researchRouter = Router({ mergeParams: true });
 researchRouter.use(requireWorkspace);
 
-const startBody = z.object({
-  depth: z.enum(["quick", "standard", "deep"]).default("quick"),
-  geography: z.array(z.string()).min(1),
-  goals: z.array(z.string()).default([]),
-});
-
 // POST /v1/workspaces/:workspaceId/ideas/:ideaId/research/runs
 researchRouter.post(
   "/runs",
-  validate({ body: startBody }),
+  validate({ body: StartResearchRun }),
   async (req, res) => {
     const { ideaId } = req.params as { ideaId: string };
     const run = await withWorkspace(req.workspaceId!, async (c) => {

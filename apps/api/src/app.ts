@@ -12,6 +12,7 @@ import { healthRouter } from "./modules/health/health.routes.js";
 import { workspacesRouter } from "./modules/workspaces/workspaces.routes.js";
 import { ideasRouter } from "./modules/ideas/ideas.routes.js";
 import { researchRouter } from "./modules/research/research.routes.js";
+import { docsRouter } from "./openapi/docs.js";
 
 export function buildApp() {
   const app = express();
@@ -24,6 +25,7 @@ export function buildApp() {
   app.use(rateLimit({ windowMs: 60_000, limit: 300 }));
 
   app.use("/health", healthRouter);
+  app.use("/v1/docs", docsRouter);
 
   const v1 = express.Router();
   v1.use(requireAuth);
