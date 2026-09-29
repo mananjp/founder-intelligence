@@ -46,6 +46,49 @@ jobs:
             apps/ai/htmlcov/
           if-no-files-found: warn
 
+  security-scan:
+    name: Security scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: pnpm audit
+        run: pnpm audit
+
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+
   migrations:
     runs-on: ubuntu-latest
     services:
@@ -124,3 +167,61 @@ jobs:
           docker rm -f fi-ai-smoke
           exit 1
 
+      - name: Export fi-ai image
+        run: set -o pipefail; docker save fi-ai:test | gzip > fi-ai-test.tar.gz
+
+      - name: Upload fi-ai image
+        uses: actions/upload-artifact@v4
+        with:
+          name: fi-ai-image
+          path: fi-ai-test.tar.gz
+          retention-days: 1
+
+  security-images:
+    name: Container image security scan
+    needs: ai-container
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Download fi-ai image
+        uses: actions/download-artifact@v4
+        with:
+          name: fi-ai-image
+          path: artifacts/ai
+
+      - name: Load fi-ai image
+        run: set -o pipefail; gunzip -c artifacts/ai/fi-ai-test.tar.gz | docker load
+
+      - name: Build fi-api image
+        run: docker build -f infra/docker/api.Dockerfile -t fi-api:security .
+
+      - name: Build fi-web image
+        run: docker build -f infra/docker/web.Dockerfile -t fi-web:security .
+
+      - name: Trivy scan fi-api
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: fi-api:security
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+
+      - name: Trivy scan fi-web
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: fi-web:security
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+
+      - name: Trivy scan fi-ai
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: fi-ai:test
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "1"
