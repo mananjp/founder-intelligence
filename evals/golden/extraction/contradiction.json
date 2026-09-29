@@ -1,0 +1,11 @@
+{
+  "id": "extraction-contradiction-001",
+  "description": "A passage that argues against the claim under test should be marked as a contradiction.",
+  "document": "Acme does not currently offer a mobile application. Customers can access the service through the web platform.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Acme does not currently offer a mobile application.",
+    "quote": "Acme does not currently offer a mobile application.",
+    "stance": "contradicts"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "extraction-irrelevant-001",
+  "description": "A document with no relevant information should produce no evidence.",
+  "document": "The weather in London was rainy today. Several flights were delayed because of strong winds.",
+  "expected": {
+    "has_relevant_evidence": false,
+    "evidence_count": 0
+  }
+}

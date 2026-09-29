@@ -66,19 +66,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: dorny/paths-filter@v3
         id: f
         with:
           filters: |
             ai: ['apps/ai/src/fi_ai/prompts/**','apps/ai/src/fi_ai/research/**','evals/**']
+
       - if: steps.f.outputs.ai == 'true'
         uses: astral-sh/setup-uv@v3
+
       - if: steps.f.outputs.ai == 'true'
         working-directory: apps/ai
         run: uv sync && uv run python -m fi_ai.evals.run --suite golden --fail-under-config
         env:
           LLM_FAST_MODEL: ${{ vars.LLM_FAST_MODEL }}
           LLM_STRONG_MODEL: ${{ vars.LLM_STRONG_MODEL }}
+
+      - name: Upload eval report
+        if: steps.f.outputs.ai == 'true' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: apps/ai/eval-report.json
+          if-no-files-found: warn
 
   ai-container:
     name: AI container build + healthcheck gate
