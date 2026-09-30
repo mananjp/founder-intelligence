@@ -1,5 +1,6 @@
 import "@fi/ui/src/tokens.css";
 import type { ReactNode } from "react";
+import { ToastViewport } from "@/components/ToastViewport";
 
 export const metadata = {
   title: "Founder Intelligence",
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         }}
       >
         {children}
+        <ToastViewport />
       </body>
     </html>
   );
