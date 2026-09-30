@@ -4,6 +4,7 @@ import rateLimit, {
   type RateLimitRequestHandler,
 } from "express-rate-limit";
 import { RedisStore, type RedisReply } from "rate-limit-redis";
+import type IORedis from "ioredis";
 import { redis as defaultRedis } from "../lib/queue.js";
 import { logger } from "../lib/logger.js";
 import { env } from "../config/env.js";
@@ -20,10 +21,10 @@ export function isInternalEndpoint(url: string): boolean {
   return path === "/internal" || path.startsWith("/internal/");
 }
 
-export interface RedisClientLike {
-  call(command: string, ...args: (string | number)[]): Promise<any>;
+export type RedisClientLike = {
+  call: IORedis["call"];
   status?: string;
-}
+};
 
 export function createSendCommand(
   client: RedisClientLike,
@@ -72,7 +73,7 @@ export function createSendCommand(
 }
 
 export class SafeRedisStore extends RedisStore {
-  override async init(options: any): Promise<void> {
+  override async init(options: RateLimitOptions): Promise<void> {
     try {
       await super.init(options);
     } catch (err) {
