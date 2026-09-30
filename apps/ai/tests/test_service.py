@@ -12,18 +12,38 @@ def test_health_endpoint():
     assert response.json() == {"status": "ok"}
 
 
+TEST_TOKEN = "test-internal-token"
+
+
 def test_start_run_requires_internal_token():
-    response = TestClient(app).post("/internal/research/runs/run-1/start")
+    with patch("fi_ai.main.settings") as settings:
+        settings.internal_service_token = TEST_TOKEN
+        response = TestClient(app).post("/internal/research/runs/run-1/start")
 
     assert response.status_code == 401
     assert response.json()["detail"] == "bad internal token"
 
 
-def test_start_run_enqueues_with_valid_internal_token():
-    with patch("fi_ai.main.run_research.delay") as enqueue:
+def test_start_run_rejects_wrong_internal_token():
+    with patch("fi_ai.main.settings") as settings:
+        settings.internal_service_token = TEST_TOKEN
         response = TestClient(app).post(
             "/internal/research/runs/run-1/start",
-            headers={"x-internal-token": "change-me"},
+            headers={"x-internal-token": "not-the-token"},
+        )
+
+    assert response.status_code == 401
+
+
+def test_start_run_enqueues_with_valid_internal_token():
+    with (
+        patch("fi_ai.main.settings") as settings,
+        patch("fi_ai.main.run_research.delay") as enqueue,
+    ):
+        settings.internal_service_token = TEST_TOKEN
+        response = TestClient(app).post(
+            "/internal/research/runs/run-1/start",
+            headers={"x-internal-token": TEST_TOKEN},
         )
 
     assert response.status_code == 202
