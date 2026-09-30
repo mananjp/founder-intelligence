@@ -1,7 +1,12 @@
 import IORedis from "ioredis";
 import { env } from "../config/env.js";
+import { logger } from "./logger.js";
 
 export const redis = new IORedis(env.REDIS_URL, { maxRetriesPerRequest: null });
+
+redis.on("error", (err) => {
+  logger.warn({ err }, "Redis connection error");
+});
 
 /**
  * Research jobs are consumed by the Python worker (Celery). We use the AI service's
