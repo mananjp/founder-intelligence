@@ -303,21 +303,35 @@ describe("Rate Limiting Unit & Integration Tests", () => {
     });
   });
 
-  describe("Application Integration (buildApp)", () => {
-    it("routes /health, /internal/ping, and authenticates /v1 correctly", async () => {
+  describe("Application Integration (buildApp) & Internal Security", () => {
+    it("routes /health, guards /internal with token, and authenticates /v1", async () => {
       const app = buildApp();
 
-      // Health endpoint works and is not rate-limited
+      // 1. Health endpoint works without auth and is not rate-limited
       const healthRes = await request(app).get("/health");
       expect(healthRes.status).toBe(200);
       expect(healthRes.body).toEqual({ status: "ok" });
 
-      // Internal router works
-      const internalRes = await request(app).get("/internal/ping");
+      // 2. Inbound /internal endpoint without token is rejected (Security concern #1)
+      const unauthInternal = await request(app).get("/internal/ping");
+      expect(unauthInternal.status).toBe(401);
+      expect(unauthInternal.body.error.code).toBe("unauthorized_internal");
+
+      // 3. Inbound /internal endpoint with invalid token is rejected
+      const badTokenInternal = await request(app)
+        .get("/internal/ping")
+        .set("x-internal-token", "wrong-token-abc");
+      expect(badTokenInternal.status).toBe(401);
+      expect(badTokenInternal.body.error.code).toBe("unauthorized_internal");
+
+      // 4. Inbound /internal endpoint with valid internal token succeeds
+      const internalRes = await request(app)
+        .get("/internal/ping")
+        .set("x-internal-token", process.env.INTERNAL_SERVICE_TOKEN!);
       expect(internalRes.status).toBe(200);
       expect(internalRes.body).toEqual({ status: "ok", tier: "internal" });
 
-      // /v1 routes still enforce authentication
+      // 5. /v1 routes still enforce bearer authentication
       const v1Res = await request(app).get("/v1/workspaces");
       expect(v1Res.status).toBe(401);
       expect(v1Res.body.error.code).toBe("unauthenticated");
