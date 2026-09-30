@@ -18,3 +18,6 @@ coverage.xml
 htmlcov/
 *.tfstate*
 .terraform/
+
+# Generated AI evaluation report
+apps/ai/eval-report.json

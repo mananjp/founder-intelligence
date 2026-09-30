@@ -1,0 +1,11 @@
+{
+  "id": "extraction-basic-001",
+  "description": "A relevant document contains a factual statement that can be extracted verbatim.",
+  "document": "Acme launched its new platform in 2024. The platform is designed for small businesses.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Acme launched its new platform in 2024.",
+    "quote": "Acme launched its new platform in 2024.",
+    "stance": "supports"
+  }
+}
