@@ -29,7 +29,7 @@ def model_for(task: str) -> str:
     return _expand(_CFG["tiers"][tier]["model"])
 
 
-def complete_structured[T: BaseModel](
+def complete_structured(
     task: str, messages: list[dict], schema: type[T], run_id: str | None = None
 ) -> T:
     """TODO(AI): implement with litellm.completion(response_format=schema) + validation/retry + cost accounting."""
