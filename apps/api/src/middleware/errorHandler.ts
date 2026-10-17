@@ -27,6 +27,16 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
         },
       });
   }
+  // body-parser throws a SyntaxError (with a `body` prop) on malformed JSON
+  if (err instanceof SyntaxError && "body" in err) {
+    return res.status(400).json({
+      error: {
+        code: "INVALID_JSON",
+        message: "Invalid JSON",
+        requestId,
+      },
+    });
+  }
   logger.error({ err, requestId }, "unhandled error");
   res
     .status(500)
