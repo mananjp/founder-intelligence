@@ -4,13 +4,13 @@ services:
     name: fi-api
     runtime: docker
     dockerfilePath: infra/docker/api.Dockerfile
-    healthCheckPath: /health
+    healthCheckPath: /health/ready
     envVars: [{ key: NODE_ENV, value: production }]
   - type: web
     name: fi-ai
     runtime: docker
     dockerfilePath: infra/docker/ai.Dockerfile
-    healthCheckPath: /health
+    healthCheckPath: /health/ready
   - type: worker
     name: fi-worker
     runtime: docker

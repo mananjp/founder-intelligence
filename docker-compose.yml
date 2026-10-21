@@ -37,6 +37,11 @@ services:
     image: axllent/mailpit
     restart: unless-stopped
     ports: ["8025:8025", "1025:1025"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:8025/api/v1/info >/dev/null 2>&1 || curl -sf http://localhost:8025/api/v1/info >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
     deploy:
       resources:
         limits:
