@@ -1,6 +1,7 @@
 import "@fi/ui/src/tokens.css";
 import type { ReactNode } from "react";
 import { ToastViewport } from "@/components/ToastViewport";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata = {
   title: "Founder Intelligence",
@@ -18,7 +19,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           margin: 0,
         }}
       >
-        {children}
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
         <ToastViewport />
       </body>
     </html>
