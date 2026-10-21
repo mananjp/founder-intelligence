@@ -3,7 +3,15 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from fi_ai.config import settings
 
+def _normalize_db_url(url: str) -> str:
+    if url.startswith("postgres://"):
+        return "postgresql+psycopg://" + url[len("postgres://"):]
+    if url.startswith("postgresql://"):
+        return "postgresql+psycopg://" + url[len("postgresql://"):]
+    return url
+
+
 engine: AsyncEngine = create_async_engine(
-    settings.database_url,
+    _normalize_db_url(settings.database_url),
     pool_pre_ping=True,
 )
