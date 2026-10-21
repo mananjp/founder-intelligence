@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
+import Link from "next/link";
 
 interface Props {
   children: ReactNode;
@@ -63,7 +64,13 @@ export class ErrorBoundary extends Component<Props, State> {
             <h2 style={{ margin: "0 0 12px 0", fontSize: 22 }}>
               Something went wrong
             </h2>
-            <p style={{ margin: "0 0 20px 0", color: "var(--fi-muted, #94a3b8)", fontSize: 14 }}>
+            <p
+              style={{
+                margin: "0 0 20px 0",
+                color: "var(--fi-muted, #94a3b8)",
+                fontSize: 14,
+              }}
+            >
               {this.state.error?.message || "An unexpected error occurred."}
             </p>
             <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
@@ -82,7 +89,7 @@ export class ErrorBoundary extends Component<Props, State> {
               >
                 Try again
               </button>
-              <a
+              <Link
                 href="/"
                 style={{
                   padding: "8px 16px",
@@ -97,7 +104,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 }}
               >
                 Go home
-              </a>
+              </Link>
             </div>
           </div>
         </div>

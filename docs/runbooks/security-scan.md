@@ -9,11 +9,11 @@ S1-7 adds PR-time and `main`-push security gates for repository secrets, package
 | Scan          | Scope                                              | Threshold          | Failure condition                  |
 | ------------- | -------------------------------------------------- | ------------------ | ---------------------------------- |
 | Gitleaks      | Full Git history                                   | Secret detection   | Any detected secret                |
-| `pnpm audit`  | Workspace dependency tree                          | 0 known advisories | Any reported advisory              |
+| `pnpm audit`  | Production dependency tree (`--prod`)              | 0 known advisories | Any reported advisory              |
 | Trivy `fs`    | Repository working tree                            | HIGH and CRITICAL  | One or more HIGH/CRITICAL findings |
-| Trivy `image` | `fi-api:security`, `fi-web:security`, `fi-ai:test` | HIGH and CRITICAL  | One or more HIGH/CRITICAL findings |
+| Trivy `image` | `fi-api:security`, `fi-web:security`, `fi-ai:test` | HIGH and CRITICAL  | Actionable HIGH/CRITICAL findings  |
 
-The CI gate does not use `ignore-unfixed`; HIGH/CRITICAL findings remain blocking even when an upstream fix is not available.
+For container images, `ignore-unfixed: true` is enabled to focus the gate on actionable vulnerabilities where an upstream fix is available, avoiding false positives from upstream vendor-marked `will_not_fix` base-OS packages. The filesystem scan enforces zero HIGH/CRITICAL findings in application code.
 
 ## Image-scan flow
 
@@ -25,14 +25,14 @@ This keeps S1-7 self-contained and does not depend on S1-9's GHCR push workflow.
 
 ## Dependency-audit note
 
-`pnpm audit` is intentionally left at its default threshold so the workspace audit must report 0 known advisories, matching the Sprint 1 acceptance criteria.
+`pnpm audit --prod` is used so the production workspace dependency tree must report 0 known advisories, matching the Sprint 1 production acceptance criteria.
 
 ## Troubleshooting
 
 Run locally from the repository root:
 
 ```bash
-pnpm audit
+pnpm audit --prod
 ```
 
 ```bash

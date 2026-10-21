@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { apiFetch } from "@/lib/apiClient";
 import type { Idea } from "@fi/contracts";
@@ -18,7 +18,7 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadWorkspace() {
+  const loadWorkspace = useCallback(async () => {
     if (!workspaceId) {
       return;
     }
@@ -37,11 +37,11 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [workspaceId]);
 
   useEffect(() => {
     void loadWorkspace();
-  }, [workspaceId]);
+  }, [loadWorkspace]);
 
   const stats = useMemo(
     () => [
