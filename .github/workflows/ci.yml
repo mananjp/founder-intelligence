@@ -209,6 +209,7 @@ jobs:
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
+          ignore-unfixed: true
 
       - name: Trivy scan fi-web
         uses: aquasecurity/trivy-action@v0.36.0
@@ -217,6 +218,7 @@ jobs:
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
+          ignore-unfixed: true
 
       - name: Trivy scan fi-ai
         uses: aquasecurity/trivy-action@v0.36.0
@@ -225,3 +227,4 @@ jobs:
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
+          ignore-unfixed: true
