@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_COMPILE_BYTECODE=0 \
     UV_LINK_MODE=copy
 WORKDIR /app
-RUN pip install --no-cache-dir uv==0.9.24
+RUN pip install --no-cache-dir uv==0.13.4
 COPY apps/ai/pyproject.toml apps/ai/uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 COPY apps/ai/src ./src
