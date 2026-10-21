@@ -8,15 +8,15 @@
 
 ## Definition of Done (all boxes must be checked)
 
-- [ ] CI pipeline = lint → typecheck → tests (with coverage gate) → Docker build → **security scan** (gitleaks + `pnpm audit` + Trivy, fail on high) → GHCR push on `main`
-- [ ] OpenAPI v3.1 spec served at `/v1/docs`; single consistent error envelope incl. malformed JSON returns 400; Redis-backed rate limiting; **RBAC enforced**
-- [ ] Migration `006` adds missing indexes; `db/seed` script; RLS enforcement model documented in ADR-0005/0006
-- [ ] Real API integration suite (supertest + Postgres in CI) replaces placeholder tests; coverage thresholds configured with ratchet policy
-- [ ] `/metrics` (Prometheus) exposed; `/health/ready` wired as the deploy probe; mailpit healthcheck; `LOG_LEVEL` documented in `.env.example`
-- [ ] Frontend: typed `ApiError` (code/status/requestId + timeout + 401 redirect), app error boundary, `not-found.tsx`, route `loading.tsx`
-- [ ] `docs/README.md` portal, 3 runbooks v1, 2 new ADRs, CODEOWNERS mapped to real team handles
-- [ ] Branch protection on `main` (required status: CI) — free on public repos
-- [ ] **Deploy scope:** containers pushed to GHCR on `main` merge (token-based, no secrets needed). **Render deployment is deliberately staged to Sprint 2** and runs once the team provides `.env`/prod secrets.
+- [x] CI pipeline = lint → typecheck → tests (with coverage gate) → Docker build → **security scan** (gitleaks + `pnpm audit` + Trivy, fail on high) → GHCR push on `main`
+- [x] OpenAPI v3.1 spec served at `/v1/docs`; single consistent error envelope incl. malformed JSON returns 400; Redis-backed rate limiting; **RBAC enforced**
+- [x] Migration `006` adds missing indexes; `db/seed` script; RLS enforcement model documented in ADR-0005/0006
+- [x] Real API integration suite (supertest + Postgres in CI) replaces placeholder tests; coverage thresholds configured with ratchet policy
+- [x] `/metrics` (Prometheus) exposed; `/health/ready` wired as the deploy probe; mailpit healthcheck; `LOG_LEVEL` documented in `.env.example`
+- [x] Frontend: typed `ApiError` (code/status/requestId + timeout + 401 redirect), app error boundary, `not-found.tsx`, route `loading.tsx`
+- [x] `docs/README.md` portal, 3 runbooks v1, 2 new ADRs, CODEOWNERS mapped to real team handles
+- [x] Branch protection on `main` (required status: CI) — free on public repos
+- [x] **Deploy scope:** containers pushed to GHCR on `main` merge (token-based, no secrets needed). **Render deployment is deliberately staged to Sprint 2** and runs once the team provides `.env`/prod secrets.
 
 ## Current baseline (verified — already green)
 
