@@ -9,6 +9,7 @@ RUN pnpm install --frozen-lockfile && pnpm --filter @fi/web build
 FROM node:22-slim
 ENV NODE_ENV=production HOSTNAME=0.0.0.0
 WORKDIR /app
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 RUN groupadd --system --gid 10001 nodejs \
     && useradd --system --uid 10001 --gid nodejs nodejs \
     && chown -R nodejs:nodejs /app
