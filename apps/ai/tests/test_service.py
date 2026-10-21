@@ -98,12 +98,6 @@ def test_t02_settings_provider_keys_none_when_not_in_env():
     Bug: Settings has no such fields, so they don't exist at all.
     Expected (fixed): All four fields exist and return None.
     """
-    keys_to_clear = {
-        "OPENAI_API_KEY": "",
-        "ANTHROPIC_API_KEY": "",
-        "TAVILY_API_KEY": "",
-        "EXA_API_KEY": "",
-    }
     # Use a fresh Settings() with env vars absent
     import os
     saved = {}
@@ -129,13 +123,12 @@ def test_t03_settings_raises_on_default_token_in_production():
     Bug: Settings starts normally with the default token even in production.
     Expected (fixed): ValueError raised at instantiation.
     """
-    with pytest.raises(ValueError):
-        with patch.dict(
-            "os.environ",
-            {"APP_ENV": "production", "INTERNAL_SERVICE_TOKEN": "change-me"},
-            clear=False,
-        ):
-            Settings()
+    with pytest.raises(ValueError), patch.dict(
+        "os.environ",
+        {"APP_ENV": "production", "INTERNAL_SERVICE_TOKEN": "change-me"},
+        clear=False,
+    ):
+        Settings()
 
 
 def test_t04_settings_raises_on_default_token_in_staging():
@@ -144,13 +137,12 @@ def test_t04_settings_raises_on_default_token_in_staging():
     Bug: Settings starts normally with the default token even in staging.
     Expected (fixed): ValueError raised at instantiation.
     """
-    with pytest.raises(ValueError):
-        with patch.dict(
-            "os.environ",
-            {"APP_ENV": "staging", "INTERNAL_SERVICE_TOKEN": "change-me"},
-            clear=False,
-        ):
-            Settings()
+    with pytest.raises(ValueError), patch.dict(
+        "os.environ",
+        {"APP_ENV": "staging", "INTERNAL_SERVICE_TOKEN": "change-me"},
+        clear=False,
+    ):
+        Settings()
 
 
 # --- T-07 / T-08: No request_id Middleware (isBugCondition_RequestId) ---

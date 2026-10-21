@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { apiFetch } from "@/lib/apiClient";
 import type { Idea } from "@fi/contracts";
@@ -18,7 +18,7 @@ export default function IdeasPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadIdeas() {
+  const loadIdeas = useCallback(async () => {
     if (!workspaceId) {
       return;
     }
@@ -37,11 +37,11 @@ export default function IdeasPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [workspaceId]);
 
   useEffect(() => {
     void loadIdeas();
-  }, [workspaceId]);
+  }, [loadIdeas]);
 
   return (
     <main

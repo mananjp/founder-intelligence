@@ -48,7 +48,7 @@ async def health_ready() -> JSONResponse:
     try:
         await _redis.ping()
         checks["redis"] = True
-    except Exception:
+    except Exception:  # noqa: BLE001
         checks["redis"] = False
 
     # DB probe — reuse shared SQLAlchemy engine from fi_ai.db
@@ -56,7 +56,7 @@ async def health_ready() -> JSONResponse:
         async with engine.connect() as conn:
             await conn.execute(text("SELECT 1"))
         checks["db"] = True
-    except Exception:
+    except Exception:  # noqa: BLE001
         checks["db"] = False
 
     ok = all(checks.values())

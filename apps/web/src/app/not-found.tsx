@@ -43,7 +43,8 @@ export default function NotFound() {
             lineHeight: 1.5,
           }}
         >
-          The page or resource you requested doesn't exist or has been moved.
+          The page or resource you requested doesn&apos;t exist or has been
+          moved.
         </p>
         <Link
           href="/"

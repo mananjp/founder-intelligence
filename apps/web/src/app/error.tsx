@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function ErrorPage({
   error,
@@ -48,7 +49,9 @@ export default function ErrorPage({
         >
           500
         </span>
-        <h1 style={{ margin: "0 0 12px 0", fontSize: 24 }}>An error occurred</h1>
+        <h1 style={{ margin: "0 0 12px 0", fontSize: 24 }}>
+          An error occurred
+        </h1>
         <p
           style={{
             margin: "0 0 24px 0",
@@ -57,7 +60,8 @@ export default function ErrorPage({
             lineHeight: 1.5,
           }}
         >
-          {error.message || "An unexpected error occurred while loading this page."}
+          {error.message ||
+            "An unexpected error occurred while loading this page."}
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
           <button
@@ -76,7 +80,7 @@ export default function ErrorPage({
           >
             Try again
           </button>
-          <a
+          <Link
             href="/"
             style={{
               padding: "10px 20px",
@@ -91,7 +95,7 @@ export default function ErrorPage({
             }}
           >
             Go home
-          </a>
+          </Link>
         </div>
       </div>
     </main>
