@@ -11,6 +11,7 @@ from starlette.responses import Response
 from fi_ai.config import settings
 from fi_ai.db import engine
 from fi_ai.observability import configure_structlog
+from fi_ai.metrics import CONTENT_TYPE_LATEST, generate_metrics
 from fi_ai.worker import run_research
 
 configure_structlog()
@@ -33,6 +34,12 @@ async def request_id_middleware(request: Request, call_next) -> Response:
     finally:
         # Always clear context — even if call_next raises, preventing context leak
         structlog.contextvars.clear_contextvars()
+
+
+@app.get("/metrics", include_in_schema=False)
+def metrics() -> Response:
+    """Expose Prometheus metrics for the AI service."""
+    return Response(content=generate_metrics(), headers={"Content-Type": CONTENT_TYPE_LATEST})
 
 
 @app.get("/health")
