@@ -29,13 +29,51 @@ jobs:
 
   python:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: fi
+          POSTGRES_PASSWORD: fi
+          POSTGRES_DB: fi
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fi -d fi"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     defaults: { run: { working-directory: apps/ai } }
+    env:
+      DATABASE_URL: postgresql://fi:fi@localhost:5432/fi
+      REDIS_URL: redis://localhost:6379/0
+      TEST_DATABASE_URL: postgresql://fi:fi@localhost:5432/fi
+      TEST_REDIS_URL: redis://localhost:6379/0
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
       - run: uv sync
+      - name: Apply database migrations
+        working-directory: .
+        run: |
+          for migration in db/migrations/*.sql; do
+            echo "Applying ${migration}"
+            PGPASSWORD=fi psql "postgresql://fi:fi@localhost:5432/fi" -v ON_ERROR_STOP=1 -f "${migration}"
+          done
       - run: uv run ruff check .
-      - run: uv run pytest
+      - name: Run integration tests
+        run: uv run pytest -m integration --no-cov
+      - name: Run Python test suite with coverage gate
+        run: uv run pytest
       - name: Upload AI coverage
         if: always()
         uses: actions/upload-artifact@v4
