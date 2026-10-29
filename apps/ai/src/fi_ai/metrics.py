@@ -1,6 +1,6 @@
 """Prometheus metrics for AI research runs and LLM usage."""
 
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+from prometheus_client import Counter, Histogram, generate_latest
 
 STAGE_DURATION_SECONDS = Histogram(
     "fi_ai_stage_duration_seconds",
