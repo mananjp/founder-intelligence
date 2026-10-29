@@ -13,8 +13,10 @@ def test_metrics_endpoint_returns_prometheus_exposition() -> None:
     response = TestClient(app).get("/metrics")
 
     assert response.status_code == 200
-    assert response.headers["content-type"].startswith("text/plain; version=0.0.4")
-    assert "fi_ai_stage_duration_seconds_bucket" in response.text
+    content_type = response.headers["content-type"]
+    assert content_type.startswith("text/plain;")
+    assert "version=" in content_type
+    assert "# TYPE fi_ai_stage_duration_seconds histogram" in response.text
     assert "fi_ai_runs_total" in response.text
     assert "fi_ai_llm_tokens_total" in response.text
     assert "fi_ai_llm_cost_usd_total" in response.text

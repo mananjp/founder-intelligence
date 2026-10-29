@@ -4,15 +4,15 @@ import redis.asyncio as aioredis
 import structlog.contextvars
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import JSONResponse
+from prometheus_client import CONTENT_TYPE_LATEST
 from sqlalchemy import text
 from starlette.requests import Request
 from starlette.responses import Response
 
 from fi_ai.config import settings
 from fi_ai.db import engine
-from fi_ai.metrics import CONTENT_TYPE_LATEST, generate_metrics
+from fi_ai.metrics import generate_metrics
 from fi_ai.observability import configure_structlog
-
 from fi_ai.worker import run_research
 
 configure_structlog()
