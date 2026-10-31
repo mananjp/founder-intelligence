@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Literal
 
 from sqlalchemy import text
@@ -33,8 +33,6 @@ class LlmCallRecord:
     cost_usd: float | None = None
     latency_ms: int | None = None
     run_id: str | None = None
-    # Internal helpers — not persisted
-    _extra: dict = field(default_factory=dict, repr=False)
 
 
 _INSERT_SQL = text(
