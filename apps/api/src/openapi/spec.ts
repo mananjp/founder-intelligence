@@ -8,6 +8,7 @@ import {
   PostInterviewTurnResponse,
   ResearchBrief,
   ResearchDepth,
+  ResearchRun,
   RunEvent,
   RunState,
   StartResearchRun,
@@ -26,6 +27,7 @@ const contractSchemas = [
   ResearchDepth,
   RunState,
   StartResearchRun,
+  ResearchRun,
   InterviewTurnRole,
   InterviewTurn,
   PostInterviewTurnBody,
@@ -150,6 +152,10 @@ const ideaResponse = registry.register(
 const researchRunResponse = registry.register(
   "ResearchRunResponse",
   z.object({ data: researchRunSchema }),
+);
+const researchRunListResponse = registry.register(
+  "ResearchRunListResponse",
+  z.object({ data: z.array(researchRunSchema) }),
 );
 const healthResponse = registry.register(
   "HealthResponse",
@@ -322,6 +328,25 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs",
+  operationId: "listResearchRuns",
+  summary: "List research runs",
+  description: "Returns all research runs queued or completed for an idea.",
+  tags: ["Research"],
+  security: bearerSecurity,
+  request: { params: ideaParams },
+  responses: {
+    200: {
+      description: "List of research runs.",
+      content: jsonContent(researchRunListResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+  },
+});
+
+registry.registerPath({
   method: "post",
   path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs",
   operationId: "startResearchRun",
@@ -345,6 +370,51 @@ registry.registerPath({
     403: { description: "The user is not a workspace member." },
     409: { description: "The idea has no research brief yet." },
     422: { description: "The request body failed validation." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs/{runId}",
+  operationId: "getResearchRun",
+  summary: "Get research run details",
+  description:
+    "Returns the details and lifecycle state of a specific research run.",
+  tags: ["Research"],
+  security: bearerSecurity,
+  request: { params: runParams },
+  responses: {
+    200: {
+      description: "Research run details.",
+      content: jsonContent(researchRunResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The research run was not found." },
+  },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs/{runId}/cancel",
+  operationId: "cancelResearchRun",
+  summary: "Cancel a research run",
+  description: "Cancels an in-progress or queued research run.",
+  tags: ["Research"],
+  security: bearerSecurity,
+  request: { params: runParams },
+  responses: {
+    200: {
+      description: "Research run cancelled.",
+      content: jsonContent(researchRunResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The research run was not found." },
+    409: {
+      description:
+        "The research run is already completed or cannot be cancelled.",
+    },
   },
 });
 
