@@ -1,5 +1,12 @@
 import {
   CreateIdea,
+  FinalizeInterviewBriefBody,
+  InterviewSessionState,
+  InterviewTurn,
+  InterviewTurnRole,
+  PostInterviewTurnBody,
+  PostInterviewTurnResponse,
+  ResearchBrief,
   ResearchDepth,
   RunEvent,
   RunState,
@@ -24,6 +31,34 @@ const startResearchRunSchema = registry.register(
   StartResearchRun,
 );
 const runEventSchema = registry.register("RunEvent", RunEvent);
+const interviewTurnRoleSchema = registry.register(
+  "InterviewTurnRole",
+  InterviewTurnRole,
+);
+const interviewTurnSchema = registry.register(
+  "InterviewTurn",
+  InterviewTurn,
+);
+const postInterviewTurnBodySchema = registry.register(
+  "PostInterviewTurnBody",
+  PostInterviewTurnBody,
+);
+const researchBriefSchema = registry.register(
+  "ResearchBrief",
+  ResearchBrief,
+);
+const finalizeInterviewBriefBodySchema = registry.register(
+  "FinalizeInterviewBriefBody",
+  FinalizeInterviewBriefBody,
+);
+const interviewSessionStateSchema = registry.register(
+  "InterviewSessionState",
+  InterviewSessionState,
+);
+const postInterviewTurnResponseSchema = registry.register(
+  "PostInterviewTurnResponse",
+  PostInterviewTurnResponse,
+);
 
 registry.registerComponent("securitySchemes", "bearerAuth", {
   type: "http",
@@ -103,6 +138,19 @@ const readinessResponse = registry.register(
     status: z.enum(["ready", "degraded"]),
     checks: z.object({ db: z.boolean(), redis: z.boolean() }),
   }),
+);
+
+const interviewStateResponse = registry.register(
+  "InterviewStateResponse",
+  z.object({ data: interviewSessionStateSchema }),
+);
+const postInterviewTurnDataResponse = registry.register(
+  "PostInterviewTurnDataResponse",
+  z.object({ data: postInterviewTurnResponseSchema }),
+);
+const researchBriefResponse = registry.register(
+  "ResearchBriefResponse",
+  z.object({ data: researchBriefSchema }),
 );
 
 const jsonContent = (schema: z.ZodTypeAny) => ({
@@ -302,6 +350,106 @@ registry.registerPath({
     },
     401: { description: "Missing or invalid bearer token." },
     403: { description: "The user is not a workspace member." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview",
+  operationId: "getInterviewState",
+  summary: "Get adaptive interview state",
+  description:
+    "Returns the current turns, resolved variables, and brief preview for the idea.",
+  tags: ["Interview"],
+  security: bearerSecurity,
+  request: { params: ideaParams },
+  responses: {
+    200: {
+      description: "Current interview state.",
+      content: jsonContent(interviewStateResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea does not exist in this workspace." },
+  },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/turns",
+  operationId: "postInterviewTurn",
+  summary: "Submit an interview turn",
+  description:
+    "Submits founder input, proxies to adaptive AI reasoning, and persists both turns.",
+  tags: ["Interview"],
+  security: bearerSecurity,
+  request: {
+    params: ideaParams,
+    body: {
+      required: true,
+      content: { "application/json": { schema: postInterviewTurnBodySchema } },
+    },
+  },
+  responses: {
+    201: {
+      description:
+        "Interview turn processed and assistant response generated.",
+      content: jsonContent(postInterviewTurnDataResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea does not exist in this workspace." },
+    422: { description: "The request body failed validation." },
+  },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/finalize",
+  operationId: "finalizeInterviewBrief",
+  summary: "Finalize research brief",
+  description:
+    "Confirms and finalizes the interview into an incremented, versioned research brief row.",
+  tags: ["Interview"],
+  security: bearerSecurity,
+  request: {
+    params: ideaParams,
+    body: {
+      required: false,
+      content: {
+        "application/json": { schema: finalizeInterviewBriefBodySchema },
+      },
+    },
+  },
+  responses: {
+    201: {
+      description: "Versioned research brief successfully created.",
+      content: jsonContent(researchBriefResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea does not exist in this workspace." },
+    422: { description: "The request body failed validation." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/brief",
+  operationId: "getLatestInterviewBrief",
+  summary: "Get latest research brief",
+  description: "Returns the latest versioned research brief for the idea.",
+  tags: ["Interview"],
+  security: bearerSecurity,
+  request: { params: ideaParams },
+  responses: {
+    200: {
+      description: "The latest research brief.",
+      content: jsonContent(researchBriefResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "No research brief exists for this idea." },
   },
 });
 
