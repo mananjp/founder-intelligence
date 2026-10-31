@@ -1,3 +1,4 @@
+import "./zod-openapi.js";
 import {
   CreateIdea,
   ResearchDepth,
@@ -6,13 +7,10 @@ import {
   StartResearchRun,
 } from "@fi/contracts";
 import {
-  extendZodWithOpenApi,
   OpenAPIRegistry,
   OpenApiGeneratorV31,
 } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
-
-extendZodWithOpenApi(z);
 
 const registry = new OpenAPIRegistry();
 
