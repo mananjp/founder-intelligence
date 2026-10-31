@@ -5,6 +5,7 @@ This directory contains verified standard operating procedures (SOPs) and runboo
 ## Index of Runbooks
 
 - [Database indexes — migration 006](./db-indexes.md): Catalog, verification queries, idempotency, and rollback procedure for indexes on `003` and `004` tables.
+- [Database persistence tests](./db-persistence-tests.md): Real PostgreSQL 16 + pgvector prerequisites, local/CI commands, and the schema/repository coverage contract.
 - [Security scan gate](./security-scan.md): PR-time and main-push security gates for secrets, dependency audit, and filesystem/container Trivy scans.
 - [Stuck research run](./research-run-stuck.md): Diagnostics, queue inspection, cancellation, and worker recovery for halted AI research runs.
 - [LLM provider outage & failover](./llm-provider-outage.md): Handling OpenAI / Anthropic outages, error spikes, and switching fallback providers.
