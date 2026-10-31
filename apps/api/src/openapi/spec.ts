@@ -21,6 +21,29 @@ import { z } from "zod";
 
 extendZodWithOpenApi(z);
 
+const contractSchemas = [
+  CreateIdea,
+  ResearchDepth,
+  RunState,
+  StartResearchRun,
+  InterviewTurnRole,
+  InterviewTurn,
+  PostInterviewTurnBody,
+  PostInterviewTurnResponse,
+  ResearchBrief,
+  FinalizeInterviewBriefBody,
+  InterviewSessionState,
+];
+for (const schema of contractSchemas) {
+  const proto = Object.getPrototypeOf(schema);
+  if (proto && !proto.openapi) {
+    proto.openapi = (z.ZodType.prototype as any).openapi;
+  }
+  if (!(schema as any).openapi) {
+    (schema as any).openapi = (z.ZodType.prototype as any).openapi;
+  }
+}
+
 const registry = new OpenAPIRegistry();
 
 const createIdeaSchema = registry.register("CreateIdea", CreateIdea);
