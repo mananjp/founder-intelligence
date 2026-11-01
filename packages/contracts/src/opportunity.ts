@@ -24,7 +24,7 @@ export const OpportunityScore = z.object({
   ideaId: z.string().uuid(),
   overallScore: z.number().min(0).max(10),
   evidenceCoverage: z.number().min(0).max(1),
-  dimensions: z.record(DimensionKey, DimensionScore),
+  dimensions: z.partialRecord(DimensionKey, DimensionScore),
   scoringModelVersion: z.string(),
 });
 export type OpportunityScore = z.infer<typeof OpportunityScore>;
