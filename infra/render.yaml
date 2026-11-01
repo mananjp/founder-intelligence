@@ -1,18 +1,48 @@
-# MVP deploy blueprint (Render). Swap for Railway/Fly if preferred.
+# Staging services consume the immutable SHA-tagged GHCR images published by
+# .github/workflows/deploy.yml. Configure the named GHCR credential in Render.
 services:
   - type: web
     name: fi-api
-    runtime: docker
-    dockerfilePath: infra/docker/api.Dockerfile
+    runtime: image
+    image:
+      url: ghcr.io/mananjp/founder-intelligence/api:latest
+      creds:
+        fromRegistryCreds:
+          name: founder-intelligence-ghcr
     healthCheckPath: /health/ready
-    envVars: [{ key: NODE_ENV, value: production }]
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "4000"
+      - key: API_PORT
+        value: "4000"
+
   - type: web
     name: fi-ai
-    runtime: docker
-    dockerfilePath: infra/docker/ai.Dockerfile
+    runtime: image
+    image:
+      url: ghcr.io/mananjp/founder-intelligence/ai:latest
+      creds:
+        fromRegistryCreds:
+          name: founder-intelligence-ghcr
     healthCheckPath: /health/ready
+    envVars:
+      - key: APP_ENV
+        value: staging
+      # The AI Docker command currently binds port 8000.
+      - key: PORT
+        value: "8000"
+
   - type: worker
     name: fi-worker
-    runtime: docker
-    dockerfilePath: infra/docker/ai.Dockerfile
+    runtime: image
+    image:
+      url: ghcr.io/mananjp/founder-intelligence/ai:latest
+      creds:
+        fromRegistryCreds:
+          name: founder-intelligence-ghcr
     dockerCommand: uv run celery -A fi_ai.worker worker -l info
+    envVars:
+      - key: APP_ENV
+        value: staging
