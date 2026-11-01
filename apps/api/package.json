@@ -12,7 +12,7 @@
     "test": "vitest run --coverage"
   },
   "dependencies": {
-    "@asteasolutions/zod-to-openapi": "^8.5.0",
+    "@asteasolutions/zod-to-openapi": "^9.1.0",
     "@fi/contracts": "workspace:*",
     "@fi/scoring": "workspace:*",
     "bullmq": "^5.12.0",
