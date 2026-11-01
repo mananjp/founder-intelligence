@@ -1,0 +1,36 @@
+{
+  "id": "crosscheck-multi-source-002",
+  "stage": "crosscheck",
+  "description": "Crosscheck: Two independent journalistic publications corroborate competitor enterprise revenue milestone.",
+  "claim": {
+    "origin": "evidence",
+    "kind": "fact"
+  },
+  "evidence": [
+    {
+      "evidence_id": "ev-crosscheck-002a",
+      "publisher": "Reuters",
+      "source_type": "news",
+      "stance": "supports",
+      "relevance": 0.85,
+      "age_days": 45
+    },
+    {
+      "evidence_id": "ev-crosscheck-002b",
+      "publisher": "Bloomberg Technology",
+      "source_type": "news",
+      "stance": "supports",
+      "relevance": 0.88,
+      "age_days": 46
+    }
+  ],
+  "document": "Reuters reports that PaymentsTech surpassed $100 million in annual recurring revenue during the third quarter of 2024.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "PaymentsTech reached $100 million in ARR during Q3 2024.",
+    "quote": "Reuters reports that PaymentsTech surpassed $100 million in annual recurring revenue during the third quarter of 2024.",
+    "stance": "supports",
+    "derived_status": "supported",
+    "has_contradiction": false
+  }
+}

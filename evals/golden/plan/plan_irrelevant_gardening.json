@@ -1,0 +1,15 @@
+{
+  "id": "plan-irrelevant-gardening-008",
+  "stage": "plan",
+  "description": "Irrelevant document: Hydroponic tomato growing instructions contain no research planning evidence.",
+  "task": {
+    "query": "B2B SaaS churn reduction machine learning benchmarks",
+    "budget_usd": 0.50,
+    "source_class": "industry_report"
+  },
+  "document": "Ensure the water nutrient reservoir maintains an electrical conductivity between 1.8 and 2.2 mS/cm during the tomato flowering phase.",
+  "expected": {
+    "has_relevant_evidence": false,
+    "evidence_count": 0
+  }
+}

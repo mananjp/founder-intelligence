@@ -1,0 +1,15 @@
+{
+  "id": "scope-irrelevant-sports-008",
+  "stage": "scope",
+  "description": "Irrelevant document: Sports match recap contains no market or scoping evidence for B2B software.",
+  "brief": {
+    "problem": "Inventory shrinkage and stockout misallocation in 3PL warehouses",
+    "customer": "Mid-market third-party logistics operators",
+    "geography": ["US", "CA"]
+  },
+  "document": "The local football club secured an unexpected 2-1 victory in injury time after a corner kick deflection stunned the visiting defense.",
+  "expected": {
+    "has_relevant_evidence": false,
+    "evidence_count": 0
+  }
+}

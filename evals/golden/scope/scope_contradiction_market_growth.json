@@ -1,0 +1,20 @@
+{
+  "id": "scope-contradiction-market-growth-007",
+  "stage": "scope",
+  "description": "Seeded contradiction: Market intelligence report reveals contraction contrary to founder growth thesis.",
+  "brief": {
+    "problem": "Quick commerce dark store optimization software",
+    "customer": "Grocery delivery dark store operators",
+    "geography": ["IN", "AE"]
+  },
+  "document": "New dark store openings across Tier 1 Indian metros contracted by 22% year-over-year in 2024 as operators focused on unit economics over footprint expansion.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Dark store footprint expansion is accelerating in Indian metros.",
+    "quote": "New dark store openings across Tier 1 Indian metros contracted by 22% year-over-year in 2024 as operators focused on unit economics over footprint expansion.",
+    "stance": "contradicts",
+    "research_questions": [
+      "Is rapid dark store physical footprint expansion continuing or stalling in Tier 1 Indian metros?"
+    ]
+  }
+}

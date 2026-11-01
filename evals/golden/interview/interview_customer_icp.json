@@ -1,0 +1,19 @@
+{
+  "id": "interview-customer-icp-002",
+  "stage": "interview",
+  "description": "Founder interview turn clarifies Ideal Customer Profile criteria and company size.",
+  "turn": {
+    "role": "founder",
+    "turn_index": 2
+  },
+  "document": "Founder: We are targeting mid-sized regional hospital networks with 200 to 1,000 beds rather than massive university health systems.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Target customers are mid-sized regional hospital networks with 200 to 1,000 beds.",
+    "quote": "We are targeting mid-sized regional hospital networks with 200 to 1,000 beds rather than massive university health systems.",
+    "stance": "supports",
+    "extracted_variables": {
+      "customer": "Regional hospital networks (200-1000 beds)"
+    }
+  }
+}

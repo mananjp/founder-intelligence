@@ -1,0 +1,19 @@
+{
+  "id": "interview-business-model-003",
+  "stage": "interview",
+  "description": "Founder interview turn establishes monetization and contract pricing structure.",
+  "turn": {
+    "role": "founder",
+    "turn_index": 3
+  },
+  "document": "Founder: We charge an annual platform fee of $24,000 plus $150 per completed vendor security assessment pack.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Pricing model is $24,000 annual base subscription plus $150 per completed assessment.",
+    "quote": "We charge an annual platform fee of $24,000 plus $150 per completed vendor security assessment pack.",
+    "stance": "supports",
+    "extracted_variables": {
+      "business_model": "Annual subscription ($24k) + usage fee ($150/assessment)"
+    }
+  }
+}

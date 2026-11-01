@@ -1,0 +1,20 @@
+{
+  "id": "scope-competitive-moat-004",
+  "stage": "scope",
+  "description": "Scoping competitive differentiation questions for veterinary radiology AI.",
+  "brief": {
+    "problem": "Backlog in board-certified veterinary radiology consult turnaround times",
+    "customer": "Emergency specialty animal hospitals",
+    "geography": ["US"]
+  },
+  "document": "Incumbent veterinary teleradiology networks maintain exclusive reader agreements with 75% of ACVR board-certified radiologists in North America.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Incumbent teleradiology networks retain exclusive contracts with 75% of ACVR radiologists.",
+    "quote": "Incumbent veterinary teleradiology networks maintain exclusive reader agreements with 75% of ACVR board-certified radiologists in North America.",
+    "stance": "supports",
+    "research_questions": [
+      "What lock-in or exclusivity barriers exist with certified veterinary radiologist networks?"
+    ]
+  }
+}

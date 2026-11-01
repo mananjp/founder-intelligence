@@ -1,0 +1,11 @@
+{
+  "id": "extraction-competitor-feature-006",
+  "description": "Factual extraction of security capability from platform documentation.",
+  "document": "Supabase provides Row Level Security directly integrated with PostgreSQL policies and JSON Web Token claims.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Supabase integrates PostgreSQL Row Level Security with JWT claims.",
+    "quote": "Supabase provides Row Level Security directly integrated with PostgreSQL policies and JSON Web Token claims.",
+    "stance": "supports"
+  }
+}

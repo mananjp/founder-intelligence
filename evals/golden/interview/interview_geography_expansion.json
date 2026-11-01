@@ -1,0 +1,19 @@
+{
+  "id": "interview-geography-expansion-005",
+  "stage": "interview",
+  "description": "Founder interview turn specifies initial geographic beachhead and expansion sequencing.",
+  "turn": {
+    "role": "founder",
+    "turn_index": 5
+  },
+  "document": "Founder: We are focusing purely on US healthcare systems in Year 1 before evaluating NHS digital compliance in the UK for Year 2.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Launch geography is exclusively US healthcare systems in Year 1.",
+    "quote": "We are focusing purely on US healthcare systems in Year 1 before evaluating NHS digital compliance in the UK for Year 2.",
+    "stance": "supports",
+    "extracted_variables": {
+      "geography": ["US"]
+    }
+  }
+}

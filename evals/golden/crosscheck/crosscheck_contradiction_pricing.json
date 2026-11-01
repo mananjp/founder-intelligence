@@ -1,0 +1,36 @@
+{
+  "id": "crosscheck-contradiction-pricing-007",
+  "stage": "crosscheck",
+  "description": "Seeded contradiction: Competitor marketing claims permanent free tier, but pricing terms state paid enterprise only.",
+  "claim": {
+    "origin": "evidence",
+    "kind": "fact"
+  },
+  "evidence": [
+    {
+      "evidence_id": "ev-crosscheck-007a",
+      "publisher": "TechBlog Review",
+      "source_type": "news",
+      "stance": "supports",
+      "relevance": 0.75,
+      "age_days": 180
+    },
+    {
+      "evidence_id": "ev-crosscheck-007b",
+      "publisher": "DataStream Terms",
+      "source_type": "official_site",
+      "stance": "contradicts",
+      "relevance": 0.95,
+      "age_days": 10
+    }
+  ],
+  "document": "Effective September 2025, DataStream has completely eliminated the free developer tier and requires a minimum $1,000 monthly commitment for API access.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "DataStream provides a permanent free tier for developer API access.",
+    "quote": "Effective September 2025, DataStream has completely eliminated the free developer tier and requires a minimum $1,000 monthly commitment for API access.",
+    "stance": "contradicts",
+    "derived_status": "conflicting",
+    "has_contradiction": true
+  }
+}

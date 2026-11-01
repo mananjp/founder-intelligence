@@ -1,0 +1,19 @@
+{
+  "id": "interview-differentiation-moat-004",
+  "stage": "interview",
+  "description": "Founder interview turn details technological moat and integration defensibility.",
+  "turn": {
+    "role": "founder",
+    "turn_index": 4
+  },
+  "document": "Founder: Our core defensibility is automated evidence extraction mapped directly against the HECVAT and HITRUST control frameworks.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Differentiation is automated evidence extraction mapped to HECVAT and HITRUST frameworks.",
+    "quote": "Our core defensibility is automated evidence extraction mapped directly against the HECVAT and HITRUST control frameworks.",
+    "stance": "supports",
+    "extracted_variables": {
+      "differentiation": "Native HECVAT and HITRUST control mapping"
+    }
+  }
+}

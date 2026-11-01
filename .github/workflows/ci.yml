@@ -152,7 +152,7 @@ jobs:
         id: f
         with:
           filters: |
-            ai: ['apps/ai/src/fi_ai/prompts/**','apps/ai/src/fi_ai/research/**','evals/**']
+            ai: ['apps/ai/src/fi_ai/prompts/**','apps/ai/src/fi_ai/research/**','apps/ai/src/fi_ai/evals/**','apps/ai/tests/test_eval_runner.py','evals/**']
 
       - if: steps.f.outputs.ai == 'true'
         uses: astral-sh/setup-uv@v3
@@ -266,3 +266,4 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
+
