@@ -14,7 +14,16 @@ const expectedRoutes = [
   ["get", "/v1/workspaces/{workspaceId}/ideas"],
   ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}"],
   ["post", "/v1/workspaces/{workspaceId}/ideas"],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs"],
   ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs"],
+  [
+    "get",
+    "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs/{runId}",
+  ],
+  [
+    "post",
+    "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs/{runId}/cancel",
+  ],
   [
     "get",
     "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs/{runId}/events",
