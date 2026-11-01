@@ -9,6 +9,7 @@ tasks: # task -> tier
   interview_turn: fast
   classify_source: fast
   extract_evidence: fast
+  embed_texts: embedding
   crosscheck_nli: fast
   synthesize_module: strong
   recommend: strong

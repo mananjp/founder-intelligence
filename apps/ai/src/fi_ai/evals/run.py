@@ -28,6 +28,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from fi_ai.evidence.verbatim import is_verbatim
+
 # run.py:
 # repository/
 #   apps/ai/src/fi_ai/evals/run.py
@@ -36,6 +38,10 @@ from typing import Any
 REPOSITORY_ROOT = Path(__file__).resolve().parents[5]
 
 GOLDEN_ROOT = REPOSITORY_ROOT / "evals" / "golden"
+
+# Target score for the verbatim-quote evaluation metric (Sprint 2, WS4 / Issue #20):
+# every evaluated candidate quote must pass the deterministic verbatim check.
+QUOTE_VERBATIM_TARGET = 1.0
 
 
 @dataclass
@@ -63,7 +69,7 @@ def evaluate_case(path: Path) -> CaseResult:
     """Evaluate one deterministic golden extraction case."""
     try:
         case = load_json(path)
-    except (OSError, json.JSONDecodeError, ValueError , TypeError) as exc:
+    except (OSError, json.JSONDecodeError, ValueError, TypeError) as exc:
         return CaseResult(
             case_id=path.stem,
             passed=False,
@@ -111,8 +117,8 @@ def evaluate_case(path: Path) -> CaseResult:
                 ),
             )
 
-        # The golden quote must occur exactly in the source document.
-        checks["quote_verbatim"] = expected_quote in document
+        # The golden quote must occur verbatim in the source document (whitespace-normalized).
+        checks["quote_verbatim"] = is_verbatim(expected_quote, document)
 
         expected_stance = expected.get("stance")
 
@@ -166,6 +172,12 @@ def calculate_metrics(
 
     Some Bible metrics require actual research/model output and therefore
     cannot be honestly measured by fixture validation alone.
+
+    ``quote_verbatim_rate`` is the mean of the per-case ``quote_verbatim`` checks:
+    the numerator is the number of evaluated candidate quotes that passed the
+    deterministic verbatim gate, the denominator is the number of evaluated
+    candidate quotes. An empty evaluation set has no evaluated quotes, so the rate
+    is ``None`` (missing is not a passing score).
     """
 
     quote_results = [
@@ -187,10 +199,23 @@ def calculate_metrics(
         "citation_validity_rate": None,
         "contradiction_recall": None,
 
-        # This one can be checked deterministically against the snapshot
+        # This one is checked deterministically against the snapshot
         # contained in the golden fixture.
         "quote_verbatim_rate": quote_verbatim_rate,
     }
+
+
+def verbatim_rate_met(report: dict[str, Any]) -> bool:
+    """Return whether the evaluated ``quote_verbatim_rate`` met its target.
+
+    A missing rate is never treated as passing.
+    """
+    quote_verbatim_rate = report.get("metrics", {}).get("quote_verbatim_rate")
+
+    return (
+        quote_verbatim_rate is not None
+        and quote_verbatim_rate >= QUOTE_VERBATIM_TARGET
+    )
 
 
 def build_report(
@@ -285,10 +310,8 @@ def main() -> int:
             )
         )
 
-        if (
-            args.fail_under_config
-            and report["status"] != "passed"
-        ):
+        # A missing quote_verbatim_rate is never treated as a passing score.
+        if args.fail_under_config and (report["status"] != "passed" or not verbatim_rate_met(report)):
             return 1
 
         return 0
