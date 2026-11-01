@@ -5,11 +5,41 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from urllib.parse import SplitResult, urlsplit, urlunsplit
+
+
+def _normalized_netloc(parts: SplitResult) -> str:
+    """Lowercase scheme/host, drop credentials, and omit default ports."""
+    host = (parts.hostname or "").lower()
+    if not host:
+        return parts.netloc.lower()
+    if ":" in host:  # IPv6 literal
+        host = f"[{host}]"
+    try:
+        port = parts.port
+    except ValueError:
+        port = None
+    scheme = parts.scheme.lower()
+    is_default = port is None or (scheme == "http" and port == 80) or (scheme == "https" and port == 443)
+    return host if is_default else f"{host}:{port}"
 
 
 def compute_url_hash(url: str) -> str:
-    """Deterministic SHA-256 hash of a normalized URL."""
-    normalized = url.strip().lower()
+    """Deterministic SHA-256 hash of a normalized URL.
+
+    Scheme and host are case-insensitive, but the path and query are preserved
+    as-is because HTTP paths are case-sensitive. The fragment is dropped.
+    """
+    parts = urlsplit(url.strip())
+    normalized = urlunsplit(
+        (
+            parts.scheme.lower(),
+            _normalized_netloc(parts),
+            parts.path or "/",
+            parts.query,
+            "",
+        )
+    )
     return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 

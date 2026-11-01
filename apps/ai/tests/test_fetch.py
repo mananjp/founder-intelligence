@@ -1,12 +1,14 @@
 """Unit tests for research fetch subsystem."""
 
 import httpx
+import pytest
 
 from fi_ai.research.fetch.cache import UrlCache, compute_url_hash
 from fi_ai.research.fetch.client import FetchClient
 from fi_ai.research.fetch.extractor import extract_readability
 from fi_ai.research.fetch.rate_limiter import DomainRateLimiter
 from fi_ai.research.fetch.robots import RobotsChecker
+from fi_ai.research.fetch.ssrf import UnsafeUrlError, validate_outbound_url
 from fi_ai.research.fetch.storage import (
     InMemoryStorageAdapter,
     LocalStorageAdapter,
@@ -18,8 +20,18 @@ from fi_ai.research.pipeline import fetch as fetch_stage
 
 def test_url_hash_deterministic():
     url1 = "https://example.com/page"
-    url2 = "  HTTPS://EXAMPLE.COM/PAGE  "
+    url2 = "  HTTPS://EXAMPLE.COM/page  "
     assert compute_url_hash(url1) == compute_url_hash(url2)
+
+    # Default ports and fragments are ignored
+    assert compute_url_hash("https://example.com:443/page") == compute_url_hash(url1)
+    assert compute_url_hash("https://example.com/page#section") == compute_url_hash(url1)
+
+    # Paths are case-sensitive in HTTP and must not collide in the cache
+    assert compute_url_hash("https://example.com/Page") != compute_url_hash(url1)
+    assert compute_url_hash("https://example.com/page?q=A") != compute_url_hash(
+        "https://example.com/page?q=a"
+    )
 
 
 def test_url_cache_ttl():
@@ -101,7 +113,7 @@ def test_robots_checker():
         return httpx.Response(404)
 
     mock_client = httpx.Client(transport=httpx.MockTransport(mock_get))
-    checker = RobotsChecker(http_client=mock_client)
+    checker = RobotsChecker(http_client=mock_client, resolve_dns=False)
 
     assert checker.is_allowed("https://allowed.com/public") is True
     assert checker.is_allowed("https://disallowed.com/public") is True
@@ -120,7 +132,7 @@ def test_fetch_client_end_to_end():
         return httpx.Response(200, text="<html><body><p>Successful fetch content</p></body></html>")
 
     mock_client = httpx.Client(transport=httpx.MockTransport(mock_handler))
-    client = FetchClient(http_client=mock_client)
+    client = FetchClient(http_client=mock_client, resolve_dns=False)
 
     # 1. Successful fetch
     res_ok = client.fetch("https://test.com/ok")
@@ -162,7 +174,7 @@ def test_fetch_pipeline_stage_run():
         return httpx.Response(200, text="<html><body><p>Research text</p></body></html>")
 
     mock_client = httpx.Client(transport=httpx.MockTransport(mock_handler))
-    client = FetchClient(http_client=mock_client)
+    client = FetchClient(http_client=mock_client, resolve_dns=False)
 
     ctx2 = RunContext("run-test-2")
     events2 = []
@@ -179,3 +191,108 @@ def test_fetch_pipeline_stage_run():
         "fetched": 2,
         "failed": 0,
     }
+
+
+def test_validate_outbound_url_rejects_unsafe_targets():
+    unsafe_urls = [
+        "http://127.0.0.1/",
+        "http://localhost:3000/",
+        "http://169.254.169.254/latest/meta-data/",
+        "http://10.0.0.5/",
+        "http://192.168.1.1/",
+        "http://[::1]/",
+        "http://0.0.0.0/",
+        "ftp://example.com/file",
+        "file:///etc/passwd",
+        "https://user:pass@example.com/",
+    ]
+    for url in unsafe_urls:
+        with pytest.raises(UnsafeUrlError):
+            validate_outbound_url(url, resolve_dns=False)
+
+    assert validate_outbound_url("https://93.184.216.34/", resolve_dns=False) == "https://93.184.216.34/"
+
+
+def test_fetch_client_rejects_ssrf_before_requesting():
+    calls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(str(request.url))
+        return httpx.Response(200, text="secret")
+
+    mock_client = httpx.Client(transport=httpx.MockTransport(handler))
+    client = FetchClient(http_client=mock_client, resolve_dns=False)
+
+    res = client.fetch("http://127.0.0.1:8080/admin")
+    assert res.success is False
+    assert res.status == "failed"
+    assert "non-public" in (res.error or "")
+    assert calls == []
+
+
+def test_fetch_client_follows_validated_redirects_and_rejects_internal():
+    calls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        url = str(request.url)
+        calls.append(url)
+        if url.endswith("/start"):
+            return httpx.Response(302, headers={"location": "/final"})
+        return httpx.Response(200, text="<html><body><p>Final content</p></body></html>")
+
+    client = FetchClient(
+        http_client=httpx.Client(transport=httpx.MockTransport(handler)),
+        resolve_dns=False,
+    )
+    res = client.fetch("https://test.com/start")
+    assert res.success is True
+    assert "Final content" in (res.readable_text or "")
+    assert "https://test.com/final" in calls
+
+    def redirect_handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(302, headers={"location": "http://169.254.169.254/latest"})
+
+    internal_client = FetchClient(
+        http_client=httpx.Client(transport=httpx.MockTransport(redirect_handler)),
+        resolve_dns=False,
+    )
+    internal = internal_client.fetch("https://test.com/start")
+    assert internal.success is False
+    assert "non-public" in (internal.error or "")
+
+
+def test_fetch_client_caps_response_size():
+    client = FetchClient(
+        http_client=httpx.Client(
+            transport=httpx.MockTransport(lambda _r: httpx.Response(200, text="x" * 64))
+        ),
+        resolve_dns=False,
+        max_response_bytes=16,
+    )
+    res = client.fetch("https://test.com/big")
+    assert res.success is False
+    assert "exceeded" in (res.error or "")
+
+
+def test_fetch_client_rejects_unsupported_content_type():
+    client = FetchClient(
+        http_client=httpx.Client(
+            transport=httpx.MockTransport(
+                lambda _r: httpx.Response(
+                    200,
+                    headers={"content-type": "application/pdf"},
+                    content=b"%PDF-1.7",
+                )
+            )
+        ),
+        resolve_dns=False,
+    )
+    res = client.fetch("https://test.com/file.pdf")
+    assert res.success is False
+    assert "Unsupported content type" in (res.error or "")
+
+
+def test_robots_fail_closed_on_server_error():
+    mock_client = httpx.Client(transport=httpx.MockTransport(lambda _r: httpx.Response(503)))
+    checker = RobotsChecker(http_client=mock_client, resolve_dns=False)
+    assert checker.is_allowed("https://broken.com/page") is False
