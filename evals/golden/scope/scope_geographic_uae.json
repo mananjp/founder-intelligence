@@ -1,0 +1,20 @@
+{
+  "id": "scope-geographic-uae-006",
+  "stage": "scope",
+  "description": "Scoping UAE regional market dynamics for corporate treasury automation.",
+  "brief": {
+    "problem": "Multi-bank liquidity fragmentation and manual FX transfers across GCC entities",
+    "customer": "Mid-tier conglomerates in Dubai and Abu Dhabi",
+    "geography": ["AE", "SA"]
+  },
+  "document": "The Central Bank of the UAE mandates onshore corporate account open API compliance through the Al Etihad Payments framework by Q4 2025.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "The Central Bank of the UAE mandates corporate open API compliance via Al Etihad Payments by Q4 2025.",
+    "quote": "The Central Bank of the UAE mandates onshore corporate account open API compliance through the Al Etihad Payments framework by Q4 2025.",
+    "stance": "supports",
+    "research_questions": [
+      "What are the timeline and open API specifications for Al Etihad Payments in the UAE?"
+    ]
+  }
+}

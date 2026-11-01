@@ -1,0 +1,21 @@
+{
+  "id": "plan-pricing-benchmarks-001",
+  "stage": "plan",
+  "description": "Planning search queries and domain filters for competitor pricing matrices.",
+  "task": {
+    "query": "site:pricing.* B2B SaaS data pipeline per credit tier",
+    "budget_usd": 0.50,
+    "source_class": "official_site"
+  },
+  "document": "Snowflake data cloud pricing begins with standard computing credits starting at $2.00 per capacity unit on on-demand plans.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Snowflake standard computing credits begin at $2.00 per capacity unit.",
+    "quote": "Snowflake data cloud pricing begins with standard computing credits starting at $2.00 per capacity unit on on-demand plans.",
+    "stance": "supports",
+    "search_task": {
+      "query_template": "Snowflake on-demand capacity unit pricing",
+      "expected_domain": "snowflake.com"
+    }
+  }
+}

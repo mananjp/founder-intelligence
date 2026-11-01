@@ -1,0 +1,13 @@
+{
+  "id": "crosscheck-verified-primary-001",
+  "stage": "crosscheck",
+  "description": "Crosscheck: Primary government registry filing elevates claim status to verified.",
+  "document": "According to the Delaware Division of Corporations filing, CloudCorp Inc. was officially incorporated on March 14, 2021 with authentication number 492011.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "CloudCorp Inc. was incorporated in Delaware in March 2021.",
+    "quote": "According to the Delaware Division of Corporations filing, CloudCorp Inc. was officially incorporated on March 14, 2021 with authentication number 492011.",
+    "stance": "supports",
+    "derived_status": "verified"
+  }
+}

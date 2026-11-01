@@ -1,0 +1,20 @@
+{
+  "id": "scope-tam-warehouse-001",
+  "stage": "scope",
+  "description": "Scoping research questions for North American warehouse management software TAM.",
+  "brief": {
+    "problem": "Inventory shrinkage and stockout misallocation in 3PL warehouses",
+    "customer": "Mid-market third-party logistics operators",
+    "geography": ["US", "CA"]
+  },
+  "document": "The North American warehouse management software market was valued at $1.8 billion in 2024 and is projected to expand at an 8.4% compound annual rate through 2030.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "The North American warehouse management software market was valued at $1.8 billion in 2024.",
+    "quote": "The North American warehouse management software market was valued at $1.8 billion in 2024 and is projected to expand at an 8.4% compound annual rate through 2030.",
+    "stance": "supports",
+    "research_questions": [
+      "What is the addressable spend for mid-market 3PL warehouse management systems in North America?"
+    ]
+  }
+}

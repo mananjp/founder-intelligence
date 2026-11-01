@@ -1,0 +1,13 @@
+{
+  "id": "crosscheck-market-share-consensus-006",
+  "stage": "crosscheck",
+  "description": "Crosscheck: Analyst consensus confirms market leader holds dominant 54% share.",
+  "document": "Gartner and IDC research both report that AWS holds 54% of global cloud infrastructure spend among Fortune 500 enterprises.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "AWS commands 54% of Fortune 500 cloud infrastructure spend.",
+    "quote": "Gartner and IDC research both report that AWS holds 54% of global cloud infrastructure spend among Fortune 500 enterprises.",
+    "stance": "supports",
+    "derived_status": "supported"
+  }
+}

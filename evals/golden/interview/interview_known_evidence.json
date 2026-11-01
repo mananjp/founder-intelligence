@@ -1,0 +1,19 @@
+{
+  "id": "interview-known-evidence-006",
+  "stage": "interview",
+  "description": "Founder interview turn documents pilot deployment metrics and NPS evidence.",
+  "turn": {
+    "role": "founder",
+    "turn_index": 6
+  },
+  "document": "Founder: In our pilot across 3 hospital groups, the median review cycle dropped from 45 days down to 6 business days.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Pilot hospital groups achieved a review cycle reduction from 45 days to 6 business days.",
+    "quote": "In our pilot across 3 hospital groups, the median review cycle dropped from 45 days down to 6 business days.",
+    "stance": "supports",
+    "extracted_variables": {
+      "known_evidence": ["Pilot reduced review cycle from 45 days to 6 business days across 3 hospitals"]
+    }
+  }
+}

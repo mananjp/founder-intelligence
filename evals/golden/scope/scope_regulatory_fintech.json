@@ -1,0 +1,20 @@
+{
+  "id": "scope-regulatory-fintech-002",
+  "stage": "scope",
+  "description": "Scoping compliance requirements for cross-border payroll platforms.",
+  "brief": {
+    "problem": "Multi-jurisdiction tax withholding and contractor classification",
+    "customer": "Remote-first tech startups hiring globally",
+    "geography": ["US", "GB", "DE"]
+  },
+  "document": "Cross-border contractor payment solutions operating in the EU must comply with DAC7 reporting requirements for platform operators as of January 2023.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "EU platform operators must comply with DAC7 reporting requirements for cross-border contractor payments.",
+    "quote": "Cross-border contractor payment solutions operating in the EU must comply with DAC7 reporting requirements for platform operators as of January 2023.",
+    "stance": "supports",
+    "research_questions": [
+      "What are mandatory tax reporting regimes for cross-border contractor payroll in the EU?"
+    ]
+  }
+}

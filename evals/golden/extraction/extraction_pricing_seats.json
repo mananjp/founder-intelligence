@@ -1,0 +1,11 @@
+{
+  "id": "extraction-pricing-seats-005",
+  "description": "Factual extraction of per-seat subscription price point from public product tier page.",
+  "document": "Linear Standard tier is priced at $8 per user per month billed annually or $10 billed monthly.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Linear Standard costs $8 per user per month billed annually.",
+    "quote": "Linear Standard tier is priced at $8 per user per month billed annually or $10 billed monthly.",
+    "stance": "supports"
+  }
+}

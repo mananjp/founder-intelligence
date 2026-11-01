@@ -63,7 +63,7 @@ def evaluate_case(path: Path) -> CaseResult:
     """Evaluate one deterministic golden extraction case."""
     try:
         case = load_json(path)
-    except (OSError, json.JSONDecodeError, ValueError , TypeError) as exc:
+    except (OSError, json.JSONDecodeError, ValueError, TypeError) as exc:
         return CaseResult(
             case_id=path.stem,
             passed=False,
@@ -93,9 +93,7 @@ def evaluate_case(path: Path) -> CaseResult:
 
     checks: dict[str, bool] = {}
 
-    expected_relevant = bool(
-        expected.get("has_relevant_evidence", False)
-    )
+    expected_relevant = bool(expected.get("has_relevant_evidence", False))
 
     if expected_relevant:
         expected_quote = expected.get("quote")
@@ -105,10 +103,7 @@ def evaluate_case(path: Path) -> CaseResult:
                 case_id=case_id,
                 passed=False,
                 checks={},
-                error=(
-                    "Relevant golden cases must provide a non-empty "
-                    "expected.quote"
-                ),
+                error=("Relevant golden cases must provide a non-empty expected.quote"),
             )
 
         # The golden quote must occur exactly in the source document.
@@ -145,16 +140,12 @@ def discover_cases(suite: str) -> list[Path]:
         root = GOLDEN_ROOT / suite
 
     if not root.exists():
-        raise FileNotFoundError(
-            f"Golden suite not found: {root}"
-        )
+        raise FileNotFoundError(f"Golden suite not found: {root}")
 
     cases = sorted(root.rglob("*.json"))
 
     if not cases:
-        raise FileNotFoundError(
-            f"No golden cases found in: {root}"
-        )
+        raise FileNotFoundError(f"No golden cases found in: {root}")
 
     return cases
 
@@ -169,24 +160,21 @@ def calculate_metrics(
     """
 
     quote_results = [
-        result.checks["quote_verbatim"]
-        for result in results
-        if "quote_verbatim" in result.checks
+        result.checks["quote_verbatim"] for result in results if "quote_verbatim" in result.checks
     ]
 
     if quote_results:
-        quote_verbatim_rate = (
-            sum(quote_results) / len(quote_results)
-        )
+        quote_verbatim_rate = sum(quote_results) / len(quote_results)
+        unsupported_claim_rate = (len(quote_results) - sum(quote_results)) / len(quote_results)
     else:
         quote_verbatim_rate = None
+        unsupported_claim_rate = None
 
     return {
-        # These require actual generated claims/evidence/citations.
-        "unsupported_claim_rate": None,
+        # Quotes that are not verbatim substrings in source documents constitute unsupported claims (Bible §27, §41).
+        "unsupported_claim_rate": unsupported_claim_rate,
         "citation_validity_rate": None,
         "contradiction_recall": None,
-
         # This one can be checked deterministically against the snapshot
         # contained in the golden fixture.
         "quote_verbatim_rate": quote_verbatim_rate,
@@ -197,20 +185,40 @@ def build_report(
     suite: str,
     results: list[CaseResult],
     elapsed_seconds: float,
+    max_unsupported_claim_rate: float = 0.05,
+    min_quote_verbatim_rate: float = 1.0,
 ) -> dict[str, Any]:
     """Build the structured evaluation report."""
     passed = sum(result.passed for result in results)
     failed = len(results) - passed
+    metrics = calculate_metrics(results)
+
+    threshold_violations: list[str] = []
+    unsupported_rate = metrics.get("unsupported_claim_rate")
+    verbatim_rate = metrics.get("quote_verbatim_rate")
+
+    if unsupported_rate is not None and unsupported_rate >= max_unsupported_claim_rate:
+        threshold_violations.append(
+            f"unsupported_claim_rate ({unsupported_rate:.2%}) >= {max_unsupported_claim_rate:.2%}"
+        )
+
+    if verbatim_rate is not None and verbatim_rate < min_quote_verbatim_rate:
+        threshold_violations.append(
+            f"quote_verbatim_rate ({verbatim_rate:.2%}) < {min_quote_verbatim_rate:.2%}"
+        )
+
+    status = "passed" if (failed == 0 and not threshold_violations) else "failed"
 
     return {
         "suite": suite,
-        "status": "passed" if failed == 0 else "failed",
+        "status": status,
         "cases": {
             "total": len(results),
             "passed": passed,
             "failed": failed,
         },
-        "metrics": calculate_metrics(results),
+        "metrics": metrics,
+        "threshold_violations": threshold_violations,
         "runtime": {
             "cost_per_run_usd": None,
             "latency_p50_ms": None,
@@ -246,6 +254,20 @@ def main() -> int:
         action="store_true",
     )
 
+    parser.add_argument(
+        "--max-unsupported-rate",
+        type=float,
+        default=0.05,
+        help="Maximum allowable unsupported claim rate (default: 0.05 or 5%)",
+    )
+
+    parser.add_argument(
+        "--min-quote-verbatim-rate",
+        type=float,
+        default=1.0,
+        help="Minimum allowable quote verbatim rate (default: 1.0 or 100%)",
+    )
+
     args = parser.parse_args()
 
     started_at = time.perf_counter()
@@ -253,19 +275,16 @@ def main() -> int:
     try:
         case_paths = discover_cases(args.suite)
 
-        results = [
-            evaluate_case(path)
-            for path in case_paths
-        ]
+        results = [evaluate_case(path) for path in case_paths]
 
-        elapsed_seconds = (
-            time.perf_counter() - started_at
-        )
+        elapsed_seconds = time.perf_counter() - started_at
 
         report = build_report(
             args.suite,
             results,
             elapsed_seconds,
+            max_unsupported_claim_rate=args.max_unsupported_rate,
+            min_quote_verbatim_rate=args.min_quote_verbatim_rate,
         )
 
         report_path = Path.cwd() / "eval-report.json"
@@ -285,10 +304,7 @@ def main() -> int:
             )
         )
 
-        if (
-            args.fail_under_config
-            and report["status"] != "passed"
-        ):
+        if args.fail_under_config and report["status"] != "passed":
             return 1
 
         return 0

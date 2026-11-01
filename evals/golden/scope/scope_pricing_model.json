@@ -1,0 +1,20 @@
+{
+  "id": "scope-pricing-model-005",
+  "stage": "scope",
+  "description": "Scoping willingness to pay and contract terms for devops incident triage tooling.",
+  "brief": {
+    "problem": "Mean-time-to-resolution alert fatigue for engineering on-call teams",
+    "customer": "Scaleup engineering organizations with 50 to 500 engineers",
+    "geography": ["US", "EU"]
+  },
+  "document": "Enterprise incident response software typically contracts at $45 to $75 per monitored developer seat per month on annual commitments.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Enterprise incident response tools cost between $45 and $75 per developer seat per month.",
+    "quote": "Enterprise incident response software typically contracts at $45 to $75 per monitored developer seat per month on annual commitments.",
+    "stance": "supports",
+    "research_questions": [
+      "What are standard per-seat annual contract values for incident management platforms?"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "crosscheck-directional-signal-003",
+  "stage": "crosscheck",
+  "description": "Crosscheck: Single developer forum observation treated as directional signal rather than verified fact.",
+  "document": "A user on the Hacker News discussion thread noted that DatabaseX latency spikes whenever queries exceed 50 concurrent connections.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "DatabaseX experiences latency degradation under high concurrent connections.",
+    "quote": "A user on the Hacker News discussion thread noted that DatabaseX latency spikes whenever queries exceed 50 concurrent connections.",
+    "stance": "supports",
+    "derived_status": "directional"
+  }
+}

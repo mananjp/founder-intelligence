@@ -1,0 +1,21 @@
+{
+  "id": "plan-customer-pain-queries-006",
+  "stage": "plan",
+  "description": "Planning search queries targeting buyer complaints on review sites.",
+  "task": {
+    "query": "site:g2.com EHR software physician charting after hours burnout",
+    "budget_usd": 0.35,
+    "source_class": "reviews"
+  },
+  "document": "Over 70% of negative physician reviews for ambulatory EHR platforms cite excessive nighttime charting and clunky inbox workflows.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Over 70% of negative ambulatory EHR reviews cite excessive nighttime charting.",
+    "quote": "Over 70% of negative physician reviews for ambulatory EHR platforms cite excessive nighttime charting and clunky inbox workflows.",
+    "stance": "supports",
+    "search_task": {
+      "query_template": "ambulatory EHR physician reviews after hours charting",
+      "expected_domain": "g2.com"
+    }
+  }
+}

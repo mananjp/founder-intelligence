@@ -1,0 +1,11 @@
+{
+  "id": "extraction-contradiction-funding-007",
+  "description": "Seeded contradiction: Press headline claims $50M raised, but SEC Form D filing shows $12M total offering.",
+  "document": "According to the SEC Form D filed on August 12, 2024, total offering amount sold was $12,000,000 across 4 investors.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "TechCorp raised $50 million in its Series A financing round.",
+    "quote": "According to the SEC Form D filed on August 12, 2024, total offering amount sold was $12,000,000 across 4 investors.",
+    "stance": "contradicts"
+  }
+}
