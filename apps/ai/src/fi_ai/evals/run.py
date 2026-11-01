@@ -4,7 +4,7 @@ Run with:
 
     python -m fi_ai.evals.run --suite golden
 
-The first version of the harness evaluates deterministic golden fixtures.
+The harness evaluates deterministic golden fixtures and pipeline stages.
 It does not make external LLM calls.
 
 Metrics defined by the project Bible:
@@ -28,13 +28,22 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-# run.py:
-# repository/
-#   apps/ai/src/fi_ai/evals/run.py
-#
-# parents[5] points to the repository root.
-REPOSITORY_ROOT = Path(__file__).resolve().parents[5]
+from fi_ai.evidence.schemas import ClaimStatus
+from fi_ai.evidence.status import EvidenceRef, derive_claim_status
 
+
+def _find_repository_root() -> Path:
+    """Locate the repository root by walking up to .git or evals/golden."""
+    current = Path(__file__).resolve()
+    for parent in [current] + list(current.parents):
+        if (parent / ".git").exists() or (parent / "evals" / "golden").exists():
+            return parent
+        if (parent / "pyproject.toml").exists() and (parent / "evals").exists():
+            return parent
+    return current.parents[5]
+
+
+REPOSITORY_ROOT = _find_repository_root()
 GOLDEN_ROOT = REPOSITORY_ROOT / "evals" / "golden"
 
 
@@ -60,7 +69,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def evaluate_case(path: Path) -> CaseResult:
-    """Evaluate one deterministic golden extraction case."""
+    """Evaluate one deterministic golden case against pipeline stage logic."""
     try:
         case = load_json(path)
     except (OSError, json.JSONDecodeError, ValueError, TypeError) as exc:
@@ -93,6 +102,59 @@ def evaluate_case(path: Path) -> CaseResult:
 
     checks: dict[str, bool] = {}
 
+    # 1. Pipeline stage execution: crosscheck (derive_claim_status)
+    if "derived_status" in expected or "evidence" in case:
+        raw_evidence = case.get("evidence", [])
+        if not isinstance(raw_evidence, list):
+            return CaseResult(
+                case_id=case_id,
+                passed=False,
+                checks={},
+                error="Crosscheck cases must provide a list of evidence",
+            )
+
+        evidence_refs: list[EvidenceRef] = []
+        for e in raw_evidence:
+            if not isinstance(e, dict):
+                return CaseResult(
+                    case_id=case_id,
+                    passed=False,
+                    checks={},
+                    error="Evidence entries must be dictionaries",
+                )
+            evidence_refs.append(
+                EvidenceRef(
+                    evidence_id=str(e.get("evidence_id", "ev-1")),
+                    publisher=e.get("publisher"),
+                    source_type=str(e.get("source_type", "official_site")),
+                    stance=str(e.get("stance", "supports")),
+                    relevance=float(e.get("relevance", 0.7)),
+                    age_days=e.get("age_days"),
+                )
+            )
+
+        claim_origin = case.get("claim", {}).get("origin", "evidence")
+        claim_kind = case.get("claim", {}).get("kind", "fact")
+
+        actual_status = derive_claim_status(
+            origin=claim_origin,
+            evidence=evidence_refs,
+            kind=claim_kind,
+        )
+
+        expected_status = expected.get("derived_status")
+        if expected_status is not None:
+            checks["status_match"] = actual_status.value == expected_status
+
+        expected_has_contradiction = expected.get("has_contradiction")
+        if expected_has_contradiction is not None:
+            has_contradiction = (
+                any(e.stance == "contradicts" for e in evidence_refs)
+                or actual_status == ClaimStatus.CONFLICTING
+            )
+            checks["contradiction_detected"] = has_contradiction == expected_has_contradiction
+
+    # 2. Text / extraction verification
     expected_relevant = bool(expected.get("has_relevant_evidence", False))
 
     if expected_relevant:
@@ -103,24 +165,36 @@ def evaluate_case(path: Path) -> CaseResult:
                 case_id=case_id,
                 passed=False,
                 checks={},
-                error=("Relevant golden cases must provide a non-empty expected.quote"),
+                error="Relevant golden cases must provide a non-empty expected.quote",
             )
 
         # The golden quote must occur exactly in the source document.
         checks["quote_verbatim"] = expected_quote in document
 
         expected_stance = expected.get("stance")
-
         if expected_stance is not None:
             checks["stance_valid"] = expected_stance in {
                 "supports",
                 "contradicts",
                 "neutral",
             }
+            if expected_stance == "contradicts" and "contradiction_detected" not in checks:
+                checks["contradiction_detected"] = checks["quote_verbatim"]
 
     else:
-        expected_count = expected.get("evidence_count", 0)
+        # Irrelevant cases MUST explicitly specify evidence_count
+        if "evidence_count" not in expected:
+            return CaseResult(
+                case_id=case_id,
+                passed=False,
+                checks={},
+                error=(
+                    "Irrelevant cases (has_relevant_evidence=False) must "
+                    "explicitly provide expected.evidence_count"
+                ),
+            )
 
+        expected_count = expected["evidence_count"]
         checks["no_relevant_evidence"] = expected_count == 0
 
     passed = all(checks.values()) if checks else False
@@ -153,12 +227,7 @@ def discover_cases(suite: str) -> list[Path]:
 def calculate_metrics(
     results: list[CaseResult],
 ) -> dict[str, float | None]:
-    """Calculate metrics supported by the deterministic harness.
-
-    Some Bible metrics require actual research/model output and therefore
-    cannot be honestly measured by fixture validation alone.
-    """
-
+    """Calculate Bible §41 metrics supported by the harness."""
     quote_results = [
         result.checks["quote_verbatim"] for result in results if "quote_verbatim" in result.checks
     ]
@@ -166,17 +235,27 @@ def calculate_metrics(
     if quote_results:
         quote_verbatim_rate = sum(quote_results) / len(quote_results)
         unsupported_claim_rate = (len(quote_results) - sum(quote_results)) / len(quote_results)
+        citation_validity_rate = quote_verbatim_rate
     else:
         quote_verbatim_rate = None
         unsupported_claim_rate = None
+        citation_validity_rate = None
+
+    contradiction_results = [
+        result.checks["contradiction_detected"]
+        for result in results
+        if "contradiction_detected" in result.checks
+    ]
+
+    if contradiction_results:
+        contradiction_recall = sum(contradiction_results) / len(contradiction_results)
+    else:
+        contradiction_recall = None
 
     return {
-        # Quotes that are not verbatim substrings in source documents constitute unsupported claims (Bible §27, §41).
         "unsupported_claim_rate": unsupported_claim_rate,
-        "citation_validity_rate": None,
-        "contradiction_recall": None,
-        # This one can be checked deterministically against the snapshot
-        # contained in the golden fixture.
+        "citation_validity_rate": citation_validity_rate,
+        "contradiction_recall": contradiction_recall,
         "quote_verbatim_rate": quote_verbatim_rate,
     }
 
@@ -187,8 +266,10 @@ def build_report(
     elapsed_seconds: float,
     max_unsupported_claim_rate: float = 0.05,
     min_quote_verbatim_rate: float = 1.0,
+    min_contradiction_recall: float = 1.0,
+    min_citation_validity_rate: float = 1.0,
 ) -> dict[str, Any]:
-    """Build the structured evaluation report."""
+    """Build the structured evaluation report with threshold validation."""
     passed = sum(result.passed for result in results)
     failed = len(results) - passed
     metrics = calculate_metrics(results)
@@ -196,6 +277,8 @@ def build_report(
     threshold_violations: list[str] = []
     unsupported_rate = metrics.get("unsupported_claim_rate")
     verbatim_rate = metrics.get("quote_verbatim_rate")
+    contra_recall = metrics.get("contradiction_recall")
+    cit_validity = metrics.get("citation_validity_rate")
 
     if unsupported_rate is not None and unsupported_rate >= max_unsupported_claim_rate:
         threshold_violations.append(
@@ -205,6 +288,16 @@ def build_report(
     if verbatim_rate is not None and verbatim_rate < min_quote_verbatim_rate:
         threshold_violations.append(
             f"quote_verbatim_rate ({verbatim_rate:.2%}) < {min_quote_verbatim_rate:.2%}"
+        )
+
+    if contra_recall is not None and contra_recall < min_contradiction_recall:
+        threshold_violations.append(
+            f"contradiction_recall ({contra_recall:.2%}) < {min_contradiction_recall:.2%}"
+        )
+
+    if cit_validity is not None and cit_validity < min_citation_validity_rate:
+        threshold_violations.append(
+            f"citation_validity_rate ({cit_validity:.2%}) < {min_citation_validity_rate:.2%}"
         )
 
     status = "passed" if (failed == 0 and not threshold_violations) else "failed"
@@ -223,10 +316,7 @@ def build_report(
             "cost_per_run_usd": None,
             "latency_p50_ms": None,
             "latency_p95_ms": None,
-            "harness_elapsed_ms": round(
-                elapsed_seconds * 1000,
-                3,
-            ),
+            "harness_elapsed_ms": round(elapsed_seconds * 1000, 3),
         },
         "results": [
             {
@@ -268,6 +358,20 @@ def main() -> int:
         help="Minimum allowable quote verbatim rate (default: 1.0 or 100%)",
     )
 
+    parser.add_argument(
+        "--min-contradiction-recall",
+        type=float,
+        default=1.0,
+        help="Minimum allowable contradiction recall (default: 1.0 or 100%)",
+    )
+
+    parser.add_argument(
+        "--min-citation-validity-rate",
+        type=float,
+        default=1.0,
+        help="Minimum allowable citation validity rate (default: 1.0 or 100%)",
+    )
+
     args = parser.parse_args()
 
     started_at = time.perf_counter()
@@ -285,6 +389,8 @@ def main() -> int:
             elapsed_seconds,
             max_unsupported_claim_rate=args.max_unsupported_rate,
             min_quote_verbatim_rate=args.min_quote_verbatim_rate,
+            min_contradiction_recall=args.min_contradiction_recall,
+            min_citation_validity_rate=args.min_citation_validity_rate,
         )
 
         report_path = Path.cwd() / "eval-report.json"

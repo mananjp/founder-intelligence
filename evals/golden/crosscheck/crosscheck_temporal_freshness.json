@@ -2,12 +2,27 @@
   "id": "crosscheck-temporal-freshness-005",
   "stage": "crosscheck",
   "description": "Crosscheck: High-freshness primary announcement within 30 days qualifies as active evidence.",
+  "claim": {
+    "origin": "evidence",
+    "kind": "fact"
+  },
+  "evidence": [
+    {
+      "evidence_id": "ev-crosscheck-005",
+      "publisher": "Engineering Blog",
+      "source_type": "official_site",
+      "stance": "supports",
+      "relevance": 0.92,
+      "age_days": 16
+    }
+  ],
   "document": "In a blog post published October 15, 2026, the team announced general availability of their multi-region vector indexing engine.",
   "expected": {
     "has_relevant_evidence": true,
     "claim_text": "The multi-region vector indexing engine reached general availability in October 2026.",
     "quote": "In a blog post published October 15, 2026, the team announced general availability of their multi-region vector indexing engine.",
     "stance": "supports",
-    "is_fresh": true
+    "derived_status": "verified",
+    "has_contradiction": false
   }
 }

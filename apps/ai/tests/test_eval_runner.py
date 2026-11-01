@@ -42,10 +42,11 @@ def test_suite_has_contradiction_and_irrelevant(suite_name: str):
 
     assert all(r.passed for r in results)
 
-    # Must contain at least one seeded contradiction (stance == contradicts)
+    # Must contain at least one seeded contradiction
     has_contradiction = any(
-        r.checks.get("stance_valid") is True and "contradicts" in p.read_text(encoding="utf-8")
+        r.checks.get("contradiction_detected") is True or r.checks.get("stance_valid") is True
         for p, r in zip(cases, results, strict=False)
+        if "contradict" in p.read_text(encoding="utf-8")
     )
     assert has_contradiction, f"Suite {suite_name} must contain a seeded contradiction"
 
@@ -54,50 +55,70 @@ def test_suite_has_contradiction_and_irrelevant(suite_name: str):
     assert has_irrelevant, f"Suite {suite_name} must contain an irrelevant-document case"
 
 
-def test_basic_golden_case_passes():
+def test_crosscheck_asserts_real_stage_output():
+    """Verify crosscheck suite exercises derive_claim_status pipeline stage."""
     from fi_ai.evals.run import evaluate_case
 
-    path = GOLDEN_ROOT / "extraction" / "basic.json"
-
+    path = GOLDEN_ROOT / "crosscheck" / "crosscheck_verified_primary.json"
     result = evaluate_case(path)
 
     assert result.passed is True
-    assert result.checks["quote_verbatim"] is True
+    assert result.checks["status_match"] is True
+    assert result.checks["contradiction_detected"] is True
+
+    path_contra = GOLDEN_ROOT / "crosscheck" / "crosscheck_contradiction_pricing.json"
+    result_contra = evaluate_case(path_contra)
+
+    assert result_contra.passed is True
+    assert result_contra.checks["status_match"] is True
+    assert result_contra.checks["contradiction_detected"] is True
 
 
-def test_irrelevant_golden_case_passes():
+def test_missing_evidence_count_raises_error(tmp_path):
+    """Missing evidence_count in irrelevant case must produce an explicit error."""
     from fi_ai.evals.run import evaluate_case
 
-    path = GOLDEN_ROOT / "extraction" / "irrelevant.json"
+    bad_case = tmp_path / "bad.json"
+    bad_case.write_text(
+        json.dumps(
+            {
+                "id": "bad-case-001",
+                "document": "Some text",
+                "expected": {
+                    "has_relevant_evidence": False
+                    # missing evidence_count
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
 
-    result = evaluate_case(path)
-
-    assert result.passed is True
-    assert result.checks["no_relevant_evidence"] is True
-
-
-def test_contradiction_golden_case_passes():
-    from fi_ai.evals.run import evaluate_case
-
-    path = GOLDEN_ROOT / "extraction" / "contradiction.json"
-
-    result = evaluate_case(path)
-
-    assert result.passed is True
-    assert result.checks["stance_valid"] is True
+    result = evaluate_case(bad_case)
+    assert result.passed is False
+    assert "explicitly provide expected.evidence_count" in (result.error or "")
 
 
 def test_calculate_metrics_values():
     from fi_ai.evals.run import CaseResult, calculate_metrics
 
-    # Perfect verbatim
+    # Perfect verbatim + contradiction recall
     perfect_results = [
-        CaseResult(case_id="1", passed=True, checks={"quote_verbatim": True}),
-        CaseResult(case_id="2", passed=True, checks={"quote_verbatim": True}),
+        CaseResult(
+            case_id="1",
+            passed=True,
+            checks={"quote_verbatim": True, "contradiction_detected": True},
+        ),
+        CaseResult(
+            case_id="2",
+            passed=True,
+            checks={"quote_verbatim": True, "contradiction_detected": True},
+        ),
     ]
     metrics = calculate_metrics(perfect_results)
     assert metrics["quote_verbatim_rate"] == 1.0
     assert metrics["unsupported_claim_rate"] == 0.0
+    assert metrics["contradiction_recall"] == 1.0
+    assert metrics["citation_validity_rate"] == 1.0
 
     # With non-verbatim quote
     flawed_results = [
@@ -107,6 +128,7 @@ def test_calculate_metrics_values():
     metrics_flawed = calculate_metrics(flawed_results)
     assert metrics_flawed["quote_verbatim_rate"] == 0.5
     assert metrics_flawed["unsupported_claim_rate"] == 0.5
+    assert metrics_flawed["citation_validity_rate"] == 0.5
 
 
 def test_build_report_threshold_failure():
@@ -170,5 +192,7 @@ def test_eval_runner_creates_report(
     assert report["cases"]["failed"] == 0
     assert report["metrics"]["unsupported_claim_rate"] == 0.0
     assert report["metrics"]["quote_verbatim_rate"] == 1.0
+    assert report["metrics"]["contradiction_recall"] == 1.0
+    assert report["metrics"]["citation_validity_rate"] == 1.0
 
     assert '"status": "passed"' in output
