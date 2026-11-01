@@ -19,6 +19,10 @@ const expectedRoutes = [
     "get",
     "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs/{runId}/events",
   ],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview"],
+  ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/turns"],
+  ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/finalize"],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/brief"],
 ] as const;
 const protectedRoutes = expectedRoutes.filter(([, path]) =>
   path.startsWith("/v1/"),
@@ -79,6 +83,20 @@ describe("OpenAPI document", () => {
         "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs",
       ),
     ).toMatchObject({ $ref: "#/components/schemas/StartResearchRun" });
+    expect(
+      requestBodySchema(
+        "post",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/turns",
+      ),
+    ).toMatchObject({ $ref: "#/components/schemas/PostInterviewTurnBody" });
+    expect(
+      requestBodySchema(
+        "post",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/finalize",
+      ),
+    ).toMatchObject({
+      $ref: "#/components/schemas/FinalizeInterviewBriefBody",
+    });
   });
 
   it("includes schemas and media types for successful responses", () => {
@@ -95,6 +113,22 @@ describe("OpenAPI document", () => {
         "post",
         "/v1/workspaces/{workspaceId}/ideas/{ideaId}/research/runs",
         "202",
+      ],
+      ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview", "200"],
+      [
+        "post",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/turns",
+        "201",
+      ],
+      [
+        "post",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/finalize",
+        "201",
+      ],
+      [
+        "get",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/brief",
+        "200",
       ],
     ] as const;
 
