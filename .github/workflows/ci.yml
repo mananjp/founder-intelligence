@@ -1,4 +1,4 @@
-name: ci
+﻿name: ci
 on:
   pull_request:
   push:
@@ -35,11 +35,11 @@ jobs:
         env:
           POSTGRES_USER: fi
           POSTGRES_PASSWORD: fi
-          POSTGRES_DB: fi
+          POSTGRES_DB: fi_test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U fi -d fi"
+          --health-cmd "pg_isready -U fi -d fi_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
@@ -54,9 +54,9 @@ jobs:
           --health-retries 10
     defaults: { run: { working-directory: apps/ai } }
     env:
-      DATABASE_URL: postgresql://fi:fi@localhost:5432/fi
+      DATABASE_URL: postgresql://fi:fi@localhost:5432/fi_test
       REDIS_URL: redis://localhost:6379/0
-      TEST_DATABASE_URL: postgresql://fi:fi@localhost:5432/fi
+      TEST_DATABASE_URL: postgresql://fi:fi@localhost:5432/fi_test
       TEST_REDIS_URL: redis://localhost:6379/0
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
         run: |
           for migration in db/migrations/*.sql; do
             echo "Applying ${migration}"
-            PGPASSWORD=fi psql "postgresql://fi:fi@localhost:5432/fi" -v ON_ERROR_STOP=1 -f "${migration}"
+            PGPASSWORD=fi psql "postgresql://fi:fi@localhost:5432/fi_test" -v ON_ERROR_STOP=1 -f "${migration}"
           done
       - run: uv run ruff check .
       - name: Run integration tests
