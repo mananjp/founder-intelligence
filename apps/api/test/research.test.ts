@@ -15,6 +15,7 @@ import {
   publishRunEvent,
   getStreamHistory,
   parseStreamFields,
+  compareStreamIds,
 } from "../src/lib/sse.js";
 import type { RunEvent } from "@fi/contracts";
 
@@ -160,7 +161,6 @@ describe("Research Runs Lifecycle & Durable SSE", () => {
       expect(xaddSpy).toHaveBeenCalledWith(
         `run:${runId}:events`,
         "MAXLEN",
-        "~",
         "1000",
         "*",
         "type",
@@ -203,6 +203,41 @@ describe("Research Runs Lifecycle & Durable SSE", () => {
       expect(missed.length).toBe(1);
       expect(missed[0].id).toBe("102-0");
       expect(missed[0].event.stage).toBe("planning");
+    });
+
+    it("uses an exclusive XRANGE bound so trimmed ids still replay", async () => {
+      const event: RunEvent = { type: "stage.completed", stage: "scoping" };
+      const xrangeSpy = vi
+        .spyOn(redis, "xrange")
+        .mockResolvedValue([["500-0", ["data", JSON.stringify(event)]]] as any);
+
+      const missed = await getStreamHistory(runId, "400-0");
+
+      expect(xrangeSpy).toHaveBeenCalledWith(
+        `run:${runId}:events`,
+        "(400-0",
+        "+",
+      );
+      expect(missed.map((item) => item.id)).toEqual(["500-0"]);
+    });
+
+    it("falls back to full history for a malformed Last-Event-ID", async () => {
+      const event: RunEvent = { type: "stage.started", stage: "scoping" };
+      const xrangeSpy = vi
+        .spyOn(redis, "xrange")
+        .mockResolvedValue([["500-0", ["data", JSON.stringify(event)]]] as any);
+
+      const missed = await getStreamHistory(runId, "not-an-id");
+
+      expect(xrangeSpy).toHaveBeenCalledWith(`run:${runId}:events`, "-", "+");
+      expect(missed.length).toBe(1);
+    });
+
+    it("orders stream ids by milliseconds then sequence", () => {
+      expect(compareStreamIds("100-0", "101-0")).toBeLessThan(0);
+      expect(compareStreamIds("100-9", "100-10")).toBeLessThan(0);
+      expect(compareStreamIds("101-0", "101-0")).toBe(0);
+      expect(compareStreamIds("102-0", "101-9")).toBeGreaterThan(0);
     });
   });
 

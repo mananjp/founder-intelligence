@@ -47,6 +47,32 @@ export function parseStreamFields(fields: string[]): RunEvent {
   return dict as unknown as RunEvent;
 }
 
+const STREAM_ID_PATTERN = /^\d+-\d+$/;
+
+/** Returns true for a well-formed Redis stream id (`ms-seq`). */
+export function isStreamId(value: string | undefined): value is string {
+  return typeof value === "string" && STREAM_ID_PATTERN.test(value);
+}
+
+/**
+ * Compares two Redis stream ids. Returns a negative number when `a < b`, zero
+ * when equal, and a positive number when `a > b`. Non-numeric ids fall back to
+ * lexicographic order so callers never throw on unexpected input.
+ */
+export function compareStreamIds(a: string, b: string): number {
+  if (!isStreamId(a) || !isStreamId(b)) {
+    return a < b ? -1 : a > b ? 1 : 0;
+  }
+  const aDash = a.indexOf("-");
+  const bDash = b.indexOf("-");
+  const aMs = Number(a.slice(0, aDash));
+  const aSeq = Number(a.slice(aDash + 1));
+  const bMs = Number(b.slice(0, bDash));
+  const bSeq = Number(b.slice(bDash + 1));
+  if (aMs !== bMs) return aMs - bMs;
+  return aSeq - bSeq;
+}
+
 /**
  * Publishes a research run progress event:
  * 1. Appends to Redis stream `run:{runId}:events` for durable replay via Last-Event-ID.
@@ -69,7 +95,6 @@ export async function publishRunEvent(
     const addedId = await redis.xadd(
       streamKey,
       "MAXLEN",
-      "~",
       "1000",
       "*",
       "type",
@@ -98,27 +123,28 @@ export async function publishRunEvent(
 }
 
 /**
- * Reads historical events from the Redis stream, optionally starting after `fromId`.
+ * Reads historical events from the Redis stream, optionally starting strictly
+ * after `fromId`. Uses an exclusive XRANGE bound so a client that falls off the
+ * trimmed stream (MAXLEN) still resumes from the oldest retained event instead
+ * of silently replaying nothing. Non-numeric ids replay the full history.
  */
 export async function getStreamHistory(
   runId: string,
   fromId?: string,
 ): Promise<StreamEventItem[]> {
   const streamKey = getRunStreamKey(runId);
+  const start = isStreamId(fromId) ? `(${fromId}` : "-";
   try {
-    const rawEntries = (await redis.xrange(streamKey, "-", "+")) as Array<
+    const rawEntries = (await redis.xrange(streamKey, start, "+")) as Array<
       [string, string[]]
     >;
     if (!Array.isArray(rawEntries)) return [];
 
     const items: StreamEventItem[] = [];
-    let skip = Boolean(fromId);
 
     for (const [id, fields] of rawEntries) {
-      if (skip) {
-        if (id === fromId) {
-          skip = false;
-        }
+      // Defensive filter for clients/fakes that ignore the exclusive bound.
+      if (isStreamId(fromId) && compareStreamIds(id, fromId) <= 0) {
         continue;
       }
       items.push({
@@ -154,64 +180,125 @@ export async function streamRunEvents(
   }
 
   let lastSentId = options?.lastEventId;
+  if (lastSentId === "") lastSentId = undefined;
 
-  // 1. Replay missed historical events from Redis stream
-  if (lastSentId !== undefined && lastSentId !== "") {
-    const history = await getStreamHistory(runId, lastSentId);
-    for (const item of history) {
-      sendSSE(res, item.id, item.event);
-      lastSentId = item.id;
-    }
-  } else {
-    const history = await getStreamHistory(runId);
-    for (const item of history) {
-      sendSSE(res, item.id, item.event);
-      lastSentId = item.id;
-    }
-  }
+  const channel = getRunChannelKey(runId);
 
-  // 2. Subscribe to live events via Redis pub/sub
+  // Subscribe BEFORE reading history so events published during the replay
+  // window are buffered instead of lost between the XRANGE and SUBSCRIBE.
   const sub = new IORedis(env.REDIS_URL, { maxRetriesPerRequest: null });
   sub.on("error", (err) => {
     logger.warn({ err, runId }, "SSE Redis subscriber error");
   });
 
-  const channel = getRunChannelKey(runId);
+  const sentIds = new Set<string>();
+  let closed = false;
+  let replayComplete = false;
+  const buffered: StreamEventItem[] = [];
+  let pingInterval: ReturnType<typeof setInterval> | undefined;
+
+  const teardown = () => {
+    if (closed) return;
+    closed = true;
+    if (pingInterval) {
+      clearInterval(pingInterval);
+      pingInterval = undefined;
+    }
+    void sub.unsubscribe(channel).catch(() => {});
+    void sub.quit().catch(() => {});
+  };
+
+  const flush = (item: StreamEventItem) => {
+    if (closed || sentIds.has(item.id)) return;
+    if (
+      isStreamId(lastSentId) &&
+      isStreamId(item.id) &&
+      compareStreamIds(item.id, lastSentId) <= 0
+    ) {
+      return;
+    }
+    sentIds.add(item.id);
+    lastSentId = item.id;
+    sendSSE(res, item.id, item.event);
+
+    // A finished run is terminal: release the subscriber and close the stream
+    // so clients do not keep a dangling connection (and Redis client) forever.
+    if (item.event?.type === "run.finished") {
+      teardown();
+      if (!res.writableEnded) {
+        res.end();
+      }
+    }
+  };
+
+  sub.on("message", (_ch, message) => {
+    const item = parsePubSubMessage(message);
+    if (!item) {
+      logger.warn({ runId }, "Ignoring malformed SSE pub/sub message");
+      return;
+    }
+    if (!replayComplete) {
+      buffered.push(item);
+      return;
+    }
+    flush(item);
+  });
+
+  res.on("close", teardown);
+
+  let subscribeFailed = false;
   try {
     await sub.subscribe(channel);
   } catch (err) {
-    logger.warn({ err, runId }, "Failed to subscribe to run channel");
+    subscribeFailed = true;
+    logger.error({ err, runId }, "Failed to subscribe to run channel");
   }
 
-  sub.on("message", (_ch, message) => {
-    try {
-      const parsed = JSON.parse(message);
-      if (parsed && typeof parsed === "object") {
-        const id = parsed.id ?? `${Date.now()}-0`;
-        const eventData = parsed.event ?? parsed;
-        if (!lastSentId || id !== lastSentId) {
-          sendSSE(res, id, eventData);
-          lastSentId = id;
-        }
-      }
-    } catch {
-      res.write(`data: ${message}\n\n`);
-    }
-  });
+  // 1. Replay missed historical events from Redis stream
+  const history = await getStreamHistory(runId, lastSentId);
+  for (const item of history) {
+    flush(item);
+  }
 
-  // 3. Heartbeat keep-alive ping every 15 seconds
-  const pingInterval = setInterval(() => {
+  if (!closed) {
+    replayComplete = true;
+    buffered.sort((a, b) => compareStreamIds(a.id, b.id));
+    for (const item of buffered.splice(0)) {
+      flush(item);
+    }
+  }
+
+  if (closed) return;
+
+  if (subscribeFailed) {
+    teardown();
+    if (!res.writableEnded) {
+      res.end();
+    }
+    return;
+  }
+
+  // 2. Heartbeat keep-alive ping every 15 seconds
+  pingInterval = setInterval(() => {
     if (!res.writableEnded) {
       res.write(": ping\n\n");
     }
   }, 15000);
+}
 
-  // 4. Cleanup on connection close
-  res.on("close", () => {
-    clearInterval(pingInterval);
-    void sub.unsubscribe(channel).catch(() => {});
-    void sub.quit().catch(() => {});
-  });
+/** Parses a pub/sub payload published by `publishRunEvent`. */
+function parsePubSubMessage(message: string): StreamEventItem | null {
+  try {
+    const parsed = JSON.parse(message);
+    if (!parsed || typeof parsed !== "object") return null;
+    const id =
+      typeof parsed.id === "string" ? parsed.id : `${Date.now()}-0`;
+    const event = (parsed.event ?? parsed) as RunEvent;
+    if (!event || typeof event !== "object") return null;
+    return { id, event };
+  } catch {
+    return null;
+  }
 }
 
 function sendSSE(res: Response, id: string, event: RunEvent): void {
