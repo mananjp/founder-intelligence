@@ -41,6 +41,9 @@ src = ["src", "tests"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+markers = [
+  "integration: tests that require live PostgreSQL and Redis services",
+]
 addopts = [
   "--cov=fi_ai",
   "--cov-report=term-missing",
