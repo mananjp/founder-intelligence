@@ -1,4 +1,6 @@
 """structlog config, Langfuse tracing, cost accounting."""
+from __future__ import annotations
+
 import structlog
 
 

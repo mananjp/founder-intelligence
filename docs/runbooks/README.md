@@ -11,3 +11,4 @@ This directory contains verified standard operating procedures (SOPs) and runboo
 - [Database backup & restore](./db-restore.md): Routine snapshot procedures and disaster recovery restore steps for PostgreSQL 16 + pgvector.
 - [Cost & token spike mitigation](./cost-spike.md): Investigating runaway token usage, enforcing tier ceilings, and autoscaling controls.
 - [Rate limiting operational guidance](./rate-limiting.md): Redis rate limiter store, thresholds, fail-open behavior, and tuning.
+- [AI service Prometheus metrics](./ai-metrics.md): `/metrics` endpoint, metric names, labels, and example PromQL queries.
