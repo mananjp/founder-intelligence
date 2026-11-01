@@ -12,3 +12,4 @@ This directory contains verified standard operating procedures (SOPs) and runboo
 - [Cost & token spike mitigation](./cost-spike.md): Investigating runaway token usage, enforcing tier ceilings, and autoscaling controls.
 - [Rate limiting operational guidance](./rate-limiting.md): Redis rate limiter store, thresholds, fail-open behavior, and tuning.
 - [AI service Prometheus metrics](./ai-metrics.md): `/metrics` endpoint, metric names, labels, and example PromQL queries.
+- [Render staging deployment](./staging-deploy.md): GHCR image publishing, Render deploy hooks, required secrets, environment-variable matrix, and readiness smoke tests.
