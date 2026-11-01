@@ -4,8 +4,11 @@ Run with:
 
     python -m fi_ai.evals.run --suite golden
 
-The harness evaluates deterministic golden fixtures and pipeline stages.
-It does not make external LLM calls.
+The harness evaluates deterministic golden fixtures and the crosscheck stage
+logic. It does not make external LLM calls. Where a Bible metric cannot be
+measured without real pipeline output, the report stays null rather than
+inventing a value; citation_validity_rate currently proxies quote verbatim
+rate because no citation-to-snapshot link is recorded in the fixtures.
 
 Metrics defined by the project Bible:
 
@@ -155,7 +158,14 @@ def evaluate_case(path: Path) -> CaseResult:
             checks["contradiction_detected"] = has_contradiction == expected_has_contradiction
 
     # 2. Text / extraction verification
-    expected_relevant = bool(expected.get("has_relevant_evidence", False))
+    expected_relevant = expected.get("has_relevant_evidence")
+    if not isinstance(expected_relevant, bool):
+        return CaseResult(
+            case_id=case_id,
+            passed=False,
+            checks={},
+            error="expected.has_relevant_evidence must be a boolean",
+        )
 
     if expected_relevant:
         expected_quote = expected.get("quote")
@@ -348,28 +358,28 @@ def main() -> int:
         "--max-unsupported-rate",
         type=float,
         default=0.05,
-        help="Maximum allowable unsupported claim rate (default: 0.05 or 5%)",
+        help="Maximum allowable unsupported claim rate (default: 0.05 or 5%%)",
     )
 
     parser.add_argument(
         "--min-quote-verbatim-rate",
         type=float,
         default=1.0,
-        help="Minimum allowable quote verbatim rate (default: 1.0 or 100%)",
+        help="Minimum allowable quote verbatim rate (default: 1.0 or 100%%)",
     )
 
     parser.add_argument(
         "--min-contradiction-recall",
         type=float,
         default=1.0,
-        help="Minimum allowable contradiction recall (default: 1.0 or 100%)",
+        help="Minimum allowable contradiction recall (default: 1.0 or 100%%)",
     )
 
     parser.add_argument(
         "--min-citation-validity-rate",
         type=float,
         default=1.0,
-        help="Minimum allowable citation validity rate (default: 1.0 or 100%)",
+        help="Minimum allowable citation validity rate (default: 1.0 or 100%%)",
     )
 
     args = parser.parse_args()
