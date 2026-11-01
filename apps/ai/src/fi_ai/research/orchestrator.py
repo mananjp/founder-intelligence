@@ -7,10 +7,12 @@ Every stage must be idempotent: re-running a stage for the same run_id must not 
 from __future__ import annotations
 
 from collections.abc import Callable
+from time import perf_counter
 from typing import Protocol
 
 import structlog
 
+from fi_ai.metrics import observe_stage_duration, record_budget_exceeded, record_run_state
 from fi_ai.research.state import TERMINAL, RunState, next_state
 
 log = structlog.get_logger()
@@ -71,17 +73,23 @@ class Orchestrator:
             if state in TERMINAL:
                 break
             if self.ctx.over_budget():
+                record_budget_exceeded()
                 state = RunState.PARTIAL
                 break
             self.ctx.publish({"type": "stage.started", "stage": state.value})
+            stage = state
+            started_at = perf_counter()
             try:
-                stages[state](self.ctx)
+                stages[stage](self.ctx)
             except Exception as exc:
-                log.exception("stage.failed", stage=state.value)
-                self.ctx.publish({"type": "stage.failed", "stage": state.value, "error": str(exc)})
+                log.exception("stage.failed", stage=stage.value)
+                self.ctx.publish({"type": "stage.failed", "stage": stage.value, "error": str(exc)})
                 state = RunState.FAILED
                 break
+            finally:
+                observe_stage_duration(stage.value, perf_counter() - started_at)
             self.ctx.publish({"type": "stage.completed", "stage": state.value})
             # TODO: persist state + checkpoint to research_runs
+        record_run_state(state.value)
         self.ctx.publish({"type": "run.finished", "state": state.value})
         return state

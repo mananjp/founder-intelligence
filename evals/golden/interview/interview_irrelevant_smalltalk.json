@@ -1,0 +1,14 @@
+{
+  "id": "interview-irrelevant-smalltalk-008",
+  "stage": "interview",
+  "description": "Irrelevant document: Founder discusses traffic delays and coffee preferences with zero business relevance.",
+  "turn": {
+    "role": "founder",
+    "turn_index": 8
+  },
+  "document": "Founder: Sorry for the one minute delay joining the Zoom, the morning highway traffic was pretty bad and I was grabbing an espresso downstairs.",
+  "expected": {
+    "has_relevant_evidence": false,
+    "evidence_count": 0
+  }
+}

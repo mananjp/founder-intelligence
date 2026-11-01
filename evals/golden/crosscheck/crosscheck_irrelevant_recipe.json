@@ -1,0 +1,17 @@
+{
+  "id": "crosscheck-irrelevant-recipe-008",
+  "stage": "crosscheck",
+  "description": "Irrelevant document: Baking recipe text contains zero market claims or crosscheck entities.",
+  "claim": {
+    "origin": "evidence",
+    "kind": "fact"
+  },
+  "evidence": [],
+  "document": "Whisk the organic whole milk and two beaten eggs into the dry flour mixture until smooth, taking care not to overmix.",
+  "expected": {
+    "has_relevant_evidence": false,
+    "evidence_count": 0,
+    "derived_status": "unverified",
+    "has_contradiction": false
+  }
+}

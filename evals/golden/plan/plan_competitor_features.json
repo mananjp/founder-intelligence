@@ -1,0 +1,21 @@
+{
+  "id": "plan-competitor-features-002",
+  "stage": "plan",
+  "description": "Planning query tasks to discover AI code review tool features.",
+  "task": {
+    "query": "automated code review pull request AST diff support",
+    "budget_usd": 0.40,
+    "source_class": "product_docs"
+  },
+  "document": "GitHub Copilot Enterprise includes semantic pull request summaries and inline code review suggestions directly in the GitHub web pull request diff view.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "GitHub Copilot Enterprise provides semantic PR summaries in web diff view.",
+    "quote": "GitHub Copilot Enterprise includes semantic pull request summaries and inline code review suggestions directly in the GitHub web pull request diff view.",
+    "stance": "supports",
+    "search_task": {
+      "query_template": "GitHub Copilot Enterprise pull request diff review features",
+      "expected_domain": "docs.github.com"
+    }
+  }
+}

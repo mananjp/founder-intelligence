@@ -17,6 +17,7 @@ import { internalRouter } from "./modules/internal/internal.routes.js";
 import { workspacesRouter } from "./modules/workspaces/workspaces.routes.js";
 import { ideasRouter } from "./modules/ideas/ideas.routes.js";
 import { researchRouter } from "./modules/research/research.routes.js";
+import { interviewRouter } from "./modules/interview/interview.routes.js";
 import { docsRouter } from "./openapi/docs.js";
 
 export function buildApp() {
@@ -46,7 +47,8 @@ export function buildApp() {
   v1.use("/workspaces", workspacesRouter);
   v1.use("/workspaces/:workspaceId/ideas", ideasRouter);
   v1.use("/workspaces/:workspaceId/ideas/:ideaId/research", researchRouter);
-  // TODO(modules): interview, evidence, competitors, customers, scorecard, assumptions,
+  v1.use("/workspaces/:workspaceId/ideas/:ideaId/interview", interviewRouter);
+  // TODO(modules): evidence, competitors, customers, scorecard, assumptions,
   // experiments, decisions, copilot, radar, reports, billing, notifications
   app.use("/v1", v1);
 

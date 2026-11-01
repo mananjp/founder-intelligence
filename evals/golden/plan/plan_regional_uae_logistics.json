@@ -1,0 +1,21 @@
+{
+  "id": "plan-regional-uae-logistics-003",
+  "stage": "plan",
+  "description": "Planning geography-aware search queries targeting UAE customs clearance APIs.",
+  "task": {
+    "query": "Dubai Customs Mirsal 2 integration technical documentation",
+    "budget_usd": 0.60,
+    "source_class": "government"
+  },
+  "document": "Dubai Customs provides automated declaration filings through the Mirsal 2 web service interface requiring a registered digital certificate.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Dubai Customs offers automated declaration filings via the Mirsal 2 web service interface.",
+    "quote": "Dubai Customs provides automated declaration filings through the Mirsal 2 web service interface requiring a registered digital certificate.",
+    "stance": "supports",
+    "search_task": {
+      "query_template": "Dubai Customs Mirsal 2 API documentation",
+      "expected_domain": "dubaicustoms.gov.ae"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "id": "scope-customer-icp-hvac-003",
+  "stage": "scope",
+  "description": "Scoping target customer parameters for commercial HVAC dispatch automation.",
+  "brief": {
+    "problem": "Dispatcher burnout and high customer response latency",
+    "customer": "Commercial HVAC contractors with 10 to 50 field technicians",
+    "geography": ["US"]
+  },
+  "document": "Over 68% of regional commercial HVAC service providers with 10 to 50 technicians rely on manual dispatcher phone queues and legacy ERP schedules.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Over 68% of regional commercial HVAC providers with 10-50 technicians rely on manual phone dispatch.",
+    "quote": "Over 68% of regional commercial HVAC service providers with 10 to 50 technicians rely on manual dispatcher phone queues and legacy ERP schedules.",
+    "stance": "supports",
+    "research_questions": [
+      "What percentage of mid-sized commercial HVAC contractors currently use automated dispatch?"
+    ]
+  }
+}

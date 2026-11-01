@@ -1,0 +1,21 @@
+{
+  "id": "plan-sec-filings-margin-005",
+  "stage": "plan",
+  "description": "Planning SEC 10-K search queries for public cloud infrastructure gross margins.",
+  "task": {
+    "query": "Datadog 10-K gross profit margin subscription revenue",
+    "budget_usd": 0.40,
+    "source_class": "filing"
+  },
+  "document": "In its 2024 annual report, Datadog reported GAAP gross profit margin of 81.2% for the fiscal year ended December 31, 2024.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Datadog achieved an 81.2% GAAP gross margin in fiscal year 2024.",
+    "quote": "In its 2024 annual report, Datadog reported GAAP gross profit margin of 81.2% for the fiscal year ended December 31, 2024.",
+    "stance": "supports",
+    "search_task": {
+      "query_template": "Datadog 10-K fiscal 2024 GAAP gross margin",
+      "expected_domain": "sec.gov"
+    }
+  }
+}

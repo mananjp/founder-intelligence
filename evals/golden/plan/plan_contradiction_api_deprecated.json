@@ -1,0 +1,21 @@
+{
+  "id": "plan-contradiction-api-deprecated-007",
+  "stage": "plan",
+  "description": "Seeded contradiction: Research plan anticipates live public Twitter v1.1 API, but official announcement marks it sunset.",
+  "task": {
+    "query": "Twitter API v1.1 free search endpoint status",
+    "budget_usd": 0.30,
+    "source_class": "official_site"
+  },
+  "document": "The Twitter API v1.1 standard search endpoint has been deprecated and permanently retired in favor of the paid v2 tiered access.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Twitter v1.1 search endpoint is available for free tier data fetching.",
+    "quote": "The Twitter API v1.1 standard search endpoint has been deprecated and permanently retired in favor of the paid v2 tiered access.",
+    "stance": "contradicts",
+    "search_task": {
+      "query_template": "Twitter developer v1.1 search deprecation retirement",
+      "expected_domain": "developer.x.com"
+    }
+  }
+}

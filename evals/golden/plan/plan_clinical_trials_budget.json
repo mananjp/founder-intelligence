@@ -1,0 +1,21 @@
+{
+  "id": "plan-clinical-trials-budget-004",
+  "stage": "plan",
+  "description": "Planning patient recruitment cost queries across clinical trial registries.",
+  "task": {
+    "query": "oncology clinical trial average patient recruitment cost FDA",
+    "budget_usd": 0.50,
+    "source_class": "academic"
+  },
+  "document": "Phase 2 oncology trials experience average patient recruitment and retention costs exceeding $6,500 per enrolled subject.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Phase 2 oncology trial patient recruitment costs exceed $6,500 per subject.",
+    "quote": "Phase 2 oncology trials experience average patient recruitment and retention costs exceeding $6,500 per enrolled subject.",
+    "stance": "supports",
+    "search_task": {
+      "query_template": "Phase 2 oncology patient recruitment cost per subject",
+      "expected_domain": "ncbi.nlm.nih.gov"
+    }
+  }
+}

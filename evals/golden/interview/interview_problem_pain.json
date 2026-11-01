@@ -1,0 +1,19 @@
+{
+  "id": "interview-problem-pain-001",
+  "stage": "interview",
+  "description": "Founder interview turn extracts precise customer problem and workflow failure mode.",
+  "turn": {
+    "role": "founder",
+    "turn_index": 1
+  },
+  "document": "Founder: The biggest friction is that hospital procurement teams wait an average of 45 days just to get vendor security questionnaires reviewed and signed off.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Hospital procurement teams wait 45 days on average for vendor security questionnaire reviews.",
+    "quote": "hospital procurement teams wait an average of 45 days just to get vendor security questionnaires reviewed and signed off.",
+    "stance": "supports",
+    "extracted_variables": {
+      "problem": "45-day delay in hospital procurement vendor security questionnaire signoffs"
+    }
+  }
+}

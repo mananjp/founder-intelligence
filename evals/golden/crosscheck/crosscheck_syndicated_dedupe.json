@@ -1,0 +1,36 @@
+{
+  "id": "crosscheck-syndicated-dedupe-004",
+  "stage": "crosscheck",
+  "description": "Crosscheck: Syndicated PR Newswire republishing on Yahoo Finance detected as single origin publisher.",
+  "claim": {
+    "origin": "evidence",
+    "kind": "fact"
+  },
+  "evidence": [
+    {
+      "evidence_id": "ev-crosscheck-004a",
+      "publisher": "PR Newswire",
+      "source_type": "press_release",
+      "stance": "supports",
+      "relevance": 0.8,
+      "age_days": 20
+    },
+    {
+      "evidence_id": "ev-crosscheck-004b",
+      "publisher": "PR Newswire",
+      "source_type": "press_release",
+      "stance": "supports",
+      "relevance": 0.8,
+      "age_days": 20
+    }
+  ],
+  "document": "PR Newswire via Yahoo Finance: AI Workflow startup Promptify announced a $15 million Series A led by Matrix Partners.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "Promptify raised a $15 million Series A led by Matrix Partners.",
+    "quote": "PR Newswire via Yahoo Finance: AI Workflow startup Promptify announced a $15 million Series A led by Matrix Partners.",
+    "stance": "supports",
+    "derived_status": "directional",
+    "has_contradiction": false
+  }
+}

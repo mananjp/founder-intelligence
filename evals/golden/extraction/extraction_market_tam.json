@@ -1,0 +1,11 @@
+{
+  "id": "extraction-market-tam-004",
+  "description": "Factual extraction of market valuation data from an industry research summary.",
+  "document": "The global developer observability platform market reached $4.2 billion in 2025, driven by distributed microservice tracing adoption.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "The global developer observability platform market reached $4.2 billion in 2025.",
+    "quote": "The global developer observability platform market reached $4.2 billion in 2025, driven by distributed microservice tracing adoption.",
+    "stance": "supports"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "interview-contradiction-churn-007",
+  "stage": "interview",
+  "description": "Seeded contradiction: Founder earlier claimed 100% pilot retention, but admits 3 pilot customers churned.",
+  "turn": {
+    "role": "founder",
+    "turn_index": 7
+  },
+  "document": "Founder: Well, to be transparent, three of the original eight pilot sites decided not to convert because their IT committees froze new cloud vendor onboarding.",
+  "expected": {
+    "has_relevant_evidence": true,
+    "claim_text": "All eight pilot hospital sites successfully converted to paying annual subscriptions.",
+    "quote": "three of the original eight pilot sites decided not to convert because their IT committees froze new cloud vendor onboarding.",
+    "stance": "contradicts",
+    "extracted_variables": {
+      "pilot_conversion": "5 of 8 converted (3 churned due to IT freeze)"
+    }
+  }
+}

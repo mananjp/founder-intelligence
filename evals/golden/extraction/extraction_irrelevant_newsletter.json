@@ -1,0 +1,9 @@
+{
+  "id": "extraction-irrelevant-newsletter-008",
+  "description": "Irrelevant document: Marketing promotional email text provides zero extractable research evidence.",
+  "document": "Click here to unsubscribe from this retail newsletter or manage your marketing email preferences in account settings.",
+  "expected": {
+    "has_relevant_evidence": false,
+    "evidence_count": 0
+  }
+}
