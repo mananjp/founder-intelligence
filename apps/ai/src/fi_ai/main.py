@@ -5,6 +5,7 @@ import structlog.contextvars
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import JSONResponse
 from prometheus_client import CONTENT_TYPE_LATEST
+from pydantic import BaseModel
 from sqlalchemy import text
 from starlette.requests import Request
 from starlette.responses import Response
@@ -87,6 +88,28 @@ def start_run(run_id: str, x_internal_token: str | None = Header(default=None)) 
     return {"run_id": run_id, "queued": True}
 
 
-# TODO(AI/Research): POST /internal/interview/turn   (adaptive interview: brief + next question)
+class _InterviewTurnBody(BaseModel):
+    ideaId: str
+    ideaTitle: str
+    rawDescription: str
+    geography: list[str] = []
+    turnHistory: list[dict] = []
+    founderMessage: str
+
+
+@app.post("/internal/interview/turn")
+def interview_turn(
+    body: _InterviewTurnBody,
+    x_internal_token: str | None = Header(default=None),
+) -> dict:
+    """Called by the Node API (T4). Runs one adaptive interview turn via LiteLLM."""
+    _guard(x_internal_token)
+    from fi_ai.interview import run_interview_turn  # local import — keeps startup clean
+
+    result = run_interview_turn(body.model_dump(by_alias=False), run_id=None)
+    # Serialise with camelCase aliases so T4's AiInterviewTurnResult Zod schema parses cleanly.
+    return result.model_dump(exclude_none=True)
+
+
 # TODO(AI/Reasoning): POST /internal/copilot/ask      (RAG over project evidence)
 # TODO(AI/Research): POST /internal/radar/check       (called by scheduler)
