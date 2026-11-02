@@ -719,6 +719,53 @@ async def test_failed_transaction_rolls_back_every_write(repo, db_engine, seed):
     assert await _count(db_engine, tables.llm_calls) == 0
 
 
+async def test_transaction_rollback_with_explicit_connection(db_engine, seed):
+    """Rollback via an explicitly supplied connection (``begin_nested()`` savepoint).
+
+    The repository-opened path (``engine.begin()``) is covered by
+    ``test_failed_transaction_rolls_back_every_write``. This test covers the path
+    where the caller supplies a connection that already owns a transaction:
+    ``transaction()`` then uses ``connection.begin_nested()``, so rolling back
+    undoes only the savepoint's writes while records committed outside the
+    transaction remain intact.
+
+    ``transaction()`` is not re-entrant-safe when called without passing the
+    existing connection: a repository without a connection starts a fresh
+    top-level transaction on each call rather than nesting into the caller's
+    transaction. Callers that need nesting must pass the connection explicitly.
+    """
+    repo = PostgresRepository(db_engine)
+
+    # Unrelated record committed outside the transaction under test.
+    source = await repo.upsert_source(
+        url="https://example.com/keep",
+        content_hash="keep-hash",
+        source_type="news",
+    )
+
+    async with db_engine.begin() as connection:
+        tx_repo = PostgresRepository(db_engine, connection)
+        with pytest.raises(RuntimeError, match="boom"):
+            async with tx_repo.transaction() as tx:
+                await tx.upsert_source(
+                    url="https://example.com/rollback",
+                    content_hash="rollback-hash",
+                    source_type="news",
+                )
+                await tx.insert_llm_call(
+                    task="rollback",
+                    model="fast",
+                    run_id=seed.run_id,
+                    cost_usd=1,
+                )
+                raise RuntimeError("boom")
+
+    # The enclosing transaction committed with no net changes from the savepoint.
+    assert await _count(db_engine, tables.sources, tables.sources.c.url == source.url) == 1
+    assert await _count(db_engine, tables.sources) == 1
+    assert await _count(db_engine, tables.llm_calls) == 0
+
+
 async def test_failed_statement_does_not_leave_partial_write(repo, db_engine, seed):
     source = await make_source(repo)
 

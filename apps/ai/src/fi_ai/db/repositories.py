@@ -91,9 +91,16 @@ class PostgresRepository:
         """Insert with ``ON CONFLICT (id) DO NOTHING`` and return the stored row.
 
         ``statement`` must already include ``on_conflict_do_nothing(index_elements=[id])``
-        and ``RETURNING *``. On a conflict we read the existing row inside the same
-        transaction, which is race-safe because the conflicting row is already committed
-        (or being written by a concurrent transaction that has finished the insert).
+        and ``RETURNING *``. Because ``RETURNING *`` yields no row when the insert is
+        skipped due to a conflict, a conflict is detected by a ``None`` result and the
+        existing row is re-selected within the same transaction.
+
+        The re-select returns the row that won the ``id`` unique constraint. Under
+        concurrency this is best-effort idempotency: exactly one concurrent inserter
+        wins the constraint and the others re-select that winner's row. The pattern
+        does not provide serializable isolation by itself; it relies on the primary
+        key constraint and read-committed row locking, so the re-select may block
+        until a concurrent insert commits or aborts.
         """
 
         def _first(result: Any) -> sa.Row[Any] | None:
