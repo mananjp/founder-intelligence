@@ -15,3 +15,4 @@ This directory contains verified standard operating procedures (SOPs) and runboo
 - [AI service Prometheus metrics](./ai-metrics.md): `/metrics` endpoint, metric names, labels, and example PromQL queries.
 - [Render staging deployment](./staging-deploy.md): GHCR image publishing, Render deploy hooks, required secrets, environment-variable matrix, and readiness smoke tests.
 - [Coverage ratchet & non-drop guard](./coverage-ratchet.md): Upward-only coverage policy, Sprint 2 floors, and the CI guard that enforces them.
+- [Staging load / soak smoke](./staging-load-smoke.md): k6 health + auth CRUD + 50-stream SSE soak against staging, thresholds, and a results log.
