@@ -11,6 +11,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "check:coverage": "node scripts/check-coverage-ratchet.mjs",
     "format": "prettier --write ."
   },
   "devDependencies": {
