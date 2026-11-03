@@ -14,7 +14,9 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],
-      reporter: ["text", "html", "lcov", "json"],
+      reporter: ["text", "html", "lcov", "json", "json-summary"],
+      // Sprint 2 coverage ratchet — Wk1 non-drop floor (Sprint 1 baseline).
+      // Wk3 raises these to API >= 80% once module tests land. Upward-only.
       thresholds: {
         statements: 70,
         branches: 70,
