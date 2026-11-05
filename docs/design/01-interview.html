@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview: state specification (S2-29)</title>
+<!--
+  Static companion to 01-interview.md. Every frame is one state from the spec.
+  Tokens below MIRROR packages/ui/src/tokens.css (subset). Keep in sync, or swap this
+  block for <link rel="stylesheet" href="…/tokens.css"> once the docs path is known.
+  Tokens marked PROPOSED are not in tokens.css yet.
+  Several role="alert" elements are on one page only because this is a gallery;
+  in the product only one is rendered at a time.
+-->
+<style>
+:root{
+  --fi-bg:#0e1116;--fi-surface:#161b22;--fi-text:#e8ecf1;--fi-muted:#8a93a3;
+  --fi-on-accent:#fff;--fi-accent-strong:#3059f0;--fi-accent-text:#6f8fff;
+  --fi-border:rgba(255,255,255,.08);--fi-border-strong:rgba(255,255,255,.12);--fi-overlay:rgba(255,255,255,.02);
+  --fi-danger:#ff7b72;--fi-danger-bg:rgba(255,123,114,.12);
+  --fi-warning:#f0883e;--fi-warning-bg:rgba(240,136,62,.12);
+  --fi-skeleton-base:rgba(255,255,255,.06);--fi-skeleton-highlight:rgba(255,255,255,.12);
+  --fi-focus-ring:0 0 0 2px var(--fi-bg),0 0 0 4px var(--fi-accent-text);
+  --fi-radius:10px;--fi-radius-sm:6px;--fi-radius-lg:16px;
+  --fi-font-display:"General Sans",ui-sans-serif,system-ui;--fi-font-body:"Inter",ui-sans-serif,system-ui;
+  --fi-border-input:#5f6877; /* PROPOSED, ~3.1:1 on surface by hand calc, verify. --fi-border (~1.25:1) fails 1.4.11 for inputs */
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fi-bg);color:var(--fi-text);font:14px/20px var(--fi-font-body)}
+main{max-width:1040px;margin:0 auto;padding:32px 16px 64px}
+h1{font:600 32px/40px var(--fi-font-display);margin:0 0 8px}
+h2{font:600 16px/24px var(--fi-font-display);margin:0}
+p{margin:0}
+.lede{color:var(--fi-muted);max-width:68ch;margin-bottom:32px}
+.state{margin-top:40px}
+.state>header{margin-bottom:12px}
+.sig{color:var(--fi-muted);font-size:12px;line-height:16px;margin-top:2px}
+.frame{background:var(--fi-surface);border:1px solid var(--fi-border-strong);border-radius:var(--fi-radius-lg);padding:16px;display:grid;gap:12px}
+.split{display:grid;grid-template-columns:1fr 240px;gap:16px}
+@media(max-width:720px){.split{grid-template-columns:1fr}}
+.panel{border:1px solid var(--fi-border);border-radius:var(--fi-radius);padding:12px;display:grid;gap:12px;align-content:start}
+.ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.msg{max-width:80%;display:grid;gap:4px}
+.msg .who{font-size:12px;line-height:16px;color:var(--fi-muted);display:flex;gap:4px;align-items:center}
+.msg .body{padding:8px 12px;border-radius:var(--fi-radius)}
+.msg.fi .body{padding-left:0}
+.msg.you{justify-self:end}.msg.you .who{justify-content:flex-end}
+.msg.you .body{background:var(--fi-overlay);border:1px solid var(--fi-border-strong)}
+.status{display:flex;gap:8px;align-items:center;color:var(--fi-muted)}
+.dots{letter-spacing:2px}
+.composer{display:grid;gap:8px}
+textarea{width:100%;min-height:72px;resize:vertical;background:var(--fi-bg);color:var(--fi-text);font:inherit;border:1px solid var(--fi-border-input);border-radius:var(--fi-radius);padding:8px 12px}
+textarea:focus-visible,button:focus-visible{outline:none;box-shadow:var(--fi-focus-ring)}
+textarea[readonly]{opacity:.8}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.hint{color:var(--fi-muted);font-size:12px;line-height:16px}
+button{font:600 14px/20px var(--fi-font-body);border-radius:var(--fi-radius);padding:8px 16px;border:1px solid var(--fi-border-strong);background:transparent;color:var(--fi-text);cursor:pointer;min-height:36px}
+button.primary{background:var(--fi-accent-strong);border-color:transparent;color:var(--fi-on-accent)}
+button:disabled{opacity:.5;cursor:not-allowed}
+.note{display:grid;grid-template-columns:16px 1fr auto;gap:12px;align-items:start;padding:12px;border-radius:var(--fi-radius);border:1px solid var(--fi-border-strong);background:var(--fi-overlay)}
+.note .ic{margin-top:2px}
+.note strong{display:block}
+.note.err{background:var(--fi-danger-bg);border-color:var(--fi-danger);color:var(--fi-text)}.note.err .ic{color:var(--fi-danger)}
+.note.warn{background:var(--fi-warning-bg);border-color:var(--fi-warning)}.note.warn .ic{color:var(--fi-warning)}
+.ref{color:var(--fi-muted);font-size:12px;line-height:16px;margin-top:4px}.ref code{font-family:ui-monospace,monospace;user-select:all}
+.fielderr{display:flex;gap:4px;align-items:center;color:var(--fi-danger);font-size:12px;line-height:16px}
+.counter{color:var(--fi-warning);font-size:12px;line-height:16px;display:flex;gap:4px;align-items:center}
+.vars{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.vars li{display:flex;gap:8px;align-items:center}
+.vars .na{color:var(--fi-muted)}
+.skel{background:var(--fi-skeleton-base);border-radius:var(--fi-radius-sm);height:14px;position:relative;overflow:hidden}
+.skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--fi-skeleton-highlight),transparent);transform:translateX(-100%);animation:sh 1.4s infinite}
+@keyframes sh{to{transform:translateX(100%)}}
+@media(prefers-reduced-motion:reduce){.skel::after{animation:none}}
+.empty{display:grid;justify-items:center;text-align:center;gap:8px;padding:32px 16px;color:var(--fi-muted)}
+.empty h3{margin:0;font:600 20px/28px var(--fi-font-display);color:var(--fi-text)}
+.empty p{max-width:44ch}
+dl{margin:0;display:grid;gap:12px}
+dt{font-weight:600}
+dd{margin:0;color:var(--fi-text)}
+dd.na{color:var(--fi-muted);display:flex;gap:4px;align-items:center}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-alert" viewBox="0 0 16 16"><path d="M8 2 1.5 13.5h13z"/><path d="M8 6.5v3.2M8 11.7v.1"/></symbol>
+  <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.2v4M8 4.9v.1"/></symbol>
+  <symbol id="i-off" viewBox="0 0 16 16"><path d="M2 2l12 12M4.2 7.2A6.5 6.5 0 0 1 8 6c1 0 2 .2 2.9.6M1.5 5A10 10 0 0 1 8 3c1.4 0 2.7.3 3.9.8M6 10.4a3 3 0 0 1 3-.6M8 13v.1"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></symbol>
+  <symbol id="i-dash" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5" stroke-dasharray="2.5 2.5"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="m5.6 8.2 1.7 1.7 3.1-3.4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 16 16"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></symbol>
+  <symbol id="i-fi" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M6 6.5h3.5M6 9.5h2"/></symbol>
+</svg>
+
+<main>
+<h1>Interview</h1>
+<p class="lede">State gallery for Sprint 2 task T29. Each frame is one row of <code>01-interview.md</code>. Signal tags: Confirmed = in code today, Planned = in a Sprint 2 task, Proposed = design recommendation.</p>
+
+<!-- 1 -->
+<section class="state" aria-labelledby="s1">
+<header><h2 id="s1">1. Route loading</h2><p class="sig">GET interview, skeleton matches final layout, composer read-only</p></header>
+<div class="frame" aria-busy="true">
+  <div class="split">
+    <div class="panel" aria-hidden="true">
+      <div class="skel" style="width:60%"></div><div class="skel" style="width:40%;justify-self:end;height:36px"></div>
+      <div class="skel" style="width:70%;height:36px"></div><div class="skel" style="width:35%;justify-self:end"></div>
+    </div>
+    <div class="panel" aria-hidden="true"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  </div>
+  <div class="composer"><p class="status" role="status"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>Loading your conversation…</p>
+  <textarea readonly aria-label="Your answer" placeholder="Your answer"></textarea></div>
+</div></section>
+
+<!-- 2 -->
+<section class="state" aria-labelledby="s2">
+<header><h2 id="s2">2. First use: no turns yet</h2><p class="sig">Empty state type: first use. The composer is the one action. Open question Q1</p></header>
+<div class="frame">
+  <div class="split">
+    <div class="panel"><div class="empty"><svg class="ic" style="width:32px;height:32px" aria-hidden="true"><use href="#i-chat"/></svg>
+      <h3>Tell us about your idea</h3><p>Describe it in a few sentences. FI will ask follow-up questions, one at a time, to build your research brief.</p></div></div>
+    <div class="panel"><strong>Captured details</strong><p class="hint">0 of 7 captured</p>
+      <ul class="vars na"><li><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>Problem: Not captured yet</li><li><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>Customer: Not captured yet</li><li class="hint">+ 5 more</li></ul></div>
+  </div>
+  <div class="composer"><textarea aria-label="Your answer" placeholder="Describe your idea"></textarea>
+    <div class="row"><span class="hint">Ctrl + Enter to send</span><button class="primary">Send answer</button></div></div>
+</div></section>
+
+<!-- 3 -->
+<section class="state" aria-labelledby="s3">
+<header><h2 id="s3">3. In progress, reply pending</h2><p class="sig">Optimistic founder bubble, status line, 4 of 7 captured</p></header>
+<div class="frame">
+  <div class="split">
+    <div class="panel" role="log" aria-live="polite" aria-label="Conversation">
+      <div class="msg fi"><span class="who"><svg class="ic" aria-hidden="true"><use href="#i-fi"/></svg>FI</span><div class="body">Who is the first customer you would sell to, and how do they handle this problem today?</div></div>
+      <div class="msg you"><span class="who">You</span><div class="body">Small clinics in Dubai. They track appointments in spreadsheets and WhatsApp.</div></div>
+      <div class="msg you"><span class="who">You · Sending…</span><div class="body">Most pay a receptionist to do the reminders by hand.</div></div>
+      <p class="status" role="status"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>Thinking about your answer<span class="dots" aria-hidden="true">…</span></p>
+    </div>
+    <div class="panel"><strong>Captured details</strong><p class="hint">4 of 7 captured</p>
+      <ul class="vars">
+        <li><svg class="ic" aria-hidden="true"><use href="#i-ok"/></svg>Problem: Captured</li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-ok"/></svg>Customer: Captured</li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-ok"/></svg>Geography: Captured</li>
+        <li><svg class="ic" aria-hidden="true"><use href="#i-ok"/></svg>Alternatives: Captured</li>
+        <li class="na"><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>Category: Not captured yet</li>
+        <li class="na"><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>Business model: Not captured yet</li>
+        <li class="na"><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>Differentiation: Not captured yet</li>
+      </ul></div>
+  </div>
+  <div class="composer"><textarea readonly aria-label="Your answer">Most pay a receptionist to do the reminders by hand.</textarea>
+    <div class="row"><span class="hint">Ctrl + Enter to send</span><button class="primary" disabled>Sending…</button></div></div>
+</div></section>
+
+<!-- 4 -->
+<section class="state" aria-labelledby="s4">
+<header><h2 id="s4">4. Validation: answer too long</h2><p class="sig">422 validation_failed on content (Confirmed). Text is kept, never truncated</p></header>
+<div class="frame">
+  <div class="note err" role="alert"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg><div><strong>Check the highlighted field.</strong></div></div>
+  <div class="composer"><textarea aria-label="Your answer" aria-invalid="true" aria-describedby="e4 c4" style="border-color:var(--fi-danger)">…10,412 characters of the founder’s answer, kept exactly as typed…</textarea>
+    <p class="fielderr" id="e4"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Shorten your answer to 10,000 characters or fewer.</p>
+    <div class="row"><span class="counter" id="c4"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>10,412 / 10,000</span><button class="primary">Send answer</button></div></div>
+</div></section>
+
+<!-- 5 -->
+<section class="state" aria-labelledby="s5">
+<header><h2 id="s5">5. Timeout on send</h2><p class="sig">Client timeout (Proposed). The server may have saved the turn, so no blind retry</p></header>
+<div class="frame">
+  <div class="panel"><div class="msg you"><span class="who">You · Not confirmed</span><div class="body">Most pay a receptionist to do the reminders by hand.</div></div></div>
+  <div class="note warn" role="alert"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>This is taking longer than expected</strong>Your answer may have been sent. Refresh to check before sending it again.<p class="ref">Reference: <code>req_7f3a91c2</code></p></div><button>Refresh conversation</button></div>
+</div></section>
+
+<!-- 6 -->
+<section class="state" aria-labelledby="s6">
+<header><h2 id="s6">6. Server error on send</h2><p class="sig">500 internal (Confirmed). Bubble removed, text restored to composer, reference ID shown</p></header>
+<div class="frame">
+  <div class="note err" role="alert"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>Something went wrong on our side</strong>That didn’t work. Try again in a moment.<p class="ref">Reference: <code>req_b20e44d8</code></p></div><button>Try again</button></div>
+  <div class="composer"><textarea aria-label="Your answer">Most pay a receptionist to do the reminders by hand.</textarea>
+    <div class="row"><span class="hint">Your text is still here.</span><button class="primary">Send answer</button></div></div>
+</div></section>
+
+<!-- 7 -->
+<section class="state" aria-labelledby="s7">
+<header><h2 id="s7">7. Offline</h2><p class="sig">Client network failure (Proposed). Persistent banner that clears itself, draft kept</p></header>
+<div class="frame">
+  <div class="note warn" role="status" id="off"><svg class="ic" aria-hidden="true"><use href="#i-off"/></svg><div><strong>You’re offline</strong>Changes won’t save until your connection is back.</div></div>
+  <div class="composer"><textarea aria-label="Your answer">Most pay a receptionist to do the reminders by hand.</textarea>
+    <div class="row"><span class="hint">Your text is kept on this page.</span><button class="primary" disabled aria-describedby="off">Send answer</button></div></div>
+</div></section>
+
+<!-- 8 -->
+<section class="state" aria-labelledby="s8">
+<header><h2 id="s8">8. View-only (403)</h2><p class="sig">Planned. Transcript stays readable, composer replaced with an explanation</p></header>
+<div class="frame">
+  <div class="panel"><div class="msg fi"><span class="who"><svg class="ic" aria-hidden="true"><use href="#i-fi"/></svg>FI</span><div class="body">Who is the first customer you would sell to?</div></div></div>
+  <div class="note"><svg class="ic" aria-hidden="true"><use href="#i-lock"/></svg><div><strong>View-only access</strong>Your role in this workspace can’t make changes. Ask a workspace owner if you need edit access.</div></div>
+</div></section>
+
+<!-- 9 -->
+<section class="state" aria-labelledby="s9">
+<header><h2 id="s9">9. Stale data after a failed refresh</h2><p class="sig">Refetch fails with data on screen. Transcript stays, composer stays usable</p></header>
+<div class="frame">
+  <div class="note warn" role="alert"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>We couldn’t refresh this conversation</strong>You’re seeing what we loaded earlier.<p class="ref">Reference: <code>req_91ac0d15</code></p></div><button>Try again</button></div>
+  <div class="panel"><div class="msg fi"><span class="who"><svg class="ic" aria-hidden="true"><use href="#i-fi"/></svg>FI</span><div class="body">Who is the first customer you would sell to?</div></div></div>
+</div></section>
+
+<!-- 10 -->
+<section class="state" aria-labelledby="s10">
+<header><h2 id="s10">10. Brief preview, interview complete</h2><p class="sig">Missing fields say “Not captured yet”. Unknowns say “None recorded”, never “none exist”</p></header>
+<div class="frame">
+  <div class="note"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><div><strong>Your brief is ready to review</strong>Check it, edit anything that’s wrong, then confirm.</div></div>
+  <div class="panel"><dl>
+    <div><dt>Problem</dt><dd>Clinics lose revenue to missed appointments and spend staff time on manual reminders.</dd></div>
+    <div><dt>Customer</dt><dd>Small private clinics in the UAE.</dd></div>
+    <div><dt>Geography</dt><dd>United Arab Emirates</dd></div>
+    <div><dt>Alternatives</dt><dd>Spreadsheets, WhatsApp messages, a receptionist making calls.</dd></div>
+    <div><dt>Differentiation</dt><dd>Automated reminders that fit the clinic’s existing booking flow.</dd></div>
+    <div><dt>Category</dt><dd class="na"><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>Not captured yet</dd></div>
+    <div><dt>Business model</dt><dd class="na"><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>Not captured yet</dd></div>
+    <div><dt>Unknowns</dt><dd class="na"><svg class="ic" aria-hidden="true"><use href="#i-dash"/></svg>None recorded</dd></div>
+  </dl></div>
+  <div class="row"><span class="hint">2 of 7 details are missing. Research will treat them as unknown.</span>
+    <span style="display:flex;gap:8px"><button>Edit brief</button><button class="primary">Confirm brief</button></span></div>
+</div></section>
+</main>
+</body>
+</html>
