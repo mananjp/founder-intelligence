@@ -22,4 +22,33 @@
   --fi-radius: 10px;
   --fi-font-display: "General Sans", ui-sans-serif, system-ui;
   --fi-font-body: "Inter", ui-sans-serif, system-ui;
+    /* feedback: never reuse claim-status colours (ux-states §7) */
+  --fi-danger: #ff7b72;
+  --fi-danger-bg: rgba(255, 123, 114, 0.12);
+  --fi-warning: #f0883e;
+  --fi-warning-bg: rgba(240, 136, 62, 0.12);
+
+  /* accent split: --fi-accent is too dark for text */
+  --fi-accent-text: #6f8fff;   /* links, inferred badge text (~5.8:1 on surface) */
+  --fi-accent-strong: #3059f0; /* primary button fill + --fi-on-accent (~5.5:1) */
+
+  /* loading + focus */
+  --fi-skeleton-base: rgba(255, 255, 255, 0.06);
+  --fi-skeleton-highlight: rgba(255, 255, 255, 0.12);
+  --fi-focus-ring: 0 0 0 2px var(--fi-bg), 0 0 0 4px var(--fi-accent-text);
+  --fi-border-input: #5f6877; /* added for WCAG 1.4.11 input contrast */
+
+  /* type scale (size / line-height) */
+  --fi-text-xs: 12px; --fi-leading-xs: 16px;
+  --fi-text-sm: 14px; --fi-leading-sm: 20px;
+  --fi-text-md: 16px; --fi-leading-md: 24px;
+  --fi-text-lg: 20px; --fi-leading-lg: 28px;
+  --fi-text-xl: 24px; --fi-leading-xl: 32px;
+  --fi-text-2xl: 32px; --fi-leading-2xl: 40px;
+
+  /* spacing (4px base) + radii */
+  --fi-space-1: 4px;  --fi-space-2: 8px;  --fi-space-3: 12px; --fi-space-4: 16px;
+  --fi-space-5: 24px; --fi-space-6: 32px; --fi-space-7: 48px;
+  --fi-radius-sm: 6px; --fi-radius-lg: 16px;
+
 }
