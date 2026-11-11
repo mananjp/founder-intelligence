@@ -1,4 +1,4 @@
-﻿-- Migration 007: persistent research tasks for the Scope -> Plan pipeline.
+-- Migration 008: persistent research tasks for the Scope -> Plan pipeline.
 -- Additive and safe to re-apply.
 
 create table if not exists research_tasks (

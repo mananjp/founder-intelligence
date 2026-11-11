@@ -67,6 +67,8 @@ EXPECTED_COLUMNS: dict[str, dict[str, tuple[str, bool, str | None]]] = {
         "created_by": ("uuid", False, None),
         "created_at": ("timestampwithtimezone", False, "now()"),
         "completed_at": ("timestampwithtimezone", True, None),
+        "last_completed_stage": ("text", True, None),
+        "cancel_requested_at": ("timestampwithtimezone", True, None),
     },
     "sources": {
         "id": ("uuid", False, "gen_random_uuid()"),
@@ -277,9 +279,14 @@ EXPECTED_FKS: dict[str, set[tuple[tuple[str, ...], str, tuple[str, ...], str | N
 }
 
 EXPECTED_INDEXES: dict[str, set[tuple[str, tuple[str, ...], str | None]]] = {
-    "ideas": {("ideas_workspace_id_idx", ("workspace_id",), None)},
+    "ideas": {
+        ("ideas_workspace_id_idx", ("workspace_id",), None),
+        ("ideas_workspace_id_id_uidx", ("workspace_id", "id"), None),
+    },
     "research_runs": {
         ("research_runs_idea_id_created_at_idx", ("idea_id", "created_at desc"), None),
+        ("research_runs_workspace_id_id_uidx", ("workspace_id", "id"), None),
+        ("research_runs_workspace_id_created_at_idx", ("workspace_id", "created_at desc"), None),
     },
     "evidence": {
         ("evidence_run_id_idx", ("run_id",), None),
