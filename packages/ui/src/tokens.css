@@ -16,6 +16,7 @@
   --fi-conflicting-bg: rgba(217, 83, 79, 0.12);
   --fi-conflicting-bg-strong: rgba(217, 83, 79, 0.18);
   --fi-conflicting-border: rgba(217, 83, 79, 0.7);
+  --fi-conflicting-text: #ef6f6a; /* conflicting badge text, ~5.9:1 on --fi-surface */
   --fi-assumption: #c99a3d;
   --fi-info-bg: rgba(61, 107, 255, 0.18);
   --fi-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
