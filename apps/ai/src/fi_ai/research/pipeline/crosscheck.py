@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from datetime import date
+from datetime import UTC, date, datetime
 from typing import Any, Literal
 from uuid import UUID, uuid5
 
@@ -203,7 +203,7 @@ def _nli_judgment(run_id: str, left: str, right: str) -> NliResult:
 
 def _age_days(published_at: date | None, observed_at: date | None) -> int | None:
     source_date = published_at or observed_at
-    return (date.today() - source_date).days if source_date else None
+    return (datetime.now(tz=UTC).date() - source_date).days if source_date else None
 
 
 def _persist_claims(
