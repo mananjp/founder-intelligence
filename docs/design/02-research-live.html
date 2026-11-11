@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research Setup and Live: state specification (S2-29)</title>
+<style>
+:root{
+  --fi-bg:#0e1116;--fi-surface:#161b22;--fi-text:#e8ecf1;--fi-muted:#8a93a3;
+  --fi-on-accent:#fff;--fi-accent-strong:#3059f0;--fi-accent-text:#6f8fff;
+  --fi-border:rgba(255,255,255,.08);--fi-border-strong:rgba(255,255,255,.12);--fi-border-input:#5f6877;--fi-overlay:rgba(255,255,255,.02);
+  --fi-danger:#ff7b72;--fi-danger-bg:rgba(255,123,114,.12);--fi-warning:#f0883e;--fi-warning-bg:rgba(240,136,62,.12);
+  --fi-verified:#2fb673;
+  --fi-focus-ring:0 0 0 2px var(--fi-bg),0 0 0 4px var(--fi-accent-text);
+  --fi-radius:10px;--fi-radius-lg:16px;
+  --fi-font-display:"General Sans",ui-sans-serif,system-ui;--fi-font-body:"Inter",ui-sans-serif,system-ui;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fi-bg);color:var(--fi-text);font:14px/20px var(--fi-font-body)}
+main{max-width:800px;margin:0 auto;padding:32px 16px 64px}
+h1{font:600 32px/40px var(--fi-font-display);margin:0 0 8px}
+h2{font:600 16px/24px var(--fi-font-display);margin:0}
+h3{margin:0;font:600 24px/32px var(--fi-font-display)}
+p{margin:0}code{font-size:12px}
+.lede{color:var(--fi-muted);max-width:68ch;margin-bottom:24px}
+.state{margin-top:40px}.state>header{margin-bottom:12px}
+.frame{background:var(--fi-surface);border:1px solid var(--fi-border-strong);border-radius:var(--fi-radius-lg);padding:24px;display:grid;gap:20px}
+.center{text-align:center;display:grid;gap:8px;justify-items:center}
+.muted{color:var(--fi-muted)}
+.metrics{display:flex;gap:24px;color:var(--fi-accent-text);font-weight:600}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:8px}legend{font-weight:600;margin-bottom:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--fi-border-input);border-radius:var(--fi-radius);padding:12px}
+.opt.dis{opacity:.7}.opt small{display:block;color:var(--fi-muted)}
+label.f{display:grid;gap:4px;font-weight:600}
+.input{font:inherit;color:var(--fi-text);background:var(--fi-bg);border:1px solid var(--fi-border-input);border-radius:var(--fi-radius);padding:8px 12px}
+.input.bad{border-color:var(--fi-danger)}.errtxt{color:var(--fi-danger);font-weight:400}
+ol{list-style:none;margin:0;padding:24px;display:grid;gap:16px;border:1px solid var(--fi-border);border-radius:var(--fi-radius);background:var(--fi-bg)}
+li{display:flex;gap:12px;align-items:center;color:var(--fi-muted)}
+li .st{margin-left:auto;font-size:12px}
+li.done{color:var(--fi-text)}li.done .g{color:var(--fi-verified)}
+li.active{color:var(--fi-accent-text);font-weight:600;animation:pulse 2s infinite}
+li.fail{color:var(--fi-danger)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+@media(prefers-reduced-motion:reduce){li.active{animation:none}}
+.note{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;padding:12px;border-radius:var(--fi-radius);border:1px solid var(--fi-border-strong);background:var(--fi-overlay)}
+.note strong{display:block}.note.err{background:var(--fi-danger-bg);border-color:var(--fi-danger)}.note.warn{background:var(--fi-warning-bg);border-color:var(--fi-warning)}
+.ref{display:block;font-size:12px;color:var(--fi-muted);margin-top:4px}
+button.btn{font:600 14px/20px var(--fi-font-body);border-radius:var(--fi-radius);padding:8px 16px;border:1px solid var(--fi-border-input);background:transparent;color:var(--fi-text);cursor:pointer}
+button.btn.primary{background:var(--fi-accent-strong);border-color:transparent;color:var(--fi-on-accent)}
+button.btn[disabled]{opacity:.6;cursor:not-allowed}
+.dialog{max-width:380px;margin:0 auto;border:1px solid var(--fi-border-strong);border-radius:var(--fi-radius-lg);background:var(--fi-bg);padding:20px;display:grid;gap:12px}
+.dialog .row{display:flex;gap:12px;justify-content:flex-end}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="a" viewBox="0 0 16 16"><path d="M8 2 1.5 13.5h13z"/><path d="M8 6.5v3.2M8 11.7v.1"/></symbol>
+</svg>
+<main>
+<h1>Research Setup and Live</h1>
+<p class="lede">State gallery for Sprint 2 task T29. Companion to <code>02-research-live.md</code> (v1). Content is illustrative.</p>
+
+<section class="state"><header><h2>1. Setup: default, field error, plan limits</h2></header>
+<div class="frame">
+  <fieldset><legend>Depth</legend>
+    <label class="opt"><input type="radio" name="d" checked> <span>Quick<small>A fast first pass over the most important questions.</small></span></label>
+    <label class="opt"><input type="radio" name="d"> <span>Standard<small>Broader source coverage and more cross-checking.</small></span></label>
+    <label class="opt dis"><input type="radio" name="d" disabled> <span>Deep<small>Not included in your plan</small></span></label>
+  </fieldset>
+  <label class="f">Geography
+    <input class="input bad" aria-invalid="true" aria-describedby="ge" placeholder="Add a market, e.g. UAE or India">
+    <span class="errtxt" id="ge">Choose at least one market.</span></label>
+  <label class="f">Goals (optional)<input class="input" placeholder="What do you want to learn?"></label>
+  <p class="note err" role="alert" style="grid-template-columns:1fr"><span><strong>Check the highlighted fields.</strong></span></p>
+  <div><button class="btn primary">Start research</button> <button class="btn" disabled style="margin-left:8px">Starting research…</button></div>
+  <div class="note warn" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>You've used this month's research runs</strong>Your plan includes a fixed number each month.</div><button class="btn">See plans</button></div>
+</div></section>
+
+<section class="state"><header><h2>2. Live: running, with the 8 stages</h2></header>
+<div class="frame">
+  <div class="center"><h3>Researching your idea</h3>
+    <p class="muted">You can leave this page. Research keeps running on our servers, so come back whenever you like.</p>
+    <div class="metrics"><span aria-hidden="true">01:24 elapsed</span><span>$0.42 of $1.00</span></div></div>
+  <ol aria-label="Research stages">
+    <li class="done"><span class="g" aria-hidden="true">✔</span>Scoping the question<span class="st">Done</span></li>
+    <li class="done"><span class="g" aria-hidden="true">✔</span>Planning the research<span class="st">Done</span></li>
+    <li class="done"><span class="g" aria-hidden="true">✔</span>Finding sources<span class="st">Done</span></li>
+    <li class="active" aria-current="step"><span aria-hidden="true">◐</span>Reading sources<span class="st">In progress</span></li>
+    <li><span aria-hidden="true">○</span>Extracting claims<span class="st">Not started</span></li>
+    <li><span aria-hidden="true">○</span>Cross-checking evidence<span class="st">Not started</span></li>
+    <li><span aria-hidden="true">○</span>Synthesizing insights<span class="st">Not started</span></li>
+    <li><span aria-hidden="true">○</span>Writing recommendations<span class="st">Not started</span></li>
+  </ol>
+  <div class="center"><button class="btn">Stop research</button></div>
+</div></section>
+
+<section class="state"><header><h2>3. Live: reconnecting, offline, confirm stop, stopping</h2></header>
+<div class="frame">
+  <div class="note" role="status"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-muted)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>Reconnecting to the live feed</strong>Research is still running. This will catch up on its own.</div></div>
+  <div class="note warn" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>We can't reach the live feed</strong>Research is still running.</div><button class="btn">Try again</button></div>
+  <div class="note warn" role="status"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>You're offline</strong>Live updates will resume when your connection is back.</div></div>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="sd"><strong id="sd">Stop this research?</strong>
+    <p class="muted">You can start a new run any time.</p>
+    <div class="row"><button class="btn">Keep running</button><button class="btn primary">Stop research</button></div></div>
+  <div class="center" role="status"><button class="btn" disabled>Stopping…</button><p class="muted">Stopping research. This can take a moment.</p></div>
+</div></section>
+
+<section class="state"><header><h2>4. Live: queued and a failed stage</h2></header>
+<div class="frame">
+  <div class="center" role="status"><strong>Research is queued</strong><p class="muted">It will start shortly.</p></div>
+  <ol aria-label="Research stages, one stage failed">
+    <li class="done"><span class="g" aria-hidden="true">✔</span>Finding sources<span class="st">Done</span></li>
+    <li class="fail"><span aria-hidden="true">!</span>Reading sources<span class="st">Couldn't finish</span></li>
+  </ol>
+</div></section>
+
+<section class="state"><header><h2>5. Terminal states</h2></header>
+<div class="frame">
+  <div class="center" role="status"><h3 tabindex="-1">Research complete</h3><p class="muted">Your results are ready.</p><button class="btn primary">View results</button></div>
+  <div class="note warn" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>Research stopped early</strong>We reached this run's budget limit, so results use the sources gathered so far. Treat gaps as unknown, not as absent.</div><button class="btn primary">View what we found</button></div>
+  <div class="note err" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-danger)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>Research couldn't finish</strong>We stopped before producing results. Your idea is unchanged.<span class="ref">Reference: req_88b1v9</span></div><button class="btn">Try again</button></div>
+  <div class="note" role="status"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-muted)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>Research was cancelled</strong></div><button class="btn">Start again</button></div>
+</div></section>
+</main>
+</body>
+</html>
