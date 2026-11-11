@@ -13,6 +13,7 @@ rows between tests.
 from __future__ import annotations
 
 import os
+import re
 import sys
 from collections.abc import Iterator
 from dataclasses import dataclass
@@ -59,6 +60,9 @@ def _resolve_test_url() -> URL:
     return url
 
 
+_DOLLAR_QUOTE_RE = re.compile(r"\$[A-Za-z_][A-Za-z0-9_]*\$|\$\$")
+
+
 def _iter_statements(sql: str) -> Iterator[str]:
     """Split SQL on semicolons, ignoring comments and quoted literals.
 
@@ -73,6 +77,7 @@ def _iter_statements(sql: str) -> Iterator[str]:
     in_double = False
     in_line_comment = False
     in_block_comment = False
+    dollar_tag: str | None = None
 
     while index < len(sql):
         char = sql[index]
@@ -104,6 +109,21 @@ def _iter_statements(sql: str) -> Iterator[str]:
                     index += 1
                 else:
                     in_double = False
+        elif dollar_tag is not None:
+            buffer.append(char)
+            if sql.startswith(dollar_tag, index):
+                buffer.extend(sql[index + 1 : index + len(dollar_tag)])
+                index += len(dollar_tag) - 1
+                dollar_tag = None
+        elif char == "$":
+            match = _DOLLAR_QUOTE_RE.match(sql, index)
+            if match is None:
+                buffer.append(char)
+            else:
+                tag = match.group(0)
+                buffer.append(tag)
+                index += len(tag) - 1
+                dollar_tag = tag
         elif char == "-" and following == "-":
             buffer.extend((char, following))
             index += 1
