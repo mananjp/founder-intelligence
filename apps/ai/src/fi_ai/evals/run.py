@@ -7,8 +7,7 @@ Run with:
 The harness evaluates deterministic golden fixtures and the crosscheck stage
 logic. It does not make external LLM calls. Where a Bible metric cannot be
 measured without real pipeline output, the report stays null rather than
-inventing a value; citation_validity_rate currently proxies quote verbatim
-rate because no citation-to-snapshot link is recorded in the fixtures.
+inventing a value.
 
 Metrics defined by the project Bible:
 
@@ -19,6 +18,12 @@ Metrics defined by the project Bible:
 - cost_per_run_usd
 - latency_p50_ms
 - latency_p95_ms
+
+``quote_verbatim_rate`` is computed from the actual verbatim gate
+(``fi_ai.evidence.verbatim.is_verbatim_quote`) applied to each golden
+case's expected quote against its source document -- never from
+model-reported values. A missing metric (no quotes evaluated) fails the
+evaluation closed and is never reported as 100%.
 """
 
 from __future__ import annotations
@@ -33,6 +38,7 @@ from typing import Any
 
 from fi_ai.evidence.schemas import ClaimStatus
 from fi_ai.evidence.status import EvidenceRef, derive_claim_status
+from fi_ai.evidence.verbatim import is_verbatim_quote
 
 
 def _find_repository_root() -> Path:
@@ -178,8 +184,10 @@ def evaluate_case(path: Path) -> CaseResult:
                 error="Relevant golden cases must provide a non-empty expected.quote",
             )
 
-        # The golden quote must occur exactly in the source document.
-        checks["quote_verbatim"] = expected_quote in document
+        # The golden quote must occur verbatim in the source document, checked
+        # with the same deterministic gate the extract pipeline enforces
+        # (whitespace-normalized substring match).
+        checks["quote_verbatim"] = is_verbatim_quote(document, expected_quote)
 
         expected_stance = expected.get("stance")
         if expected_stance is not None:
@@ -295,7 +303,13 @@ def build_report(
             f"unsupported_claim_rate ({unsupported_rate:.2%}) >= {max_unsupported_claim_rate:.2%}"
         )
 
-    if verbatim_rate is not None and verbatim_rate < min_quote_verbatim_rate:
+    if verbatim_rate is None:
+        # Fail closed: a missing metric must never be mistaken for 100%.
+        threshold_violations.append(
+            "quote_verbatim_rate: no quotes evaluated (metric missing; cannot "
+            "confirm the verbatim gate held)"
+        )
+    elif verbatim_rate < min_quote_verbatim_rate:
         threshold_violations.append(
             f"quote_verbatim_rate ({verbatim_rate:.2%}) < {min_quote_verbatim_rate:.2%}"
         )

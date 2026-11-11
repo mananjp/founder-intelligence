@@ -13,8 +13,23 @@ The AI service exposes Prometheus text exposition at `GET /metrics`. It is inten
 | `fi_ai_llm_tokens_total` | Counter | `task`, `model`, `token_type` | Cumulative token count, with `token_type` equal to `prompt` or `completion`. |
 | `fi_ai_llm_cost_usd_total` | Counter | `task`, `model` | Cumulative provider-reported LLM cost in USD. |
 | `fi_ai_budget_exceeded_total` | Counter | none | Runs stopped because the run budget was exhausted. |
+| `fi_ai_quote_verbatim_evaluated_total` | Counter | `stage` | Non-empty quotes evaluated by the verbatim gate (the `quote_verbatim_rate` denominator). |
+| `fi_ai_quote_verbatim_accepted_total` | Counter | `stage` | Quotes accepted by the verbatim gate (the `quote_verbatim_rate` numerator). |
+| `fi_ai_quote_verbatim_rate` | Gauge | `stage` | `accepted / evaluated` for the most recent extract stage. Unset when no quotes were evaluated — never reported as 100%. |
 
-`record_llm_usage(...)` is the instrumentation hook for an LLM provider response. Call it once per provider attempt after the provider supplies the task, model, prompt tokens, completion tokens, and cost. The current `fi_ai.llm.router.complete_structured` is still a TODO stub, so these two LLM usage counters remain zero until the router's provider call path records usage.
+`record_llm_usage(...)` is the instrumentation hook for an LLM provider response. Call it once per provider attempt after the provider supplies the task, model, prompt tokens, completion tokens, and cost.
+
+`record_quote_verbatim_rate(accepted=..., evaluated=..., stage="extract")` records the verbatim gate outcome for one extract stage and returns the rate. It is called by `fi_ai.research.pipeline.extract` after extraction completes.
+
+## quote_verbatim_rate
+
+Definition: `accepted_verbatim_quotes / total_non_empty_quotes_evaluated`. The rate is
+computed from the actual deterministic verbatim gate
+(`fi_ai.evidence.verbatim.is_verbatim_quote`), never from model-reported values.
+Invalid quotes count in the denominator (they are evaluated, then rejected).
+An empty dataset yields a missing metric (`None`) — it is never reported as 100%,
+and the golden evaluation fails closed (`--min-quote-verbatim-rate` defaults to
+`1.0`) when the metric is missing or below target.
 
 Do not add `run_id`, user IDs, request IDs, or other unbounded values as metric labels: they create unbounded time-series cardinality. Keep task and model labels to known task/model identifiers.
 

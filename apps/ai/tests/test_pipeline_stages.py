@@ -36,20 +36,36 @@ def test_pipeline_stages_publish_progress_events():
     }
 
 
+def test_extract_stage_without_snapshot_publishes_progress_and_returns():
+    """With no snapshot on the context the extract stage is a safe no-op."""
+    ctx = RunContext("run-test")
+    events = []
+    ctx.publish = events.append
+
+    extract.run(ctx)
+
+    assert len(events) == 1
+    assert events[0] == {
+        "type": "stage.progress",
+        "stage": "extract",
+        "note": "no snapshot available",
+    }
+
+
 @pytest.mark.parametrize(
-    ("module", "expected_stage"),
+    ("module", "expected_stage", "expected_note"),
     [
-        (scope, "scope"),
-        (plan, "plan"),
-        (discover, "discover"),
-        (fetch, "fetch"),
-        (extract, "extract"),
-        (crosscheck, "crosscheck"),
-        (synthesize, "synthesize"),
-        (recommend, "recommend"),
+        (scope, "scope", "stub"),
+        (plan, "plan", "stub"),
+        (discover, "discover", "stub"),
+        (fetch, "fetch", "stub"),
+        (extract, "extract", "no snapshot available"),
+        (crosscheck, "crosscheck", "stub"),
+        (synthesize, "synthesize", "stub"),
+        (recommend, "recommend", "stub"),
     ],
 )
-def test_individual_pipeline_stage_runs(module, expected_stage):
+def test_individual_pipeline_stage_runs(module, expected_stage, expected_note):
     ctx = RunContext("run-test")
     events = []
     ctx.publish = events.append
@@ -60,5 +76,5 @@ def test_individual_pipeline_stage_runs(module, expected_stage):
     assert events[0] == {
         "type": "stage.progress",
         "stage": expected_stage,
-        "note": "stub",
+        "note": expected_note,
     }
