@@ -9,10 +9,13 @@ tasks: # task -> tier
   interview_turn: fast
   classify_source: fast
   extract_evidence: fast
+  scope_questions: fast
+  plan_tasks: fast
   crosscheck_nli: fast
   synthesize_module: strong
   recommend: strong
   copilot_answer: strong
   radar_diff_summary: fast
+
 fallbacks:
-  strong: fast # degrade gracefully on provider outage; flag output as lower-confidence
+  strong: fast

@@ -6,7 +6,8 @@ export default defineConfig({
       provider: "v8",
       include: ["src/**/*.ts"],
       exclude: ["src/index.ts"],
-      reporter: ["text", "html", "lcov", "json"],
+      reporter: ["text", "html", "lcov", "json", "json-summary"],
+      // Sprint 2 coverage ratchet (DoD): Scoring >= 85%. Upward-only.
       thresholds: {
         statements: 85,
         branches: 85,
