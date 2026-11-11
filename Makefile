@@ -1,4 +1,4 @@
-.PHONY: bootstrap up down migrate dev eval test lint
+.PHONY: bootstrap up down migrate seed dev eval test lint
 
 bootstrap:
 	pnpm install
@@ -12,6 +12,9 @@ down:
 
 migrate:
 	@for f in db/migrations/*.sql; do echo "applying $$f"; psql "$$DATABASE_URL" -v ON_ERROR_STOP=1 -f $$f; done
+
+seed:
+	pnpm db:seed
 
 dev:
 	pnpm dev & (cd apps/ai && uv run uvicorn fi_ai.main:app --reload --port 8000) & (cd apps/ai && uv run celery -A fi_ai.worker worker -l info) & wait
