@@ -1,4 +1,4 @@
-﻿name: ci
+name: ci
 on:
   pull_request:
   push:
@@ -16,6 +16,9 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Verify per-PR coverage ratchet & non-drop guard
+        if: always()
+        run: node scripts/check-coverage-ratchet.mjs
       - name: Upload Node coverage
         if: always()
         uses: actions/upload-artifact@v4

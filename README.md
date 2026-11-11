@@ -27,7 +27,28 @@ cp .env.example .env            # fill in keys
 make bootstrap                  # pnpm install + uv sync
 make up                         # postgres(pgvector) + redis
 make migrate                    # apply db/migrations
+pnpm db:seed                    # insert or refresh the deterministic demo workspace
 make dev                        # web :3000, api :4000, ai :8000, worker
+```
+
+### Demo workspace seed
+
+The rerunnable seed creates **Demo Workspace** for `demo@founder-intelligence.local`,
+with the idea “Evidence-backed market intelligence for founders” and a complete
+research brief, run, sources, evidence, seven claim statuses, insights, opportunity
+score, and assumptions. It uses deterministic IDs and must be run after migrations:
+
+```bash
+make migrate
+pnpm db:seed
+```
+
+The command uses `DATABASE_URL` and performs all writes in one transaction. To run
+the PostgreSQL rerun/relationship test against a migrated local database:
+
+```powershell
+$env:RUN_DB_SEED_TESTS = "1"
+pnpm db:seed:test
 ```
 
 Versions in `package.json` / `pyproject.toml` are starting points; commit the lockfiles after the first install.
