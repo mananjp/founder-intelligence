@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intelligence Home: state specification (S2-29)</title>
+<style>
+:root{
+  --fi-bg:#0e1116;--fi-surface:#161b22;--fi-text:#e8ecf1;--fi-muted:#8a93a3;
+  --fi-on-accent:#fff;--fi-accent-strong:#3059f0;--fi-accent-text:#6f8fff;
+  --fi-border:rgba(255,255,255,.08);--fi-border-strong:rgba(255,255,255,.12);--fi-border-input:#5f6877;--fi-overlay:rgba(255,255,255,.02);
+  --fi-danger:#ff7b72;--fi-danger-bg:rgba(255,123,114,.12);--fi-warning:#f0883e;--fi-warning-bg:rgba(240,136,62,.12);
+  --fi-verified:#2fb673;--fi-assumption:#c99a3d;--fi-conflicting-text:#ef6f6a; /* proposed */
+  --fi-skeleton:rgba(255,255,255,.06);
+  --fi-radius:10px;--fi-radius-lg:16px;
+  --fi-font-display:"General Sans",ui-sans-serif,system-ui;--fi-font-body:"Inter",ui-sans-serif,system-ui;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fi-bg);color:var(--fi-text);font:14px/20px var(--fi-font-body)}
+main{max-width:880px;margin:0 auto;padding:32px 16px 64px}
+h1{font:600 32px/40px var(--fi-font-display);margin:0 0 8px}
+h2{font:600 16px/24px var(--fi-font-display);margin:0}
+h3{font:600 14px/20px var(--fi-font-body);margin:0 0 12px;color:var(--fi-muted)}
+p{margin:0}code{font-size:12px}
+.lede{color:var(--fi-muted);max-width:68ch;margin-bottom:24px}
+.state{margin-top:40px}.state>header{margin-bottom:12px}
+.frame{background:var(--fi-surface);border:1px solid var(--fi-border-strong);border-radius:var(--fi-radius-lg);padding:24px;display:grid;gap:16px}
+.head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.card{border:1px solid var(--fi-border);border-radius:var(--fi-radius);background:var(--fi-bg);padding:16px}
+.score{font:600 32px/40px var(--fi-font-display)}.score span{font-size:16px;color:var(--fi-muted);font-weight:400}
+.cov{font-weight:600}.hint{color:var(--fi-muted);margin-top:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.badge{display:inline-flex;gap:6px;align-items:center;border:1px solid currentColor;border-radius:999px;padding:2px 8px;font-size:12px;text-decoration:none;white-space:nowrap}
+.b-verified,.b-supported{color:var(--fi-verified)}.b-directional,.b-assumption{color:var(--fi-assumption)}
+.b-conflicting{color:var(--fi-conflicting-text)}.b-inferred{color:var(--fi-accent-text)}.b-unverified{color:var(--fi-muted)}
+ul{margin:0;padding-left:18px;display:grid;gap:8px}
+.note{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;padding:12px;border-radius:var(--fi-radius);border:1px solid var(--fi-border-strong);background:var(--fi-overlay)}
+.note strong{display:block}.note.err{background:var(--fi-danger-bg);border-color:var(--fi-danger)}.note.warn{background:var(--fi-warning-bg);border-color:var(--fi-warning)}
+.ref{display:block;font-size:12px;color:var(--fi-muted);margin-top:4px}
+button.btn{font:600 14px/20px var(--fi-font-body);border-radius:var(--fi-radius);padding:8px 16px;border:1px solid var(--fi-border-input);background:transparent;color:var(--fi-text);cursor:pointer}
+button.btn.primary{background:var(--fi-accent-strong);border-color:transparent;color:var(--fi-on-accent)}
+.empty{text-align:center;display:grid;gap:8px;justify-items:center;padding:24px 8px}.empty p{color:var(--fi-muted);max-width:52ch}
+.sk{height:12px;border-radius:6px;background:var(--fi-skeleton);margin:12px 0}
+.demo{font-size:12px;color:var(--fi-muted)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-alert" viewBox="0 0 16 16"><path d="M8 2 1.5 13.5h13z"/><path d="M8 6.5v3.2M8 11.7v.1"/></symbol>
+</svg>
+<main>
+<h1>Intelligence Home</h1>
+<p class="lede">State gallery for Sprint 2 task T29. Companion to <code>04-intelligence-home.md</code>. All figures and text are illustrative. Field names are provisional until the T32 contract exists.</p>
+
+<section class="state"><header><h2>1. Completed run</h2></header>
+<div class="frame">
+  <div class="head"><strong>Research completed · 9 Nov 2026</strong><button class="btn">Open Evidence</button></div>
+  <div class="grid">
+    <section class="card" aria-label="Opportunity score">
+      <h3>Opportunity score</h3>
+      <p class="score" aria-label="Opportunity score 7.8 out of 10, 62 percent evidence coverage">7.8<span> / 10</span></p>
+      <p class="cov">62% evidence coverage</p>
+      <p class="hint">Most of this score rests on assumptions.</p>
+    </section>
+    <section class="card" aria-label="Claims by status">
+      <h3>Claims by status</h3>
+      <div class="chips">
+        <a class="badge b-verified" href="#"><span aria-hidden="true">✔</span>verified 9</a>
+        <a class="badge b-supported" href="#"><span aria-hidden="true">✓</span>supported 14</a>
+        <a class="badge b-directional" href="#"><span aria-hidden="true">↗</span>directional 6</a>
+        <a class="badge b-conflicting" href="#"><span aria-hidden="true">≠</span>conflicting 3</a>
+        <a class="badge b-inferred" href="#"><span aria-hidden="true">∴</span>inferred 5</a>
+        <a class="badge b-assumption" href="#"><span aria-hidden="true">?</span>assumption 7</a>
+        <a class="badge b-unverified" href="#"><span aria-hidden="true">–</span>unverified 2</a>
+      </div>
+    </section>
+    <section class="card" aria-label="Top risks"><h3>Top risks</h3>
+      <ul><li>Willingness to pay hasn't been tested directly</li><li>Two sources disagree on market size</li><li>Distribution channel is unproven</li></ul></section>
+    <section class="card" aria-label="Open assumptions"><h3>Open assumptions</h3>
+      <ul><li>Customers will pay a monthly subscription</li><li>Clinics adopt without an onboarding call</li><li>The problem recurs weekly</li></ul></section>
+  </div>
+</div></section>
+
+<section class="state"><header><h2>2. No run yet, and running</h2></header>
+<div class="grid">
+  <div class="card"><div class="empty"><strong>Nothing researched yet</strong><p>Run research and FI will score this idea from evidence.</p><button class="btn primary">Set up research</button></div></div>
+  <div class="card"><div class="empty" role="status"><strong>Research is running</strong><p>Results appear here when it finishes.</p><p class="score" style="font-size:16px">No score yet</p><button class="btn">Watch progress</button></div></div>
+</div></section>
+
+<section class="state"><header><h2>3. Partial, failed, cancelled</h2></header>
+<div class="frame">
+  <div class="note warn" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>Research stopped early</strong>We reached this run's budget limit, so results use the sources gathered so far. Treat gaps as unknown, not as absent.</div><button class="btn primary">View what we found</button></div>
+  <div class="note err" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-danger)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>Research couldn't finish</strong>We stopped before producing results. Your idea is unchanged.<span class="ref">Reference: req_88b1v9</span></div><button class="btn">Try again</button></div>
+  <div class="note warn" role="status"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>Showing results from 9 Nov 2026</strong>The latest run couldn't finish.</div><button class="btn">Try again</button></div>
+  <div class="note" role="status"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-muted)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>Research was cancelled</strong>Nothing from this run is shown.</div><button class="btn">Start again</button></div>
+</div></section>
+
+<section class="state"><header><h2>4. Loading and single-card failure</h2></header>
+<div class="grid">
+  <div class="card" aria-busy="true"><h3>Loading</h3><div class="sk" style="width:40%;height:28px"></div><div class="sk"></div><div class="sk" style="width:70%"></div></div>
+  <div class="card"><h3>Top risks</h3><div class="note err" role="alert" style="grid-template-columns:1fr"><div><strong>We couldn't load this section</strong><span class="ref">Reference: req_77c2k4</span><p style="margin-top:8px"><button class="btn">Try again</button></p></div></div></div>
+  <div class="card"><h3>Top risks</h3><div class="empty"><strong>No risks identified</strong><p>We didn't find any in the sources we checked. That doesn't prove none exist.</p></div></div>
+</div></section>
+</main>
+</body>
+</html>
