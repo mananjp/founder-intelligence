@@ -102,6 +102,7 @@ ideas = sa.Table(
     ),
 )
 sa.Index("ideas_workspace_id_idx", ideas.c.workspace_id)
+sa.Index("ideas_workspace_id_id_uidx", ideas.c.workspace_id, ideas.c.id, unique=True)
 
 research_briefs = sa.Table(
     "research_briefs",
@@ -171,10 +172,18 @@ research_runs = sa.Table(
     sa.Column("created_by", postgresql.UUID(as_uuid=True), sa.ForeignKey("users.id"), nullable=False),
     _created_at(),
     sa.Column("completed_at", sa.DateTime(timezone=True)),
+    sa.Column("last_completed_stage", sa.Text),
+    sa.Column("cancel_requested_at", sa.DateTime(timezone=True)),
 )
 sa.Index(
     "research_runs_idea_id_created_at_idx",
     research_runs.c.idea_id,
+    research_runs.c.created_at.desc(),
+)
+sa.Index("research_runs_workspace_id_id_uidx", research_runs.c.workspace_id, research_runs.c.id, unique=True)
+sa.Index(
+    "research_runs_workspace_id_created_at_idx",
+    research_runs.c.workspace_id,
     research_runs.c.created_at.desc(),
 )
 
