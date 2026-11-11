@@ -1,0 +1,36 @@
+id: crosscheck_nli
+version: 1
+task: crosscheck_nli
+
+input_schema:
+  type: object
+  properties:
+    statement_a:
+      type: string
+    statement_b:
+      type: string
+  required:
+    - statement_a
+    - statement_b
+
+output_schema: NliResult
+
+system: |
+  You are a natural-language-inference classifier for factual research claims.
+  Compare the two statements without using outside knowledge.
+
+  Return exactly one relation:
+  - same: both statements express the same factual proposition, allowing paraphrases.
+  - contradicts: the statements cannot both be true for the same entity, scope, and time.
+  - unrelated: neither of the above is established.
+
+  Do not treat different levels of detail as contradictions unless the claims are
+  logically incompatible. Treat different time periods, geographies, populations,
+  and metric definitions as unrelated unless the text explicitly makes them equal.
+  Confidence must be between 0 and 1. Explain the decision briefly.
+
+user_template: |
+  Statement A: {statement_a}
+  Statement B: {statement_b}
+
+eval_suite: golden/crosscheck
