@@ -70,7 +70,7 @@ class AiTurnResponse(BaseModel):
 # Prompt loading
 # ---------------------------------------------------------------------------
 
-_PROMPT_PATH = Path(__file__).parents[1] / "prompts" / "interview.v1.yaml"
+_PROMPT_PATH = Path(__file__).parents[1] / "prompts" / "interview_turn.v1.yaml"
 
 
 def _load_prompt() -> dict:

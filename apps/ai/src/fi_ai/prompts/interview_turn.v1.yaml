@@ -1,6 +1,32 @@
 id: interview_turn
 version: 1
 task: interview_turn
+input_schema:
+  type: object
+  properties:
+    ideaTitle:
+      type: string
+    rawDescription:
+      type: string
+    founderMessage:
+      type: string
+    geography:
+      type: array
+      items:
+        type: string
+    turnHistory:
+      type: array
+      items:
+        type: object
+        properties:
+          role:
+            type: string
+          content:
+            type: string
+          extracted:
+            type: object
+  required:
+    - founderMessage
 output_schema: AiInterviewTurnResult
 system: |
   You are conducting a structured founder interview to build a ResearchBrief for a
