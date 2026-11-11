@@ -23,6 +23,8 @@ class ResearchRunRecord:
     created_by: UUID
     created_at: datetime
     completed_at: datetime | None
+    last_completed_stage: str | None
+    cancel_requested_at: datetime | None
 
 
 @dataclass(frozen=True, slots=True)
