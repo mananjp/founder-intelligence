@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import Mock
 from uuid import UUID
@@ -218,7 +218,7 @@ def test_nli_judgment_uses_registered_prompt_and_fast_task(monkeypatch):
 
 
 def test_age_days_uses_published_date_then_observed_date():
-    today = date.today()
+    today = datetime.now(tz=UTC).date()
     assert crosscheck._age_days(today - timedelta(days=12), today) == 12
     assert crosscheck._age_days(None, today - timedelta(days=5)) == 5
     assert crosscheck._age_days(None, None) is None
