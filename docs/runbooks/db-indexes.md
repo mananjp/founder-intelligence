@@ -167,3 +167,36 @@ feature modules are stubs.
       (mirrors the CI `migrations` job), re-applying `006` (idempotency), and `explain`
       spot-checks for the representative queries above.
 - [x] Rollback documented (section 5) and links back to issue #5.
+
+## 7. Migration 007 index catalog
+
+Migration `007_competitors_customers_signals_notifications.sql` adds the indexes below
+for the competitor, customer-segment, signal, notification and research-run query paths.
+All use `create index if not exists`, so re-applying the migration is safe.
+
+| # | Index name | Table | Columns | Query served |
+| :--- | :--- | :--- | :--- | :--- |
+| 19 | `competitors_idea_id_created_at_idx` | `competitors` | `(idea_id, created_at desc)` | competitors for an idea, newest first |
+| 20 | `competitors_workspace_id_idx` | `competitors` | `(workspace_id)` | workspace-scoped competitor access |
+| 21 | `customer_segments_idea_id_created_at_idx` | `customer_segments` | `(idea_id, created_at desc)` | customer segments for an idea |
+| 22 | `customer_segments_workspace_id_idx` | `customer_segments` | `(workspace_id)` | workspace-scoped segment access |
+| 23 | `signals_idea_id_created_at_idx` | `signals` | `(idea_id, created_at desc)` | signal feed for an idea |
+| 24 | `signals_run_id_idx` | `signals` | `(run_id)` | signals produced by a research run |
+| 25 | `signals_workspace_id_idx` | `signals` | `(workspace_id)` | workspace-scoped signal access |
+| 26 | `signals_type_created_at_idx` | `signals` | `(signal_type, created_at desc)` | signals filtered by type, newest first |
+| 27 | `notifications_user_id_read_at_created_at_idx` | `notifications` | `(user_id, read_at, created_at desc)` | unread and recent notifications for a user |
+| 28 | `notifications_workspace_id_created_at_idx` | `notifications` | `(workspace_id, created_at desc)` | workspace notification feed |
+| 29 | `research_runs_workspace_id_created_at_idx` | `research_runs` | `(workspace_id, created_at desc)` | workspace research-run list |
+
+Migration 007 also enables workspace-isolation RLS on its four new workspace-owned
+tables and on `research_runs`. The policies use the `app.workspace_id` transaction
+setting established by `withWorkspace`, while application queries must continue to
+include explicit `workspace_id` predicates as required by ADR-0006.
+
+The migration also creates the following unique support indexes so composite foreign
+keys can enforce that child rows reference records in the same workspace:
+
+| Index name | Table | Columns | Purpose |
+| :--- | :--- | :--- | :--- |
+| `ideas_workspace_id_id_uidx` | `ideas` | `(workspace_id, id)` | parent key for tenant-consistent idea references |
+| `research_runs_workspace_id_id_uidx` | `research_runs` | `(workspace_id, id)` | parent key for tenant-consistent signal/run references |

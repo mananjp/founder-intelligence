@@ -42,11 +42,16 @@ Configure these environment variables:
 
 | Variable                   | Purpose                                                    |
 | -------------------------- | ---------------------------------------------------------- |
+| `STAGING_DEPLOY_ENABLED`   | Set to `true` to enable the Render deploy job              |
 | `STAGING_API_URL`          | Public HTTPS base URL for `fi-api`, without trailing slash |
 | `STAGING_AI_URL`           | Public HTTPS base URL for `fi-ai`, without trailing slash  |
 | `RENDER_API_SERVICE_ID`    | Render API service ID (`srv-...`)                          |
 | `RENDER_AI_SERVICE_ID`     | Render AI service ID (`srv-...`)                           |
 | `RENDER_WORKER_SERVICE_ID` | Render worker service ID (`srv-...`)                       |
+
+The deploy job only runs when the environment variable `STAGING_DEPLOY_ENABLED` is set to `true`,
+so image publishing stays green until the staging secrets above are configured. Once they are in
+place, set `STAGING_DEPLOY_ENABLED=true` and rerun the workflow.
 
 The workflow triggers all three Render deployments using immutable SHA-tagged GHCR images and captures each deployment ID.
 

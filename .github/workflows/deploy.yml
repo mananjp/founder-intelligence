@@ -61,6 +61,7 @@ jobs:
   render-deploy:
     name: Deploy Render staging
     needs: build-and-push
+    if: vars.STAGING_DEPLOY_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment:
