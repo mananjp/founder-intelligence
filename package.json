@@ -11,6 +11,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "check:coverage": "node scripts/check-coverage-ratchet.mjs",
     "db:seed": "tsx db/seed/demo.ts",
     "db:seed:test": "set RUN_DB_SEED_TESTS=1&& vitest run apps/api/test/demoSeed.test.ts",
     "format": "prettier --write ."
