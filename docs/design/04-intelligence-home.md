@@ -34,7 +34,7 @@ There is no overview contract in `packages/contracts` yet, so field names here a
 
 ## 3. Rules that matter
 
-1. **Score and coverage are never apart.** Always render "7.8 / 10" with "62% evidence coverage" beside it (Bible §17). Coverage is multiplied into the score in `computeOpportunityScore`, so a score without it misleads.
+1. **Score and coverage are never apart.** Always render "7.8 / 10" with "62% evidence coverage" beside it. Bible §17: the second number stops a high-looking score being mistaken for high certainty. (`computeOpportunityScore` reports coverage beside the score; by my reading it does not weight the score by it, despite its doc comment. See the Scorecard spec, open question 1.)
 2. **No score is not zero.** A missing score reads "No score yet". Never `0`, never an empty ring (`ux-states.md` §4).
 3. **Low coverage gets a plain sentence** under the score, e.g. "Most of this score rests on assumptions." The threshold is an open question (§7).
 4. **Counts link to the Vault** filtered by that status.
@@ -65,8 +65,8 @@ There is no overview contract in `packages/contracts` yet, so field names here a
 
 ## 6. Handoff
 
-**T28 (Prashant, Home UI):** reuse `EvidenceBadge` for the chips; new `ScoreSummary`, `ClaimCountChips`, `RiskList` in `packages/ui`.
-**T32 (Avi, Overview endpoint):** please confirm the contract below.
+**T28 (Home UI):** reuse `EvidenceBadge` for the chips; new `ScoreSummary`, `ClaimCountChips`, `RiskList` in `packages/ui`.
+**T32 (Overview endpoint):** the open questions in §7 need an answer from the endpoint owner.
 
 ## 7. Open questions
 
