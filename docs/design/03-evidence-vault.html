@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence Vault: state specification (S2-29)</title>
+<style>
+:root{
+  --fi-bg:#0e1116;--fi-surface:#161b22;--fi-text:#e8ecf1;--fi-muted:#8a93a3;
+  --fi-on-accent:#fff;--fi-accent-strong:#3059f0;--fi-accent-text:#6f8fff;
+  --fi-border:rgba(255,255,255,.08);--fi-border-strong:rgba(255,255,255,.12);--fi-border-input:#5f6877;--fi-overlay:rgba(255,255,255,.02);
+  --fi-danger:#ff7b72;--fi-danger-bg:rgba(255,123,114,.12);--fi-warning:#f0883e;--fi-warning-bg:rgba(240,136,62,.12);
+  --fi-verified:#2fb673;--fi-assumption:#c99a3d;--fi-conflicting-text:#ef6f6a; /* proposed */
+  --fi-skeleton:rgba(255,255,255,.06);
+  --fi-focus-ring:0 0 0 2px var(--fi-bg),0 0 0 4px var(--fi-accent-text);
+  --fi-radius:10px;--fi-radius-lg:16px;
+  --fi-font-display:"General Sans",ui-sans-serif,system-ui;--fi-font-body:"Inter",ui-sans-serif,system-ui;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fi-bg);color:var(--fi-text);font:14px/20px var(--fi-font-body)}
+main{max-width:880px;margin:0 auto;padding:32px 16px 64px}
+h1{font:600 32px/40px var(--fi-font-display);margin:0 0 8px}
+h2{font:600 16px/24px var(--fi-font-display);margin:0}
+p{margin:0}
+code{font-size:12px}
+.lede{color:var(--fi-muted);max-width:68ch;margin-bottom:24px}
+.state{margin-top:40px}.state>header{margin-bottom:12px}
+.frame{background:var(--fi-surface);border:1px solid var(--fi-border-strong);border-radius:var(--fi-radius-lg);padding:24px;display:grid;gap:16px}
+.bar{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+label{display:grid;gap:4px;font-size:12px;color:var(--fi-muted)}
+select{font:inherit;color:var(--fi-text);background:var(--fi-bg);border:1px solid var(--fi-border-input);border-radius:var(--fi-radius);padding:8px 12px;min-width:150px}
+.count{margin-left:auto;color:var(--fi-muted)}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:620px}
+th{text-align:left;font-weight:600;color:var(--fi-muted);font-size:12px;padding:8px 12px;border-bottom:1px solid var(--fi-border-strong)}
+td{padding:12px;border-bottom:1px solid var(--fi-border);vertical-align:top}
+td button.row{all:unset;cursor:pointer;color:var(--fi-text);text-decoration:underline;text-decoration-color:var(--fi-border-input);text-underline-offset:3px}
+td button.row:focus-visible{box-shadow:var(--fi-focus-ring);border-radius:4px}
+.badge{display:inline-flex;gap:6px;align-items:center;border:1px solid currentColor;border-radius:999px;padding:2px 8px;font-size:12px;white-space:nowrap}
+.b-verified,.b-supported{color:var(--fi-verified)}.b-directional,.b-assumption{color:var(--fi-assumption)}
+.b-conflicting{color:var(--fi-conflicting-text)}.b-inferred{color:var(--fi-accent-text)}.b-unverified{color:var(--fi-muted)}
+.note{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;padding:12px;border-radius:var(--fi-radius);border:1px solid var(--fi-border-strong);background:var(--fi-overlay)}
+.note strong{display:block}.note.err{background:var(--fi-danger-bg);border-color:var(--fi-danger)}.note.warn{background:var(--fi-warning-bg);border-color:var(--fi-warning)}
+.ref{display:block;font-size:12px;color:var(--fi-muted);margin-top:4px}
+button.btn{font:600 14px/20px var(--fi-font-body);border-radius:var(--fi-radius);padding:8px 16px;border:1px solid var(--fi-border-input);background:transparent;color:var(--fi-text);cursor:pointer}
+button.btn.primary{background:var(--fi-accent-strong);border-color:transparent;color:var(--fi-on-accent)}
+.empty{text-align:center;display:grid;gap:8px;justify-items:center;padding:24px 8px}.empty p{color:var(--fi-muted);max-width:52ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{border:1px solid var(--fi-border);border-radius:var(--fi-radius);background:var(--fi-bg);padding:16px}
+.card small{display:block;color:var(--fi-muted);font-size:12px;margin-bottom:8px}
+.drawer{display:grid;gap:16px;border:1px solid var(--fi-border-strong);border-radius:var(--fi-radius);background:var(--fi-bg);padding:20px}
+.drawer h3{margin:0;font:600 16px/24px var(--fi-font-display)}
+blockquote{margin:0;padding-left:12px;border-left:2px solid var(--fi-border-input)}
+.src{font-size:12px;color:var(--fi-muted);margin-top:4px}.src a{color:var(--fi-accent-text)}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.sk{height:12px;border-radius:6px;background:var(--fi-skeleton);margin:12px 0}
+.demo{font-size:12px;color:var(--fi-muted)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-alert" viewBox="0 0 16 16"><path d="M8 2 1.5 13.5h13z"/><path d="M8 6.5v3.2M8 11.7v.1"/></symbol>
+</svg>
+<main>
+<h1>Evidence Vault</h1>
+<p class="lede">State gallery for Sprint 2 task T29. Companion to <code>03-evidence-vault.md</code>. All claim text and sources are illustrative.</p>
+
+<section class="state"><header><h2>1. Populated: all seven statuses</h2></header>
+<div class="frame">
+  <div class="bar">
+    <label>Module<select><option>All modules</option></select></label>
+    <label>Status<select><option>All statuses</option></select></label>
+    <span class="count" role="status">7 claims</span>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th scope="col">Claim</th><th scope="col">Module</th><th scope="col">Status</th><th scope="col">Evidence</th></tr></thead>
+    <tbody>
+      <tr><td><button class="row">Two sources give different market size estimates for the UAE segment</button></td><td>Market</td><td><span class="badge b-conflicting"><span aria-hidden="true">≠</span>conflicting</span></td><td>4</td></tr>
+      <tr><td><button class="row">There are no direct competitors in the target city</button></td><td>Competitive</td><td><span class="badge b-unverified"><span aria-hidden="true">–</span>unverified</span></td><td>0</td></tr>
+      <tr><td><button class="row">Competitor A lists its current plans at three price tiers</button></td><td>Pricing</td><td><span class="badge b-verified"><span aria-hidden="true">✔</span>verified</span></td><td>1</td></tr>
+      <tr><td><button class="row">Customers repeatedly complain about manual reconciliation</button></td><td>Customer</td><td><span class="badge b-supported"><span aria-hidden="true">✓</span>supported</span></td><td>6</td></tr>
+      <tr><td><button class="row">Discussion volume around the problem is growing</button></td><td>Demand</td><td><span class="badge b-directional"><span aria-hidden="true">↗</span>directional</span></td><td>3</td></tr>
+      <tr><td><button class="row">This segment may have higher urgency than the wider market</button></td><td>Customer</td><td><span class="badge b-inferred"><span aria-hidden="true">∴</span>inferred</span></td><td>2</td></tr>
+      <tr><td><button class="row">Customers will pay a monthly subscription</button></td><td>GTM</td><td><span class="badge b-assumption"><span aria-hidden="true">?</span>assumption</span></td><td>0</td></tr>
+    </tbody></table></div>
+</div></section>
+
+<section class="state"><header><h2>2. Source drawer with contradictions (conflicting claim)</h2></header>
+<div class="frame"><div class="drawer" role="dialog" aria-label="Evidence for claim">
+  <div><span class="badge b-conflicting"><span aria-hidden="true">≠</span>conflicting</span>
+  <h3 style="margin-top:8px">Two sources give different market size estimates for the UAE segment</h3></div>
+  <div class="pair">
+    <div class="card"><small>Source A, equal weight</small>
+      <blockquote>The segment is estimated at 1.2 billion dirhams in 2025.</blockquote>
+      <p class="src">Industry report · <a href="#">Regional market review</a> (opens in new tab)<br>Published 14 Mar 2025 · Accessed 8 Nov 2026</p></div>
+    <div class="card"><small>Source B, equal weight</small>
+      <blockquote>Total spend in the category reached 800 million dirhams last year.</blockquote>
+      <p class="src">News · <a href="#">Trade press article</a> (opens in new tab)<br>Publication date unavailable · Accessed 8 Nov 2026</p></div>
+  </div>
+  <p class="demo">FI does not pick a winner. Quotes are shown exactly as extracted.</p>
+</div></div></section>
+
+<section class="state"><header><h2>3. Empty and drawer variants</h2></header>
+<div class="grid">
+  <div class="card"><small>Not generated yet</small><div class="empty"><strong>No evidence yet</strong><p>Evidence appears after research runs.</p><button class="btn primary">Set up research</button></div></div>
+  <div class="card"><small>Run in progress</small><div class="empty"><strong>Research is still running</strong><p>Claims appear here once they've been cross-checked.</p><button class="btn">Watch progress</button></div></div>
+  <div class="card"><small>Filtered, no match</small><div class="empty"><strong>No claims match these filters</strong><button class="btn">Clear filters</button></div></div>
+  <div class="card"><small>Drawer: zero evidence</small><div class="empty"><strong>No evidence found</strong><p>We searched the sources we gathered and found nothing that supports or contradicts this claim. It can't be marked verified until we do.</p></div></div>
+  <div class="card"><small>Drawer: assumption</small><div class="empty"><strong>This is an assumption</strong><p>It hasn't been tested yet.</p></div></div>
+  <div class="card" aria-busy="true"><small>Drawer: loading</small><div class="sk" style="width:70%"></div><div class="sk"></div><div class="sk" style="width:85%"></div></div>
+</div></section>
+
+<section class="state"><header><h2>4. Partial run and errors</h2></header>
+<div class="frame">
+  <div class="note warn" role="alert"><svg class="ic" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>Research stopped early</strong>We reached this run's budget limit, so claims use the sources gathered so far. Treat gaps as unknown, not as absent.</div></div>
+  <div class="note err" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-danger)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>Something went wrong on our side</strong>That didn't work. Try again in a moment.<span class="ref">Reference: req_88b1v9</span></div><button class="btn">Try again</button></div>
+  <div class="note warn" role="status"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-alert"/></svg>
+    <div><strong>Showing earlier results</strong>We couldn't refresh this list.</div><button class="btn">Try again</button></div>
+</div></section>
+</main>
+</body>
+</html>
