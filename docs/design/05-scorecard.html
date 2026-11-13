@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scorecard: state specification (S2-29)</title>
+<style>
+:root{
+  --fi-bg:#0e1116;--fi-surface:#161b22;--fi-text:#e8ecf1;--fi-muted:#8a93a3;
+  --fi-on-accent:#fff;--fi-accent-strong:#3059f0;--fi-accent-text:#6f8fff;
+  --fi-border:rgba(255,255,255,.08);--fi-border-strong:rgba(255,255,255,.12);--fi-border-input:#5f6877;--fi-overlay:rgba(255,255,255,.02);
+  --fi-danger:#ff7b72;--fi-danger-bg:rgba(255,123,114,.12);--fi-warning:#f0883e;--fi-warning-bg:rgba(240,136,62,.12);
+  --fi-skeleton:rgba(255,255,255,.06);
+  --fi-focus-ring:0 0 0 2px var(--fi-bg),0 0 0 4px var(--fi-accent-text);
+  --fi-radius:10px;--fi-radius-lg:16px;
+  --fi-font-display:"General Sans",ui-sans-serif,system-ui;--fi-font-body:"Inter",ui-sans-serif,system-ui;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fi-bg);color:var(--fi-text);font:14px/20px var(--fi-font-body)}
+main{max-width:880px;margin:0 auto;padding:32px 16px 64px}
+h1{font:600 32px/40px var(--fi-font-display);margin:0 0 8px}
+h2{font:600 16px/24px var(--fi-font-display);margin:0}
+p{margin:0}code{font-size:12px}
+.lede{color:var(--fi-muted);max-width:68ch;margin-bottom:24px}
+.state{margin-top:40px}.state>header{margin-bottom:12px}
+.frame{background:var(--fi-surface);border:1px solid var(--fi-border-strong);border-radius:var(--fi-radius-lg);padding:24px;display:grid;gap:16px}
+.score{font:600 32px/40px var(--fi-font-display)}.score span{font-size:16px;color:var(--fi-muted);font-weight:400}
+.cov{font-weight:600}.hint{color:var(--fi-muted);margin-top:4px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th{text-align:left;font-weight:600;color:var(--fi-muted);font-size:12px;padding:8px 12px;border-bottom:1px solid var(--fi-border-strong)}
+td{padding:12px;border-bottom:1px solid var(--fi-border);vertical-align:top}
+.dim button{all:unset;cursor:pointer;color:var(--fi-text);text-decoration:underline;text-decoration-color:var(--fi-border-input);text-underline-offset:3px}
+.dim button:focus-visible{box-shadow:var(--fi-focus-ring);border-radius:4px}
+.q{display:block;color:var(--fi-muted);font-size:12px;margin-top:4px}
+.num{font-weight:600;white-space:nowrap}
+.bar{display:inline-block;width:80px;height:6px;border-radius:3px;background:var(--fi-border-strong);vertical-align:middle;margin-left:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--fi-accent-text)}
+td a{color:var(--fi-accent-text)}
+.na{color:var(--fi-muted)}
+.meta{font-size:12px;color:var(--fi-muted);border-top:1px solid var(--fi-border);padding-top:12px}
+.note{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;padding:12px;border-radius:var(--fi-radius);border:1px solid var(--fi-border-strong);background:var(--fi-overlay)}
+.note strong{display:block}.note.err{background:var(--fi-danger-bg);border-color:var(--fi-danger)}.note.warn{background:var(--fi-warning-bg);border-color:var(--fi-warning)}
+.ref{display:block;font-size:12px;color:var(--fi-muted);margin-top:4px}
+button.btn{font:600 14px/20px var(--fi-font-body);border-radius:var(--fi-radius);padding:8px 16px;border:1px solid var(--fi-border-input);background:transparent;color:var(--fi-text);cursor:pointer}
+button.btn.primary{background:var(--fi-accent-strong);border-color:transparent;color:var(--fi-on-accent)}
+button.btn[disabled]{opacity:.6;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.card{border:1px solid var(--fi-border);border-radius:var(--fi-radius);background:var(--fi-bg);padding:16px}
+.empty{text-align:center;display:grid;gap:8px;justify-items:center;padding:16px 8px}.empty p{color:var(--fi-muted)}
+.sk{height:12px;border-radius:6px;background:var(--fi-skeleton);margin:12px 0}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="a" viewBox="0 0 16 16"><path d="M8 2 1.5 13.5h13z"/><path d="M8 6.5v3.2M8 11.7v.1"/></symbol>
+</svg>
+<main>
+<h1>Scorecard</h1>
+<p class="lede">State gallery for Sprint 2 task T29. Companion to <code>05-scorecard.md</code>. All numbers are illustrative and the dimension scores are not meant to average to the overall figure. Compute behaviour is pending T31.</p>
+
+<section class="state"><header><h2>1. Calculated: ten dimensions, one not scored, one without evidence</h2></header>
+<div class="frame">
+  <div>
+    <p class="score" aria-label="Opportunity score 7.1 out of 10, 53 percent evidence coverage">7.1<span> / 10</span></p>
+    <p class="cov">53% evidence coverage</p>
+    <p class="hint">Part of this score still rests on assumptions.</p>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th scope="col">Dimension</th><th scope="col">Score</th><th scope="col">Evidence coverage</th><th scope="col">Claims</th></tr></thead>
+    <tbody>
+      <tr><th scope="row" class="dim"><button aria-expanded="true">Problem severity</button><span class="q">Is the problem meaningful enough to motivate action?</span></th><td class="num">8.5<span class="bar" aria-hidden="true"><i style="width:85%"></i></span></td><td>80%</td><td><a href="#">5 claims</a></td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Market attractiveness</button></th><td class="num">7.5<span class="bar" aria-hidden="true"><i style="width:75%"></i></span></td><td>55%</td><td><a href="#">4 claims</a></td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Customer willingness</button></th><td class="num">6.0<span class="bar" aria-hidden="true"><i style="width:60%"></i></span></td><td>40%</td><td><a href="#">3 claims</a></td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Competitive pressure</button></th><td class="num">5.5<span class="bar" aria-hidden="true"><i style="width:55%"></i></span></td><td>65%</td><td><a href="#">6 claims</a></td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Differentiation</button></th><td class="num">8.0<span class="bar" aria-hidden="true"><i style="width:80%"></i></span></td><td>50%</td><td><a href="#">2 claims</a></td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Timing</button></th><td class="num">7.0<span class="bar" aria-hidden="true"><i style="width:70%"></i></span></td><td>70%</td><td><a href="#">4 claims</a></td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Monetization</button></th><td class="num">7.5<span class="bar" aria-hidden="true"><i style="width:75%"></i></span></td><td>35%</td><td><a href="#">2 claims</a></td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Distribution feasibility</button></th><td class="num">6.5<span class="bar" aria-hidden="true"><i style="width:65%"></i></span></td><td>30%</td><td><a href="#">1 claim</a></td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Defensibility</button></th><td class="na" colspan="2"><strong>Not scored</strong> · No rating was produced for this dimension.</td><td class="na">None</td></tr>
+      <tr><th scope="row" class="dim"><button aria-expanded="false">Execution fit</button></th><td class="num">4.0<span class="bar" aria-hidden="true"><i style="width:40%"></i></span></td><td><strong>No supporting evidence</strong></td><td class="na">None</td></tr>
+    </tbody></table></div>
+  <p class="meta">How this is calculated: scoring model opportunity-score.v1. This score is a decision aid, not a prediction of startup success.</p>
+</div></section>
+
+<section class="state"><header><h2>2. Empty and in-progress states</h2></header>
+<div class="grid">
+  <div class="card"><div class="empty"><strong>No score yet</strong><p>The opportunity score is calculated from research evidence. Run research first.</p><button class="btn primary">Set up research</button></div></div>
+  <div class="card"><div class="empty"><strong>Your score isn't calculated yet</strong><p>Research is done. Calculate the score from its evidence.</p><button class="btn primary">Calculate score</button></div></div>
+  <div class="card"><div class="empty"><strong>Nothing to score yet</strong><p>FI couldn't rate any dimension from this research.</p><button class="btn">Set up research</button></div></div>
+  <div class="card"><div class="empty" role="status"><strong>Calculating your score</strong><button class="btn" disabled>Calculating…</button></div></div>
+  <div class="card" aria-busy="true"><div class="sk" style="width:35%;height:28px"></div><div class="sk"></div><div class="sk"></div><div class="sk" style="width:80%"></div></div>
+</div></section>
+
+<section class="state"><header><h2>3. Partial run, failures, view-only</h2></header>
+<div class="frame">
+  <div class="note warn" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>Research stopped early</strong>We reached this run's budget limit, so this score uses the sources gathered so far. Treat gaps as unknown, not as absent.</div></div>
+  <div class="note err" role="alert"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-danger)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>We couldn't calculate your score</strong>That didn't work. Try again in a moment.<span class="ref">Reference: req_88b1v9</span></div><button class="btn">Try again</button></div>
+  <div class="note warn" role="status"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-warning)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>Showing your earlier score</strong>We couldn't refresh it.</div><button class="btn">Try again</button></div>
+  <div class="note" role="status"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--fi-muted)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#a"/></svg>
+    <div><strong>View-only access</strong>Your role in this workspace can't make changes.</div><button class="btn" disabled>Calculate score</button></div>
+</div></section>
+</main>
+</body>
+</html>
