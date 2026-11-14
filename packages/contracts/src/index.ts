@@ -1,9 +1,8 @@
-export * from "./evidence.js";
-export * from "./idea.js";
-export * from "./research.js";
-export * from "./opportunity.js";
-export * from "./decision.js";
-export * from "./reports.js";
-export * from "./radar.js";
-export * from "./interview.js";
-
+export * from "./evidence";
+export * from "./idea";
+export * from "./research";
+export * from "./opportunity";
+export * from "./decision";
+export * from "./reports";
+export * from "./radar";
+export * from "./interview";

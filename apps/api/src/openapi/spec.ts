@@ -12,6 +12,7 @@ import {
   RunEvent,
   RunState,
   StartResearchRun,
+  WorkspaceUsage,
 } from "@fi/contracts";
 import {
   extendZodWithOpenApi,
@@ -35,6 +36,7 @@ const contractSchemas = [
   ResearchBrief,
   FinalizeInterviewBriefBody,
   InterviewSessionState,
+  WorkspaceUsage,
 ];
 for (const schema of contractSchemas) {
   const proto = Object.getPrototypeOf(schema);
@@ -83,6 +85,10 @@ const interviewSessionStateSchema = registry.register(
 const postInterviewTurnResponseSchema = registry.register(
   "PostInterviewTurnResponse",
   PostInterviewTurnResponse,
+);
+const workspaceUsageSchema = registry.register(
+  "WorkspaceUsage",
+  WorkspaceUsage,
 );
 
 registry.registerComponent("securitySchemes", "bearerAuth", {
@@ -543,6 +549,29 @@ registry.registerPath({
     401: { description: "Missing or invalid bearer token." },
     403: { description: "The user is not a workspace member." },
     404: { description: "No research brief exists for this idea." },
+  },
+});
+
+const workspaceUsageResponse = z.object({ data: workspaceUsageSchema });
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/billing/usage",
+  operationId: "getWorkspaceBillingUsage",
+  summary: "Get workspace plan limits and usage",
+  description:
+    "Returns current subscription plan, allowed research depths, monthly runs limit, and usage counts.",
+  tags: ["Billing"],
+  security: bearerSecurity,
+  request: { params: workspaceParams },
+  responses: {
+    200: {
+      description: "Workspace usage and plan limits details.",
+      content: jsonContent(workspaceUsageResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "Workspace not found." },
   },
 });
 

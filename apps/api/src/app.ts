@@ -17,6 +17,7 @@ import { workspacesRouter } from "./modules/workspaces/workspaces.routes.js";
 import { ideasRouter } from "./modules/ideas/ideas.routes.js";
 import { researchRouter } from "./modules/research/research.routes.js";
 import { interviewRouter } from "./modules/interview/interview.routes.js";
+import { billingRouter } from "./modules/billing/billing.routes.js";
 import { docsRouter } from "./openapi/docs.js";
 
 export function buildApp() {
@@ -47,6 +48,11 @@ export function buildApp() {
   v1.use("/workspaces/:workspaceId/ideas", ideasRouter);
   v1.use("/workspaces/:workspaceId/ideas/:ideaId/research", researchRouter);
   v1.use("/workspaces/:workspaceId/ideas/:ideaId/interview", interviewRouter);
+  v1.use("/workspaces/:workspaceId/billing", billingRouter);
+  v1.use("/workspaces/:workspaceId/usage", (req, res, next) => {
+    req.url = "/usage";
+    billingRouter(req, res, next);
+  });
   // TODO(modules): evidence, competitors, customers, scorecard, assumptions,
   // experiments, decisions, copilot, radar, reports, billing, notifications
   app.use("/v1", v1);
