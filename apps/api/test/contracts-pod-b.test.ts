@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { Report, Subscription, ActivityLog } from "@fi/contracts";
+import {
+  Report,
+  Subscription,
+  ActivityLog,
+  WorkspaceUsage,
+  PlanTier,
+  PLAN_TIERS,
+} from "@fi/contracts";
 
 describe("Pod B Contract Tests — Reports, Billing & Workspace", () => {
   it("validates Report contract schema", () => {
@@ -52,5 +59,34 @@ describe("Pod B Contract Tests — Reports, Billing & Workspace", () => {
     const parsed = ActivityLog.parse(validLog);
     expect(parsed.action).toBe("idea.created");
     expect(parsed.entityType).toBe("idea");
+  });
+
+  it("validates WorkspaceUsage contract schema", () => {
+    const validUsage = {
+      workspaceId: "99999999-9999-4999-8999-999999999999",
+      plan: "free",
+      status: "active",
+      runsUsed: 3,
+      runsLimit: 5,
+      allowedDepths: ["quick"],
+      periodStart: new Date().toISOString(),
+      periodEnd: undefined,
+    };
+
+    const parsed = WorkspaceUsage.parse(validUsage);
+    expect(parsed.plan).toBe("free");
+    expect(parsed.runsUsed).toBe(3);
+    expect(parsed.runsLimit).toBe(5);
+    expect(parsed.allowedDepths).toEqual(["quick"]);
+  });
+
+  it("validates PLAN_TIERS definitions for all subscription plans", () => {
+    expect(PLAN_TIERS.free).toBeDefined();
+    expect(PLAN_TIERS.pro).toBeDefined();
+    expect(PLAN_TIERS.enterprise).toBeDefined();
+
+    expect(PlanTier.parse(PLAN_TIERS.free).allowedDepths).toEqual(["quick"]);
+    expect(PlanTier.parse(PLAN_TIERS.pro).allowedDepths).toContain("standard");
+    expect(PlanTier.parse(PLAN_TIERS.enterprise).allowedDepths).toContain("deep");
   });
 });

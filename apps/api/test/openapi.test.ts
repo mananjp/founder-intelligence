@@ -32,6 +32,7 @@ const expectedRoutes = [
   ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/turns"],
   ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/finalize"],
   ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/brief"],
+  ["get", "/v1/workspaces/{workspaceId}/billing/usage"],
 ] as const;
 const protectedRoutes = expectedRoutes.filter(([, path]) =>
   path.startsWith("/v1/"),

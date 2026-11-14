@@ -3,6 +3,7 @@ import { StartResearchRun } from "@fi/contracts";
 import { requireWorkspace } from "../../middleware/auth.js";
 import { validate } from "../../middleware/validate.js";
 import { streamRunEvents } from "../../lib/sse.js";
+import { enforcePlanLimits } from "../billing/billing.middleware.js";
 import { researchService } from "./research.service.js";
 
 export const researchRouter = Router({ mergeParams: true });
@@ -12,6 +13,7 @@ researchRouter.use(requireWorkspace);
 researchRouter.post(
   "/runs",
   validate({ body: StartResearchRun }),
+  enforcePlanLimits,
   async (req, res) => {
     const { ideaId } = req.params as { ideaId: string };
     const run = await researchService.startRun(
