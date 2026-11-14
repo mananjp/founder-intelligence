@@ -8,13 +8,13 @@
 
 # Core Backend (Mann lead, Krish Parmar, Nil, Deep, Tirth)
 /apps/api/                 @mann1325 @KRISH-0201 @Ladnil03 @Deep6890 @tirthbhanderi2006
-/db/migrations/            @mann1325 @KRISH-0201 @Ladnil03 @Deep6890 @tirthbhanderi2006 @Sharanam24
+/db/migrations/            @mann1325 @KRISH-0201 @Ladnil03 @Deep6890 @tirthbhanderi2006 @24aiml063-cell
 
 # AI (Research Engine + Scoring/Evals; Sharanam & Shreeji leads)
-/apps/ai/                  @Sharanam24 @Preetsavaliya111 @Jiyabhaviksadaria @VRAJ-710 @shreejisojitra
-/apps/ai/src/fi_ai/prompts/ @Sharanam24 @Preetsavaliya111 @shreejisojitra
+/apps/ai/                  @24aiml063-cell @Preetsavaliya111 @Jiyabhaviksadaria @VRAJ-710 @shreejisojitra
+/apps/ai/src/fi_ai/prompts/ @24aiml063-cell @Preetsavaliya111 @shreejisojitra
 /packages/scoring/         @shreejisojitra @Preetsavaliya111
-/packages/contracts/       @mann1325 @Sharanam24 @shreejisojitra
+/packages/contracts/       @mann1325 @24aiml063-cell @shreejisojitra
 /evals/                    @shreejisojitra @Preetsavaliya111
 
 # Platform / DevOps / QA (Rishi + Ansh leads, Rahil, Hitarth) + PMO
