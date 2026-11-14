@@ -210,7 +210,9 @@ export default function PricingPage() {
                   transition: "opacity 0.2s ease",
                 }}
               >
-                {tier.priceMonthlyUsd === 0 ? "Get Started Free" : `Upgrade to ${tier.name.split("/")[0].trim()}`}
+                {tier.priceMonthlyUsd === 0
+                  ? "Get Started Free"
+                  : `Upgrade to ${(tier.name.split("/")[0] ?? tier.name).trim()}`}
               </button>
             </div>
           );

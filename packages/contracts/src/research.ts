@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const ResearchDepth = z.enum(["quick", "standard", "deep"]);
+export type ResearchDepth = z.infer<typeof ResearchDepth>;
 
 export const StartResearchRun = z.object({
   depth: ResearchDepth.default("quick"),

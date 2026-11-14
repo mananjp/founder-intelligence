@@ -5,6 +5,7 @@ export {
   PlanTier,
   PLAN_TIERS,
   WorkspaceUsage,
+  ResearchDepth,
 } from "@fi/contracts";
 
 export type {
