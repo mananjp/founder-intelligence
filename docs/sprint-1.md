@@ -64,7 +64,7 @@ Docs: `docs/README.md` missing, runbooks TODO, architecture README stub, CODEOWN
 |---|------|-------|-----|----------------------------------|
 | 12 | Evals harness v1 | Shreeji + Preet `Preetsavaliya111` | L | Create `evals/` suite (golden cases for research+prompts); replace the "harness not implemented" runner in `apps/ai/src/fi_ai/evals/run.py`; wire CI path-filtered job so it runs on prompt/research diffs instead of skipping; output structured pass/fail report artifact. |
 
-## Workstream 4 — AI · Research Engine (lead: Sharanam Katwala `Sharanam24`)
+## Workstream 4 — AI · Research Engine (lead: Sharanam Katwala `24aiml063-cell`)
 
 | # | Task | Owner | Est | Deliverable / Acceptance criteria |
 |---|------|-------|-----|----------------------------------|
