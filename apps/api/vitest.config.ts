@@ -15,13 +15,12 @@ export default defineConfig({
       provider: "v8",
       include: ["src/**/*.ts"],
       reporter: ["text", "html", "lcov", "json", "json-summary"],
-      // Sprint 2 coverage ratchet — Wk1 non-drop floor (Sprint 1 baseline).
-      // Wk3 raises these to API >= 80% once module tests land. Upward-only.
+      // Sprint 2 coverage ratchet — Wk3 raise (DoD): API >= 80%. Upward-only.
       thresholds: {
-        statements: 70,
-        branches: 70,
-        functions: 60,
-        lines: 70,
+        statements: 80,
+        branches: 80,
+        functions: 80,
+        lines: 80,
       },
     },
   },
