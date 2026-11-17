@@ -21,8 +21,13 @@ log = structlog.get_logger()
 class RunContext:
     """Loaded per run: brief, geography, depth, budget tracker, db session, event publisher."""
 
-    def __init__(self, run_id: str) -> None:
+    def __init__(self, run_id: str, *, idea_id: str | None = None) -> None:
         self.run_id = run_id
+        # idea_id is populated by T15 (repository layer) when the run record is loaded from the
+        # database.  Until T15 lands it remains None; any stage that requires a valid idea_id
+        # (e.g. recommend / score_proposal) must guard against None and skip persistence rather
+        # than substituting run_id as a placeholder.
+        self.idea_id: str | None = idea_id
         self.spent_usd = 0.0
         self.budget_usd = 1.0  # TODO load from depth tier
 
