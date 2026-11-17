@@ -25,27 +25,35 @@ The **Wk1** deliverable (this PR) installs the guard and locks the floors at the
 **current Sprint 1 baseline** — it does not raise any bar, so CI behaviour is
 unchanged. The **Wk3** "raise" PR bumps the starred values to the DoD targets.
 
-| Package            | statements | branches | functions | lines | Wk3 target (DoD)      |
+Wk1 (merged) installed the guard at the Sprint 1 baseline. Wk3 (this PR) raises
+every floor to the DoD target below.
+
+| Package            | statements | branches | functions | lines | Note                  |
 | ------------------ | ---------- | -------- | --------- | ----- | --------------------- |
-| `apps/api`         | 70         | 70       | 60        | 70    | **80 / 80 / 80 / 80** |
-| `apps/web`         | 10         | 40       | 25        | 10    | **20 / 50 / 35 / 20** (+10 pts) |
-| `packages/scoring` | 85         | 85       | 85        | 85    | 85 (already met)      |
-| `apps/ai`          | 85 (`--cov-fail-under`) | — | — | — | 85 (already met)   |
+| `apps/api`         | 80         | 80       | 80        | 80    | DoD: API ≥ 80%        |
+| `apps/web`         | 20         | 50       | 35        | 20    | DoD: +10 pts          |
+| `packages/scoring` | 85         | 85       | 85        | 85    | already met (100%)    |
+| `apps/ai`          | 85 (`--cov-fail-under`) | — | — | — | already met        |
 
 > DoD target per Sprint 2 plan: **API ≥ 80%, Web +10 pts, AI/Scoring ≥ 85%.**
 
-## Current state (Sprint 2, Wk1)
+## Current state (Sprint 2, Wk3 — raise applied)
 
-`scoring` (100%) and `ai` (85%) already clear their floors. `api` is at
-~83% statements/lines and ~72% branches — comfortably above the Wk1 baseline,
-and already close to the Wk3 target except on branches. `web` is at ~12% and
-will need the WS5 frontend tests before the Wk3 +10-pt raise can land green.
-The Wk3 raise is deliberately deferred until those feature-pod tests exist so
-the raised bars go green rather than red.
+`scoring` (100%) and `ai` (85%) clear their floors. **`api` and `web` do not yet
+meet the raised floors** as of this PR:
 
-> Note: `web`'s `functions` threshold (25) already exceeds its measured ~21%, a
-> pre-existing condition on `main` unrelated to this guard. The Wk3 raise (or a
-> separate frontend-test PR) closes it.
+| Package | statements | branches | functions | lines | Clears raised floor? |
+| ------- | ---------- | -------- | --------- | ----- | -------------------- |
+| `apps/api` | 83 | **72** | 80 | 83 | ❌ branches 72 < 80 |
+| `apps/web` | **12** | **41** | **21** | **12** | ❌ all four below |
+
+The gap is owned by the feature pods whose tests feed these packages — WS5
+frontend (T24–T28) for `web`, and the API modules / branch coverage (T3, T5,
+T31–T40) for `api`. **Until those tests land, this raise makes `pnpm test` (and
+the guard) fail.** That is the intended ratchet behaviour: the bar is set to the
+DoD target and does not move back down; coverage rises to meet it. Merge timing
+is a PM/Platform decision — hold this PR, or land it to make the target binding
+and force the remaining coverage work, per the G3 call.
 
 ## How to run locally
 

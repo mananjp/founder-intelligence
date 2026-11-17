@@ -4,16 +4,15 @@ import path from "node:path";
 
 /**
  * Founder Intelligence — Coverage Ratchet & Non-Drop Guard
- * Sprint 2 Platform / DevOps (Task #9: Rahil Barchha) — Wk1 deliverable.
+ * Sprint 2 Platform / DevOps (Task #9: Rahil Barchha) — Wk1 guard + Wk3 raise.
  *
  * Enforces:
  * 1. Non-Drop Guard: PR coverage must satisfy or exceed the current floors.
  * 2. Upward-Only Policy: thresholds declared in config files cannot be lowered.
  *
- * Floors below mirror the current per-package config thresholds (Sprint 1
- * baseline). The Wk3 "raise" PR bumps both these floors and the configs to the
- * DoD targets (API >= 80%, Web +10 pts, AI/Scoring >= 85%) once module tests
- * land. Only ever raise a floor here; never lower one.
+ * Floors below are the Sprint 2 DoD targets (API >= 80%, Web +10 pts,
+ * AI/Scoring >= 85%) and mirror the per-package config thresholds. Only ever
+ * raise a floor here; never lower one.
  */
 
 // Current ratchet floors (Upward-Only Policy)
@@ -22,13 +21,13 @@ const RATCHET_FLOORS = {
     name: "apps/api",
     configPath: path.resolve("apps/api/vitest.config.ts"),
     summaryPath: path.resolve("apps/api/coverage/coverage-summary.json"),
-    thresholds: { statements: 70, branches: 70, functions: 60, lines: 70 },
+    thresholds: { statements: 80, branches: 80, functions: 80, lines: 80 },
   },
   "@fi/web": {
     name: "apps/web",
     configPath: path.resolve("apps/web/vitest.config.ts"),
     summaryPath: path.resolve("apps/web/coverage/coverage-summary.json"),
-    thresholds: { statements: 10, branches: 40, functions: 25, lines: 10 },
+    thresholds: { statements: 20, branches: 50, functions: 35, lines: 20 },
   },
   "@fi/scoring": {
     name: "packages/scoring",
