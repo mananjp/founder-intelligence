@@ -1,4 +1,4 @@
-.PHONY: bootstrap up down migrate seed dev eval test lint
+.PHONY: bootstrap up down migrate seed dev eval test lint load-smoke
 
 bootstrap:
 	pnpm install
@@ -27,3 +27,15 @@ test:
 
 lint:
 	pnpm lint && cd apps/ai && uv run ruff check .
+
+# Staging load/soak smoke (Task #10). Pass BASE_URL/AUTH_TOKEN/WORKSPACE_ID/
+# IDEA_ID/RUN_ID as make vars or export them first. See
+# docs/runbooks/staging-load-smoke.md.
+load-smoke:
+	k6 run \
+	  -e BASE_URL=$(BASE_URL) \
+	  -e AUTH_TOKEN=$(AUTH_TOKEN) \
+	  -e WORKSPACE_ID=$(WORKSPACE_ID) \
+	  -e IDEA_ID=$(IDEA_ID) \
+	  -e RUN_ID=$(RUN_ID) \
+	  scripts/load/staging-load-smoke.js
