@@ -8,13 +8,18 @@ RUN pnpm --filter @fi/api... build
 RUN pnpm --filter @fi/api deploy --prod /out
 
 FROM node:22-slim
-ENV NODE_ENV=production
+ENV NODE_ENV=production \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 WORKDIR /app
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 RUN groupadd --system --gid 10001 nodejs \
     && useradd --system --uid 10001 --gid nodejs nodejs \
     && chown -R nodejs:nodejs /app
 COPY --from=build --chown=nodejs:nodejs /out .
+# Install only Chromium headless shell + required OS shared libs for PDF export.
+RUN node ./node_modules/playwright/cli.js install --with-deps --no-progress chromium-headless-shell \
+    && rm -rf /var/lib/apt/lists/* /tmp/* \
+    && chmod -R a+rX /ms-playwright
 USER nodejs
 EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \

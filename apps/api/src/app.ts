@@ -17,6 +17,7 @@ import { workspacesRouter } from "./modules/workspaces/workspaces.routes.js";
 import { ideasRouter } from "./modules/ideas/ideas.routes.js";
 import { researchRouter } from "./modules/research/research.routes.js";
 import { interviewRouter } from "./modules/interview/interview.routes.js";
+import { reportsRouter } from "./modules/reports/reports.routes.js";
 import { docsRouter } from "./openapi/docs.js";
 
 export function buildApp() {
@@ -25,7 +26,13 @@ export function buildApp() {
   app.use(requestId);
   app.use(pinoHttp({ logger }));
   app.use(helmet());
-  app.use(cors({ origin: env.WEB_ORIGIN, credentials: true }));
+  app.use(
+    cors({
+      origin: env.WEB_ORIGIN,
+      credentials: true,
+      exposedHeaders: ["Content-Disposition"],
+    }),
+  );
   app.use(express.json({ limit: "2mb" }));
 
   // 1. Health endpoints (bypass rate limiting entirely)
@@ -47,8 +54,9 @@ export function buildApp() {
   v1.use("/workspaces/:workspaceId/ideas", ideasRouter);
   v1.use("/workspaces/:workspaceId/ideas/:ideaId/research", researchRouter);
   v1.use("/workspaces/:workspaceId/ideas/:ideaId/interview", interviewRouter);
+  v1.use("/workspaces/:workspaceId/ideas/:ideaId/reports", reportsRouter);
   // TODO(modules): evidence, competitors, customers, scorecard, assumptions,
-  // experiments, decisions, copilot, radar, reports, billing, notifications
+  // experiments, decisions, copilot, radar, billing, notifications
   app.use("/v1", v1);
 
   app.use(errorHandler);

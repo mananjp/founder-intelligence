@@ -1,11 +1,16 @@
 import {
   CreateIdea,
+  CreateReportBody,
   FinalizeInterviewBriefBody,
   InterviewSessionState,
   InterviewTurn,
   InterviewTurnRole,
   PostInterviewTurnBody,
   PostInterviewTurnResponse,
+  QuickBriefReport,
+  QuickBriefSections,
+  Report,
+  ReportKind,
   ResearchBrief,
   ResearchDepth,
   ResearchRun,
@@ -24,6 +29,11 @@ extendZodWithOpenApi(z);
 
 const contractSchemas = [
   CreateIdea,
+  CreateReportBody,
+  ReportKind,
+  Report,
+  QuickBriefSections,
+  QuickBriefReport,
   ResearchDepth,
   RunState,
   StartResearchRun,
@@ -84,6 +94,20 @@ const postInterviewTurnResponseSchema = registry.register(
   "PostInterviewTurnResponse",
   PostInterviewTurnResponse,
 );
+const reportKindSchema = registry.register("ReportKind", ReportKind);
+const createReportBodySchema = registry.register(
+  "CreateReportBody",
+  CreateReportBody,
+);
+const reportSchema = registry.register("Report", Report);
+const quickBriefSectionsSchema = registry.register(
+  "QuickBriefSections",
+  QuickBriefSections,
+);
+const quickBriefReportSchema = registry.register(
+  "QuickBriefReport",
+  QuickBriefReport,
+);
 
 registry.registerComponent("securitySchemes", "bearerAuth", {
   type: "http",
@@ -95,6 +119,7 @@ registry.registerComponent("securitySchemes", "bearerAuth", {
 const workspaceParams = z.object({ workspaceId: z.string() });
 const ideaParams = workspaceParams.extend({ ideaId: z.string() });
 const runParams = ideaParams.extend({ runId: z.string() });
+const reportParams = ideaParams.extend({ reportId: z.string() });
 
 const workspaceItemSchema = registry.register(
   "WorkspaceItem",
@@ -181,6 +206,17 @@ const researchBriefResponse = registry.register(
   "ResearchBriefResponse",
   z.object({ data: researchBriefSchema }),
 );
+const reportResponse = registry.register(
+  "ReportResponse",
+  z.object({ data: reportSchema }),
+);
+const reportListResponse = registry.register(
+  "ReportListResponse",
+  z.object({ data: z.array(reportSchema) }),
+);
+void reportKindSchema;
+void quickBriefSectionsSchema;
+void quickBriefReportSchema;
 
 const jsonContent = (schema: z.ZodTypeAny) => ({
   "application/json": { schema },
@@ -543,6 +579,109 @@ registry.registerPath({
     401: { description: "Missing or invalid bearer token." },
     403: { description: "The user is not a workspace member." },
     404: { description: "No research brief exists for this idea." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports",
+  operationId: "listReports",
+  summary: "List reports for an idea",
+  description:
+    "Returns saved reports for the specified idea, newest first.",
+  tags: ["Reports"],
+  security: bearerSecurity,
+  request: { params: ideaParams },
+  responses: {
+    200: {
+      description: "Saved reports for this idea.",
+      content: jsonContent(reportListResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea does not exist in this workspace." },
+  },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports",
+  operationId: "generateQuickBriefReport",
+  summary: "Generate a quick_brief report from the latest valid research run",
+  description:
+    "Builds and stores a structured quick_brief report from the latest completed research run for the idea. Returns the existing report idempotently unless force=true.",
+  tags: ["Reports"],
+  security: bearerSecurity,
+  request: {
+    params: ideaParams,
+    body: {
+      required: false,
+      content: { "application/json": { schema: createReportBodySchema } },
+    },
+  },
+  responses: {
+    200: {
+      description: "Existing quick_brief returned idempotently.",
+      content: jsonContent(reportResponse),
+    },
+    201: {
+      description: "New quick_brief report created.",
+      content: jsonContent(reportResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "Insufficient workspace permissions." },
+    404: { description: "The idea does not exist in this workspace." },
+    409: {
+      description:
+        "No completed research run exists yet for this idea.",
+    },
+    422: { description: "The request body failed validation." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports/{reportId}",
+  operationId: "getReport",
+  summary: "Get a report by ID",
+  description: "Returns a single persisted report scoped to the workspace and idea.",
+  tags: ["Reports"],
+  security: bearerSecurity,
+  request: { params: reportParams },
+  responses: {
+    200: {
+      description: "The requested report.",
+      content: jsonContent(reportResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea or report was not found." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports/{reportId}/pdf",
+  operationId: "downloadReportPdf",
+  summary: "Download report as PDF",
+  description:
+    "Renders the structured quick_brief report to PDF using Playwright and returns the PDF binary.",
+  tags: ["Reports"],
+  security: bearerSecurity,
+  request: { params: reportParams },
+  responses: {
+    200: {
+      description: "Playwright-rendered PDF document.",
+      content: {
+        "application/pdf": {
+          schema: z.string().openapi({ format: "binary" }),
+        },
+      },
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea or report was not found." },
+    422: { description: "Report kind or structure does not support PDF export." },
   },
 });
 
