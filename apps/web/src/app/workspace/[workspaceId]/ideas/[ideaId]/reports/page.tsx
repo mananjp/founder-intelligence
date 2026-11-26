@@ -1,12 +1,13 @@
 // Screen: Reports (Bible §33) — Generate and export intelligence.
-// Owner: Frontend squad. Fetch via apiFetch() from '@/lib/apiClient'; types from '@fi/contracts'.
+import type { Metadata } from "next";
+import { ReportsWorkspace } from "@/components/reports/ReportsWorkspace";
+
+export const metadata: Metadata = {
+  title: "Reports — Founder Intelligence",
+  description:
+    "Generate evidence-backed quick briefs and export formatted PDFs.",
+};
+
 export default function Page() {
-  return (
-    <main style={{ padding: 24 }}>
-      <h1>Reports</h1>
-      <p style={{ color: "var(--fi-muted)" }}>
-        Generate and export intelligence.
-      </p>
-    </main>
-  );
+  return <ReportsWorkspace />;
 }

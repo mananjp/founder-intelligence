@@ -32,6 +32,10 @@ const expectedRoutes = [
   ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/turns"],
   ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/finalize"],
   ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/brief"],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports"],
+  ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports"],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports/{reportId}"],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports/{reportId}/pdf"],
 ] as const;
 const protectedRoutes = expectedRoutes.filter(([, path]) =>
   path.startsWith("/v1/"),
@@ -106,6 +110,14 @@ describe("OpenAPI document", () => {
     ).toMatchObject({
       $ref: "#/components/schemas/FinalizeInterviewBriefBody",
     });
+    expect(
+      requestBodySchema(
+        "post",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports",
+      ),
+    ).toMatchObject({
+      $ref: "#/components/schemas/CreateReportBody",
+    });
   });
 
   it("includes schemas and media types for successful responses", () => {
@@ -137,6 +149,13 @@ describe("OpenAPI document", () => {
       [
         "get",
         "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/brief",
+        "200",
+      ],
+      ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports", "200"],
+      ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports", "201"],
+      [
+        "get",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/reports/{reportId}",
         "200",
       ],
     ] as const;

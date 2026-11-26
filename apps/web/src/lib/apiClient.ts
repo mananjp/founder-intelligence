@@ -32,13 +32,14 @@ export interface ApiFetchOptions extends RequestInit {
 }
 
 const DEFAULT_TIMEOUT_MS = 15000;
+const DEFAULT_BLOB_TIMEOUT_MS = 45000;
 
-/** Thin fetch wrapper. All routes are workspace-scoped: /v1/workspaces/:workspaceId/... */
-export async function apiFetch<T>(
+async function performRequest(
   path: string,
-  init?: ApiFetchOptions,
-): Promise<T> {
-  const timeoutMs = init?.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  init: ApiFetchOptions | undefined,
+  defaultTimeoutMs: number,
+): Promise<Response> {
+  const timeoutMs = init?.timeoutMs ?? defaultTimeoutMs;
   const controller = new AbortController();
   const timeoutTimer = setTimeout(() => {
     controller.abort(new Error(`Request timed out after ${timeoutMs}ms`));
@@ -85,7 +86,7 @@ export async function apiFetch<T>(
       throw apiError;
     }
 
-    return (await res.json()) as T;
+    return res;
   } catch (err) {
     if (err instanceof ApiError) {
       throw err;
@@ -101,4 +102,94 @@ export async function apiFetch<T>(
   } finally {
     clearTimeout(timeoutTimer);
   }
+}
+
+/** Thin fetch wrapper. All routes are workspace-scoped: /v1/workspaces/:workspaceId/... */
+export async function apiFetch<T>(
+  path: string,
+  init?: ApiFetchOptions,
+): Promise<T> {
+  const res = await performRequest(path, init, DEFAULT_TIMEOUT_MS);
+  return (await res.json()) as T;
+}
+
+function sanitizeParsedFilename(raw: string): string | undefined {
+  const trimmed = raw.trim();
+  if (!trimmed || trimmed === "." || trimmed === "..") return undefined;
+  for (let i = 0; i < trimmed.length; i += 1) {
+    const code = trimmed.charCodeAt(i);
+    if (code <= 0x1f || code === 0x7f) return undefined;
+  }
+  if (
+    trimmed.includes("/") ||
+    trimmed.includes("\\") ||
+    trimmed.includes("..")
+  ) {
+    return undefined;
+  }
+  return trimmed;
+}
+
+export function parseFilenameFromDisposition(
+  header: string | null | undefined,
+): string | undefined {
+  if (!header || typeof header !== "string") return undefined;
+
+  // Prefer RFC 5987/6266 extended parameter: filename*=UTF-8''encoded-name.pdf
+  const extMatch = header.match(/(?:^|[;\s])filename\*\s*=\s*([^;\r\n]+)/i);
+  if (extMatch?.[1]) {
+    const rawExt = extMatch[1].trim();
+    const rfc5987 = rawExt.match(/^([^']*)'[^']*'(.*)$/);
+    const encoded = rfc5987?.[2];
+    if (
+      rfc5987 &&
+      encoded !== undefined &&
+      (!rfc5987[1] || rfc5987[1].toLowerCase() === "utf-8")
+    ) {
+      try {
+        return sanitizeParsedFilename(decodeURIComponent(encoded));
+      } catch {
+        return undefined;
+      }
+    }
+  }
+
+  const quotedMatch = header.match(
+    /(?:^|[;\s])filename\s*=\s*"([^"\r\n]*)"/i,
+  );
+  if (quotedMatch?.[1] !== undefined) {
+    return sanitizeParsedFilename(quotedMatch[1]);
+  }
+
+  const unquotedMatch = header.match(
+    /(?:^|[;\s])filename\s*=\s*([^;"\r\n]+)(?=$|;)/i,
+  );
+  if (unquotedMatch?.[1] !== undefined) {
+    return sanitizeParsedFilename(unquotedMatch[1]);
+  }
+
+  return undefined;
+}
+
+/** Fetch binary responses (such as Playwright PDF exports) with uniform ApiError handling. */
+export async function apiFetchBlob(
+  path: string,
+  init?: ApiFetchOptions,
+): Promise<{ blob: Blob; filename?: string }> {
+  const res = await performRequest(
+    path,
+    {
+      ...init,
+      headers: {
+        Accept: "application/pdf",
+        ...init?.headers,
+      },
+    },
+    DEFAULT_BLOB_TIMEOUT_MS,
+  );
+  const blob = await res.blob();
+  const filename = parseFilenameFromDisposition(
+    res.headers.get("content-disposition"),
+  );
+  return { blob, filename };
 }
