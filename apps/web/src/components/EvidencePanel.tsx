@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { EvidenceBadge } from "@fi/ui";
 import type { Claim } from "@fi/contracts";
 
