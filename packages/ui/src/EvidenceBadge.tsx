@@ -1,3 +1,4 @@
+import React from "react";
 import type { ClaimStatus } from "@fi/contracts";
 
 const COLOR: Record<ClaimStatus, string> = {

@@ -32,6 +32,18 @@ const expectedRoutes = [
   ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/turns"],
   ["post", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/finalize"],
   ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/brief"],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/competitors"],
+  [
+    "get",
+    "/v1/workspaces/{workspaceId}/ideas/{ideaId}/competitors/{competitorId}",
+  ],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/customers"],
+  [
+    "get",
+    "/v1/workspaces/{workspaceId}/ideas/{ideaId}/customers/{segmentId}",
+  ],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/signals"],
+  ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/signals/{signalId}"],
 ] as const;
 const protectedRoutes = expectedRoutes.filter(([, path]) =>
   path.startsWith("/v1/"),
@@ -137,6 +149,28 @@ describe("OpenAPI document", () => {
       [
         "get",
         "/v1/workspaces/{workspaceId}/ideas/{ideaId}/interview/brief",
+        "200",
+      ],
+      [
+        "get",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/competitors",
+        "200",
+      ],
+      [
+        "get",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/competitors/{competitorId}",
+        "200",
+      ],
+      ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/customers", "200"],
+      [
+        "get",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/customers/{segmentId}",
+        "200",
+      ],
+      ["get", "/v1/workspaces/{workspaceId}/ideas/{ideaId}/signals", "200"],
+      [
+        "get",
+        "/v1/workspaces/{workspaceId}/ideas/{ideaId}/signals/{signalId}",
         "200",
       ],
     ] as const;

@@ -1,5 +1,12 @@
 import {
+  Claim,
+  ClaimStatus,
+  Competitor,
+  CompetitorClass,
+  CompetitorDetail,
   CreateIdea,
+  CustomerSegment,
+  CustomerSegmentDetail,
   FinalizeInterviewBriefBody,
   InterviewSessionState,
   InterviewTurn,
@@ -11,6 +18,10 @@ import {
   ResearchRun,
   RunEvent,
   RunState,
+  Signal,
+  SignalDetail,
+  SignalStrength,
+  SignalType,
   StartResearchRun,
 } from "@fi/contracts";
 import {
@@ -35,6 +46,17 @@ const contractSchemas = [
   ResearchBrief,
   FinalizeInterviewBriefBody,
   InterviewSessionState,
+  ClaimStatus,
+  Claim,
+  CompetitorClass,
+  Competitor,
+  CompetitorDetail,
+  CustomerSegment,
+  CustomerSegmentDetail,
+  SignalType,
+  SignalStrength,
+  Signal,
+  SignalDetail,
 ];
 for (const schema of contractSchemas) {
   const proto = Object.getPrototypeOf(schema);
@@ -84,6 +106,30 @@ const postInterviewTurnResponseSchema = registry.register(
   "PostInterviewTurnResponse",
   PostInterviewTurnResponse,
 );
+const competitorClassSchema = registry.register(
+  "CompetitorClass",
+  CompetitorClass,
+);
+const competitorSchema = registry.register("Competitor", Competitor);
+const competitorDetailSchema = registry.register(
+  "CompetitorDetail",
+  CompetitorDetail,
+);
+const customerSegmentSchema = registry.register(
+  "CustomerSegment",
+  CustomerSegment,
+);
+const customerSegmentDetailSchema = registry.register(
+  "CustomerSegmentDetail",
+  CustomerSegmentDetail,
+);
+const signalTypeSchema = registry.register("SignalType", SignalType);
+const signalStrengthSchema = registry.register(
+  "SignalStrength",
+  SignalStrength,
+);
+const signalSchema = registry.register("Signal", Signal);
+const signalDetailSchema = registry.register("SignalDetail", SignalDetail);
 
 registry.registerComponent("securitySchemes", "bearerAuth", {
   type: "http",
@@ -95,6 +141,9 @@ registry.registerComponent("securitySchemes", "bearerAuth", {
 const workspaceParams = z.object({ workspaceId: z.string() });
 const ideaParams = workspaceParams.extend({ ideaId: z.string() });
 const runParams = ideaParams.extend({ runId: z.string() });
+const competitorParams = ideaParams.extend({ competitorId: z.string() });
+const segmentParams = ideaParams.extend({ segmentId: z.string() });
+const signalParams = ideaParams.extend({ signalId: z.string() });
 
 const workspaceItemSchema = registry.register(
   "WorkspaceItem",
@@ -180,6 +229,30 @@ const postInterviewTurnDataResponse = registry.register(
 const researchBriefResponse = registry.register(
   "ResearchBriefResponse",
   z.object({ data: researchBriefSchema }),
+);
+const competitorListResponse = registry.register(
+  "CompetitorListResponse",
+  z.object({ data: z.array(competitorSchema) }),
+);
+const competitorDetailResponse = registry.register(
+  "CompetitorDetailResponse",
+  z.object({ data: competitorDetailSchema }),
+);
+const customerSegmentListResponse = registry.register(
+  "CustomerSegmentListResponse",
+  z.object({ data: z.array(customerSegmentSchema) }),
+);
+const customerSegmentDetailResponse = registry.register(
+  "CustomerSegmentDetailResponse",
+  z.object({ data: customerSegmentDetailSchema }),
+);
+const signalListResponse = registry.register(
+  "SignalListResponse",
+  z.object({ data: z.array(signalSchema) }),
+);
+const signalDetailResponse = registry.register(
+  "SignalDetailResponse",
+  z.object({ data: signalDetailSchema }),
 );
 
 const jsonContent = (schema: z.ZodTypeAny) => ({
@@ -543,6 +616,142 @@ registry.registerPath({
     401: { description: "Missing or invalid bearer token." },
     403: { description: "The user is not a workspace member." },
     404: { description: "No research brief exists for this idea." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/competitors",
+  operationId: "listCompetitors",
+  summary: "List competitors for an idea",
+  description:
+    "Returns competitors mapped across the five strategic competitor classes, optionally filtered by class.",
+  tags: ["Competitors"],
+  security: bearerSecurity,
+  request: {
+    params: ideaParams,
+    query: z.object({ kind: competitorClassSchema.optional() }),
+  },
+  responses: {
+    200: {
+      description: "List of competitors.",
+      content: jsonContent(competitorListResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea does not exist in this workspace." },
+    422: { description: "Invalid query parameter." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/competitors/{competitorId}",
+  operationId: "getCompetitor",
+  summary: "Get competitor details with linked claims",
+  description:
+    "Returns a competitor profile along with its linked evidence-backed claims.",
+  tags: ["Competitors"],
+  security: bearerSecurity,
+  request: { params: competitorParams },
+  responses: {
+    200: {
+      description: "Competitor detail with linked claims.",
+      content: jsonContent(competitorDetailResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea or competitor was not found." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/customers",
+  operationId: "listCustomerSegments",
+  summary: "List customer segments for an idea",
+  description: "Returns customer segments and ICP profiles for the idea.",
+  tags: ["Customers"],
+  security: bearerSecurity,
+  request: { params: ideaParams },
+  responses: {
+    200: {
+      description: "List of customer segments.",
+      content: jsonContent(customerSegmentListResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea does not exist in this workspace." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/customers/{segmentId}",
+  operationId: "getCustomerSegment",
+  summary: "Get customer segment details with linked claims",
+  description:
+    "Returns a customer segment profile along with its linked evidence-backed claims.",
+  tags: ["Customers"],
+  security: bearerSecurity,
+  request: { params: segmentParams },
+  responses: {
+    200: {
+      description: "Customer segment detail with linked claims.",
+      content: jsonContent(customerSegmentDetailResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea or customer segment was not found." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/signals",
+  operationId: "listSignals",
+  summary: "List demand and market signals for an idea",
+  description:
+    "Returns observed demand and trend signals for the idea, optionally filtered by signalType or strength.",
+  tags: ["Signals"],
+  security: bearerSecurity,
+  request: {
+    params: ideaParams,
+    query: z.object({
+      signalType: signalTypeSchema.optional(),
+      strength: signalStrengthSchema.optional(),
+    }),
+  },
+  responses: {
+    200: {
+      description: "List of signals.",
+      content: jsonContent(signalListResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea does not exist in this workspace." },
+    422: { description: "Invalid query parameter." },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/v1/workspaces/{workspaceId}/ideas/{ideaId}/signals/{signalId}",
+  operationId: "getSignal",
+  summary: "Get signal details with linked claims",
+  description:
+    "Returns a signal record along with its linked evidence-backed claims.",
+  tags: ["Signals"],
+  security: bearerSecurity,
+  request: { params: signalParams },
+  responses: {
+    200: {
+      description: "Signal detail with linked claims.",
+      content: jsonContent(signalDetailResponse),
+    },
+    401: { description: "Missing or invalid bearer token." },
+    403: { description: "The user is not a workspace member." },
+    404: { description: "The idea or signal was not found." },
   },
 });
 

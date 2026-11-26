@@ -31,7 +31,7 @@
   "pnpm": {
     "overrides": {
       "postcss": "8.5.23",
-      "next": "15.5.28",
+      "next": "15.5.29",
       "sharp": ">=0.35.5",
       "source-map-js": ">=1.2.2",
       "body-parser": ">=2.4.0",
