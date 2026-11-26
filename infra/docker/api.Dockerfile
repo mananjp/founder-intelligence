@@ -10,6 +10,9 @@ RUN pnpm --filter @fi/api deploy --prod /out
 FROM node:22-slim
 ENV NODE_ENV=production
 WORKDIR /app
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
 RUN groupadd --system --gid 10001 nodejs \
     && useradd --system --uid 10001 --gid nodejs nodejs \
